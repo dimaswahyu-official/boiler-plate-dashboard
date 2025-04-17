@@ -1,4 +1,4 @@
-import TableMasterMenu from './TableMasterMenu';
+import TableMasterMenu from './components/TableMasterMenu';
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 
 export default function MasterMenu() {
@@ -9,3 +9,5 @@ export default function MasterMenu() {
         </div>
     )
 }
+
+

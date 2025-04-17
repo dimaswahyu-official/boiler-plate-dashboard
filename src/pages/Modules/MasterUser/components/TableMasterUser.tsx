@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from "react";
-import { FaTrash, FaPlus, FaEdit, FaFileImport } from 'react-icons/fa';
-import Button from "../../../components/ui/button/Button";
-import DatePicker from "../../../components/form/date-picker";
-import Input from "../../../components/form/input/InputField";
-import DialogWithForm from '../../../components/modal';
-
+import { useMemo, useState } from "react";
+import { FaTrash, FaEdit, FaPlus, FaFileImport, FaEye } from 'react-icons/fa';
+import Button from "../../../../components/ui/button/Button";
+import DatePicker from "../../../../components/form/date-picker";
+import Input from "../../../../components/form/input/InputField";
+import ReusableFormModal from "../../../../components/modal/ReusableFormModal";
+import { useNavigate } from "react-router-dom";
 import {
     useReactTable,
     getCoreRowModel,
@@ -61,6 +61,10 @@ const dummyData: User[] = [
 
 const TableMasterUser = () => {
     const [globalFilter, setGlobalFilter] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleCloseModal = () => setIsModalOpen(false);
+    const handleOpenModal = () => setIsModalOpen(true);
 
     const columns = useMemo(
         () => [
@@ -126,6 +130,13 @@ const TableMasterUser = () => {
                         >
                             <FaTrash />
                         </button>
+
+                        <button
+                            className="text-green-600 hover:underline"
+                            onClick={() => handleDetail(row.original.id)}
+                        >
+                            <FaEye />
+                        </button>
                     </div>
                 ),
             },
@@ -147,12 +158,50 @@ const TableMasterUser = () => {
         enableRowSelection: true,
     });
 
+    const formFields = [
+        { name: "name", label: "Name", type: "text", validation: { required: "Name is required" } },
+        { name: "username", label: "Username", type: "text", validation: { required: "Username is required" } },
+        {
+            name: "roles",
+            label: "Roles",
+            type: "select",
+            options: [
+                { value: "admin", label: "Admin" },
+                { value: "spv", label: "SPV" },
+                { value: "staff", label: "Staff" },
+            ],
+            validation: { required: "Role is required" },
+        },
+        {
+            name: "branch",
+            label: "Branch",
+            type: "select",
+            options: [
+                { value: "JAT", label: "JAT" },
+                { value: "KDS", label: "KDS" },
+                { value: "BDG", label: "BDG" },
+            ],
+            validation: { required: "Branch is required" },
+        },
+        { name: "email", label: "Email", type: "text", validation: { required: "Email is required" } },
+        { name: "password", label: "New Password", type: "text", validation: { required: "Password is required" } },
+
+        // { name: "upload", label: "Upload Data", type: "text", validation: { required: "Upload is required" }, enableFileUpload: true },
+    ];
+
+    const navigate = useNavigate();
+
+    function handleDetail(id: number): void {
+        navigate(`/detail_user`, { state: { userId: id } });
+    }
+
+
     return (
         <>
+            {/* ACTION SECTION */}
             <div className="p-4 bg-white shadow rounded-md mb-5">
                 <div className="flex justify-between items-center mb-4">
                     <div className="space-x-4 flex items-center">
-
                         <Input
                             onChange={(e) => setGlobalFilter(e.target.value)}
                             type="text"
@@ -170,8 +219,19 @@ const TableMasterUser = () => {
                     </div>
 
                     <div className="space-x-4">
-                        <DialogWithForm />
-                        
+                        <ReusableFormModal
+                            isOpen={isModalOpen}
+                            onClose={handleCloseModal}
+                            onSubmit={(data) => {
+                                console.log("Form Submitted:", data);
+                            }}
+                            formFields={formFields}
+                            title="Create User"
+                            triggerButtonLabel="Add User"
+                            triggerButtonIcon={<FaPlus className="mr-2" />}
+                            triggerButtonAction={handleOpenModal}
+                        />
+
                         <Button variant="primary" size="sm" onClick={() => alert("Add User")}>
                             <FaFileImport className="mr-2" /> Import User
                         </Button>
@@ -180,6 +240,7 @@ const TableMasterUser = () => {
                 </div>
             </div>
 
+            {/* TABLE SECTION */}
             <div className="p-4 bg-white shadow rounded-md">
                 <table className="min-w-full table-auto border border-gray-200">
                     <thead>
@@ -240,4 +301,6 @@ const TableMasterUser = () => {
     );
 };
 
+
 export default TableMasterUser;
+

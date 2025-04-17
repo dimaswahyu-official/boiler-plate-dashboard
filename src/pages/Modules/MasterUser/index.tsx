@@ -1,4 +1,4 @@
-import TableMasterUser from './TableMasterUser';
+import TableMasterUser from './components/TableMasterUser';
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 
 export default function MasterUser() {

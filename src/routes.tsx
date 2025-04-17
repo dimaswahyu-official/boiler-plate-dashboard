@@ -1,74 +1,70 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { JSX, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
-import NotFound from "./pages/OtherPage/NotFound";
-import UserProfiles from "./pages/UserProfiles";
-import Videos from "./pages/UiElements/Videos";
-import Images from "./pages/UiElements/Images";
-import Alerts from "./pages/UiElements/Alerts";
-import Badges from "./pages/UiElements/Badges";
-import Avatars from "./pages/UiElements/Avatars";
-import Buttons from "./pages/UiElements/Buttons";
-import LineChart from "./pages/Charts/LineChart";
-import BarChart from "./pages/Charts/BarChart";
-import Calendar from "./pages/Calendar";
-import BasicTables from "./pages/Tables/BasicTables";
-import FormElements from "./pages/Forms/FormElements";
-import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
-import Home from "./pages/Dashboard/Home";
 
-// MODULES
+// ✅ Import ProtectedRoute
+import ProtectedRoute from "./context/ProtectedRoute";
+import { useMenuStore } from '../src/API/store/masterMenuStore';
+
+// PAGE MODULES
+import Home from "./pages/Dashboard/Home";
 import SalesRoute from "./pages/Modules/SalesRoute";
 import MasterUser from "./pages/Modules/MasterUser";
 import MasterMenu from "./pages/Modules/MasterMenu";
+import NotFound from "./pages/OtherPage/NotFound";
+
+
 
 export function AppRoutes() {
+    const { fetchMenus, menus } = useMenuStore();
+
+    useEffect(() => {
+        fetchMenus();
+    }, [fetchMenus]);
+
+    useEffect(() => {
+        console.log('menus', menus);
+    }, [menus]);
+
+    const componentMap: Record<string, JSX.Element> = {
+        Home: <Home />,
+        SalesRoute: <SalesRoute />,
+        MasterUser: <MasterUser />,
+        MasterMenu: <MasterMenu />,
+    };
+
+    const renderDynamicRoutes = () => {
+        return menus.map((menu: any) => {
+            const Component = componentMap[menu.name];
+            return Component ? (
+                <Route key={menu.id} path={menu.path} element={Component} />
+            ) : null;
+        });
+    };
+
     return (
         <Router>
             <ScrollToTop />
             <Routes>
-                {/* Dashboard Layout */}
-                <Route element={<AppLayout />}>
-                    <Route index path="/dashboard" element={<Home />} />
-
-                    {/* FEATURES */}
-                    <Route path="/sales_route" element={<SalesRoute />} />
-                    <Route path="/master_user" element={<MasterUser />} />
-                    <Route path="/master_menu" element={<MasterMenu />} />
-
-                    {/* Others Page */}
-                    <Route path="/profile" element={<UserProfiles />} />
-                    <Route path="/calendar" element={<Calendar />} />
-                    <Route path="/blank" element={<Blank />} />
-
-                    {/* Forms */}
-                    <Route path="/form-elements" element={<FormElements />} />
-
-                    {/* Tables */}
-                    <Route path="/basic-tables" element={<BasicTables />} />
-
-                    {/* Ui Elements */}
-                    <Route path="/alerts" element={<Alerts />} />
-                    <Route path="/avatars" element={<Avatars />} />
-                    <Route path="/badge" element={<Badges />} />
-                    <Route path="/buttons" element={<Buttons />} />
-                    <Route path="/images" element={<Images />} />
-                    <Route path="/videos" element={<Videos />} />
-
-                    {/* Charts */}
-                    <Route path="/line-chart" element={<LineChart />} />
-                    <Route path="/bar-chart" element={<BarChart />} />
+                {/* ✅ Protected Layout dengan token */}
+                <Route element={<ProtectedRoute />}>
+                    <Route element={<AppLayout />}>
+                        {renderDynamicRoutes()}
+                    </Route>
                 </Route>
 
-                {/* Auth Layout */}
-                {/* <Route path="/signin" element={<SignIn />} /> */}
+                {/* Auth Routes */}
                 <Route path="/" element={<SignIn />} />
+                <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
 
-                {/* Fallback Route */}
-                <Route path="*" element={<NotFound />} />
+                {/* Not Found */}
+                <Route path="*" element={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                    <div className="spinner"></div>
+                </div>} />
             </Routes>
         </Router>
     );

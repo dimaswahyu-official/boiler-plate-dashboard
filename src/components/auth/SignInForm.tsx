@@ -1,35 +1,77 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Perbaikan: gunakan useNavigate
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
-import Input from "../form/input/InputField";
-import Button from "../ui/button/Button";
+import SignInInput from "../form/input/SignInInput";
 
+import Button from "../ui/button/Button";
+import { loginService } from "../../API/services/AuthService";
+import CustomToast, { showErrorToast, showSuccessToast } from '../../components/toast';
+
+interface SignInFormValues {
+  username: string;
+  password: string;
+}
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState(""); // Tambahkan state untuk email
-  const [password, setPassword] = useState(""); // Tambahkan state untuk password
-  const navigate = useNavigate(); // Gunakan useNavigate untuk navigasi
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormValues>();
+
+  const handleLogin = async (data: SignInFormValues) => {
     setIsLoading(true);
+    setError(null);
 
-    // Simulasi proses login
-    setTimeout(() => {
-      setIsLoading(false);
-      if (password === "123456") {
-        navigate("/dashboard"); // Arahkan ke /dashboard
+    try {
+      const response = await loginService(data);
+      if (!response.access) {
+        showErrorToast("Login gagal!");
+        return;
       } else {
-        alert("Invalid password!");
+        localStorage.setItem('token', response.access);
+        showSuccessToast("Login berhasil!");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1500);
       }
-    }, 1000); // Simulasi loading 1 detik
+
+      // if (response.statusCode === 200) {
+      //   showSuccessToast("Login berhasil!");
+      //   localStorage.setItem('token', response.data.accessToken);
+
+      //   setTimeout(() => {
+      //     navigate("/dashboard");
+      //   }, 2000);
+      // }
+    } catch (err: any) {
+      console.log(err);
+      setError(err.message || "Login gagal!");
+      showErrorToast(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  async function getPublicIP() {
+    const res = await fetch("https://api.ipify.org?format=json");
+    const data = await res.json();
+    return data.ip;
+  }
+
+  getPublicIP().then(ip => console.log("IP:", ip));
 
   return (
     <div className="flex flex-col flex-1">
+      <CustomToast />
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div>
           <div className="mb-5 sm:mb-8">
@@ -41,28 +83,38 @@ export default function SignInForm() {
             </p>
           </div>
           <div>
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleSubmit(handleLogin)}>
               <div className="space-y-6">
                 <div>
                   <Label>
-                    Email <span className="text-error-500">*</span>{" "}
+                    Email <span className="text-error-500">*</span>
                   </Label>
-                  <Input
-                    placeholder="info@gmail.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)} // Update email state
+                  <SignInInput
+                    placeholder="Enter your email"
+                    register={register("username", {
+                      required: "Email is required",
+                    })}
+                    error={!!errors.username}
+                    hint={errors.username?.message}
                   />
                 </div>
                 <div>
                   <Label>
-                    Password <span className="text-error-500">*</span>{" "}
+                    Password <span className="text-error-500">*</span>
                   </Label>
                   <div className="relative">
-                    <Input
+                    <SignInInput
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)} // Update password state
+                      register={register("password", {
+                        required: "Password is required",
+                        minLength: {
+                          value: 6,
+                          message: "Password must be at least 6 characters",
+                        },
+                      })}
+                      error={!!errors.password}
+                      hint={errors.password?.message}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -84,12 +136,13 @@ export default function SignInForm() {
                     Forgot password?
                   </Link>
                 </div>
+                {error && (
+                  <p className="text-sm text-red-500 dark:text-red-400">
+                    {error}
+                  </p>
+                )}
                 <div>
-                  <Button
-                    className="w-full"
-                    size="sm"
-                    disabled={isLoading}
-                  >
+                  <Button className="w-full" size="sm" disabled={isLoading}>
                     {isLoading ? (
                       <div className="flex items-center justify-center">
                         <svg
