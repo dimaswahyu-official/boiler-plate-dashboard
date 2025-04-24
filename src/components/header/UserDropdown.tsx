@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link, useNavigate } from "react-router-dom"; // <== make sure this is 'react-router-dom'
+import { useMenuStore } from "../../API/store/menuStore";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,10 +16,13 @@ export default function UserDropdown() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
+    localStorage.removeItem("local_menus");
+    useMenuStore.getState().reset();
+    console.log("Token after logout:", localStorage.getItem("token"));
     closeDropdown();
     setTimeout(() => {
-      navigate("/signin");
+      navigate("/signin", { replace: true });
     }, 1000);
   };
 
@@ -33,8 +37,9 @@ export default function UserDropdown() {
         </span>
         <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
         <svg
-          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
-            }`}
+          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
           width="18"
           height="20"
           viewBox="0 0 18 20"

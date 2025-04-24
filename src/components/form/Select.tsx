@@ -1,4 +1,5 @@
-import { useState } from "react";
+import React from "react";
+import ReactSelect, { SingleValue } from "react-select";
 
 interface Option {
   value: string;
@@ -20,44 +21,47 @@ const Select: React.FC<SelectProps> = ({
   className = "",
   defaultValue = "",
 }) => {
-  // Manage the selected value
-  const [selectedValue, setSelectedValue] = useState<string>(defaultValue);
+  // Find the default option based on the defaultValue
+  const defaultOption = options.find((option) => option.value === defaultValue);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setSelectedValue(value);
-    onChange(value); // Trigger parent handler
+  const handleChange = (selectedOption: SingleValue<Option>) => {
+    onChange(selectedOption?.value || ""); // Trigger parent handler
   };
 
   return (
-    <select
-      className={`h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 ${
-        selectedValue
-          ? "text-gray-800 dark:text-white/90"
-          : "text-gray-400 dark:text-gray-400"
-      } ${className}`}
-      value={selectedValue}
+    <ReactSelect
+      className={className}
+      options={options}
+      placeholder={placeholder}
+      defaultValue={defaultOption}
       onChange={handleChange}
-    >
-      {/* Placeholder option */}
-      <option
-        value=""
-        disabled
-        className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-      >
-        {placeholder}
-      </option>
-      {/* Map over options */}
-      {options.map((option) => (
-        <option
-          key={option.value}
-          value={option.value}
-          className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-        >
-          {option.label}
-        </option>
-      ))}
-    </select>
+      classNamePrefix="react-select"
+      styles={{
+        control: (base) => ({
+          ...base,
+          borderRadius: "0.5rem",
+          borderColor: "#d1d5db",
+          boxShadow: "none",
+          "&:hover": { borderColor: "#a1a1aa" },
+          width: "200px", // Set static width for the control
+        }),
+        placeholder: (base) => ({
+          ...base,
+          color: "#9ca3af",
+        }),
+        menu: (base) => ({
+          ...base,
+          width: "200px", // Set static width for the dropdown menu
+        }),
+        singleValue: (base) => ({
+          ...base,
+          width: "200px", // Ensure the selected value area has a static width
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }),
+      }}
+    />
   );
 };
 

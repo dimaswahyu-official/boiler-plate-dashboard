@@ -1,12 +1,11 @@
 import { useMemo } from "react";
 import {
-  GridIcon,
-  PageIcon,
-  DollarLineIcon,
-  ListIcon,
-  FileIcon,
-} from "../icons";
-import { useMenuStore } from "../../src/API/store/masterMenuStore";
+  FaRegFileAlt,
+  FaDollarSign,
+  FaFile,
+  FaClipboardList,
+} from "react-icons/fa";
+import { useMenuStore } from "../API/store/menuStore";
 
 export type NavItem = {
   name: string;
@@ -15,11 +14,19 @@ export type NavItem = {
   subItems?: { name: string; path: string }[];
 };
 
+export type MenuItem = {
+  id: string | number;
+  name: string;
+  path?: string;
+  order: number;
+  parent_id: string | null;
+  children?: MenuItem[];
+};
+
 const iconMap: Record<string, React.ReactNode> = {
-  "1": <GridIcon />,
-  "2": <PageIcon />,
-  "3": <DollarLineIcon />,
-  "4": <ListIcon />,
+  "2": <FaRegFileAlt />,
+  "3": <FaDollarSign />,
+  "4": <FaClipboardList />,
 };
 
 const parentNameMap: Record<string, string> = {
@@ -31,66 +38,54 @@ const parentNameMap: Record<string, string> = {
 export const useDynamicSidebarItems = (): NavItem[] => {
   const { menus } = useMenuStore();
 
+  const localMenus: MenuItem[] = useMemo(() => {
+    const storedMenus = localStorage.getItem("local_menus");
+    try {
+      return storedMenus && storedMenus !== "undefined"
+        ? JSON.parse(storedMenus)
+        : [];
+    } catch {
+      console.warn("Failed to parse local_menus from localStorage.");
+      return [];
+    }
+  }, []);
+
   const navItems = useMemo(() => {
-    if (!menus || menus.length === 0) return [];
+    const effectiveMenus = menus && menus.length > 0 ? menus : localMenus;
 
-    const groupedByParent: Record<string, typeof menus> = {};
-    menus.forEach((item) => {
-      if (item.parent_id === "0") return; // Skip Auth
-      if (!groupedByParent[item.parent_id]) {
-        groupedByParent[item.parent_id] = [];
-      }
-      groupedByParent[item.parent_id].push(item);
-    });
+    if (!effectiveMenus || effectiveMenus.length === 0) return [];
 
-    const priorityGrouped: string[] = ["1", "3", "4"]; // Ordered grouped parent_id
-    const items: NavItem[] = [];
+    return effectiveMenus
+      .filter((item) => item.parent_id === null) // Only top-level items
+      .sort((a, b) => a.order - b.order)
+      .map((parent) => {
+        const hasChildren =
+          Array.isArray(parent.children) && parent.children.length > 0;
 
-    // 1. First render Master, Sales, Report (grouped menus)
-    priorityGrouped.forEach((parentId) => {
-      const groupItems = groupedByParent[parentId];
-      if (groupItems) {
-        const subItems = groupItems
-          .sort((a, b) => Number(a.order) - Number(b.order))
-          .map((sub) => ({
-            name: sub.name.replace(/([A-Z])/g, " $1").trim(),
-            path: sub.path,
-          }));
+        if (hasChildren) {
+            const subItems: { name: string; path: string }[] = parent.children
+            .sort((a: MenuItem, b: MenuItem) => a.order - b.order)
+            .map((child: MenuItem) => ({
+              name: child.name.replace(/([A-Z])/g, " $1").trim(),
+              path: child.path || "",
+            }));
 
-        items.push({
-          name: parentNameMap[parentId] || "Other Group",
-          icon: iconMap[parentId] || <FileIcon />,
-          subItems,
-        });
+          return {
+            name:
+              parentNameMap[parent.id?.toString()] ||
+              parent.name.replace(/([A-Z])/g, " $1").trim(),
+            icon: iconMap[parent.id?.toString()] || <FaFile />,
+            subItems,
+          };
+        }
 
-        delete groupedByParent[parentId]; // prevent duplicate
-      }
-    });
-
-    // 2. Then render everything else (assume it's single pages)
-    Object.entries(groupedByParent).forEach(([parentId, groupItems]) => {
-      if (parentId === "2") {
-        groupItems.forEach((item) => {
-          items.push({
-            name: item.name.replace(/([A-Z])/g, " $1").trim(),
-            icon: iconMap[parentId] || <FileIcon />,
-            path: item.path,
-          });
-        });
-      } else {
-        // Handle undefined group gracefully
-        groupItems.forEach((item) => {
-          items.push({
-            name: item.name.replace(/([A-Z])/g, " $1").trim(),
-            icon: iconMap[parentId] || <FileIcon />,
-            path: item.path,
-          });
-        });
-      }
-    });
-
-    return items;
-  }, [menus]);
+        return {
+          name: parent.name.replace(/([A-Z])/g, " $1").trim(),
+          icon: iconMap[parent.id?.toString()] || <FaFile />,
+          path: parent.path || "",
+        };
+      });
+  }, [menus, localMenus]);
 
   return navItems;
 };

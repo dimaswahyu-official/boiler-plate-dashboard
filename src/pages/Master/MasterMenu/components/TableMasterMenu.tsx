@@ -6,10 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { Row, CellContext, Table } from "@tanstack/react-table";
 import { useMenuStore } from "../../../../API/store/menuStore";
 import TableComponent from "./TableComponent";
-// import CustomToast, {
-//   showErrorToast,
-//   showSuccessToast,
-// } from "../../../../components/toast";
 
 // import * as FaIcons from "react-icons/fa";
 import {
@@ -31,6 +27,7 @@ interface Menu {
   icon: string;
   parent_id: number | null;
   order: number;
+  children?: Menu[]; // Optional property for child menus
 }
 
 const TableMasterMenu = () => {
@@ -55,29 +52,22 @@ const TableMasterMenu = () => {
   }, []);
 
   const tableData = useMemo(() => {
-    return menus
-      .map((menu) => ({
-        id: menu.id,
-        name: menu.name,
-        path: menu.path,
-        icon: menu.icon,
-        parent_id: menu.parent_id,
-        order: menu.order,
-      }))
-      .sort((a, b) => {
-        if (a.parent_id === b.parent_id) {
-          return a.order - b.order; // Sort by order if parent_id is the same
+    const flattenMenus = (
+      menus: Menu[],
+      parentId: number | null = null
+    ): Menu[] => {
+      return menus.reduce((acc: Menu[], menu) => {
+        const { children, ...rest } = menu;
+        acc.push({ ...rest, parent_id: parentId });
+        if (children && children.length > 0) {
+          acc.push(...flattenMenus(children, menu.id));
         }
-        return (a.parent_id || 0) - (b.parent_id || 0); // Sort by parent_id, treating null as 0
-      });
-  }, [menus]);
+        return acc;
+      }, []);
+    };
 
-  const parentMenuOpt = useMemo(() => {
-    return parentMenus.map((menu) => ({
-      id: menu.id,
-      name: menu.name,
-    }));
-  }, [parentMenus]);
+    return flattenMenus(menus);
+  }, [menus]);
 
   const columns = useMemo(
     () => [
@@ -186,6 +176,13 @@ const TableMasterMenu = () => {
     ],
     []
   );
+
+  const parentMenuOpt = useMemo(() => {
+    return parentMenus.map((menu) => ({
+      id: menu.id,
+      name: menu.name,
+    }));
+  }, [parentMenus]);
 
   const iconOptions = [
     { value: "FaRegFileAlt", label: "Master Data", icon: <FaRegFileAlt /> },

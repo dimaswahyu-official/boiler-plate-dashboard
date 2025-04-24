@@ -245,6 +245,7 @@ const TableMasterUser = () => {
     { value: "template", label: "Template" },
     { value: "development", label: "Development" },
   ];
+  
   const handleSelectChange = (value: string) => {
     console.log("Selected value:", value);
   };

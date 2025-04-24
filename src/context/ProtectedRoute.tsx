@@ -1,15 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuthStore } from "../API/store/authStore";
 
-export default function ProtectedRoute() {
-    const token = useAuthStore((state) => state.token) || localStorage.getItem("token");
-    // console.log('token  : ', token);
+const ProtectedRoute = () => {
+  const isAuthenticated = !!localStorage.getItem("token");
 
-    // Jika token tidak ada, arahkan ke halaman signin
-    if (!token) {
-        return <Navigate to="/signin" replace />;
-    }
+  return isAuthenticated ? <Outlet /> : <Navigate to="/signin" />;
+};
 
-    // Jika token ada, render konten dalam Outlet (alias AppLayout dan semua anaknya)
-    return <Outlet />;
-}
+export default ProtectedRoute;

@@ -107,7 +107,7 @@ const AppSidebar: React.FC = () => {
         <Link to="/">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
-              <img className="dark:hidden" src="/images/logo/logo.svg" alt="Logo" width={150} height={40} />
+              <img className="dark:hidden" src="/images/logo/logo_nna.png" alt="Logo" width={150} height={40} />
               <img className="hidden dark:block" src="/images/logo/logo-dark.svg" alt="Logo" width={150} height={40} />
             </>
           ) : (

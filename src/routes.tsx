@@ -1,71 +1,95 @@
 import { JSX, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 
-// ✅ Import ProtectedRoute
-import ProtectedRoute from "./context/ProtectedRoute";
-import { useMenuStore } from '../src/API/store/masterMenuStore';
-
 // PAGE MODULES
-import Home from "./pages/Dashboard/Home";
-import SalesRoute from "./pages/Modules/SalesRoute";
-import MasterUser from "./pages/Modules/MasterUser";
-import MasterMenu from "./pages/Modules/MasterMenu";
-import NotFound from "./pages/OtherPage/NotFound";
+import SalesRoute from "./pages/SalesDistribution/SalesRoute";
+import MasterUser from "./pages/Master/MasterUser";
+import MasterMenu from "./pages/Master/MasterMenu";
+import MasterRole from "./pages/Master/MasterRole";
+import Callplan from "./pages/Callplan";
 
-
+// ✅ Import ProtectedRoute
+import { useMenuStore } from "./API/store/menuStore";
 
 export function AppRoutes() {
-    const { fetchMenus, menus } = useMenuStore();
+  const { menus } = useMenuStore();
 
-    useEffect(() => {
-        fetchMenus();
-    }, [fetchMenus]);
+  const local_menus = (() => {
+    const storedMenus = localStorage.getItem("local_menus");
+    return storedMenus && storedMenus !== "undefined"
+      ? JSON.parse(storedMenus)
+      : [];
+  })();
 
-    useEffect(() => {
-        console.log('menus', menus);
-    }, [menus]);
+  const isAuthenticated = () => !!localStorage.getItem("token");
 
-    const componentMap: Record<string, JSX.Element> = {
-        Home: <Home />,
-        SalesRoute: <SalesRoute />,
-        MasterUser: <MasterUser />,
-        MasterMenu: <MasterMenu />,
+  const componentMap: Record<string, JSX.Element> = {
+    SalesRoute: <SalesRoute />,
+    MasterUser: <MasterUser />,
+    MasterMenu: <MasterMenu />,
+    Callplan: <Callplan />,
+    Roles: <MasterRole />,
+  };
+
+  const flattenRoutes = (data: any[]) => {
+    const result: any[] = [];
+    const traverse = (items: any[]) => {
+      items.forEach((item) => {
+        result.push(item);
+        if (item.children && item.children.length > 0) {
+          traverse(item.children);
+        }
+      });
     };
+    traverse(data);
+    return result;
+  };
 
-    const renderDynamicRoutes = () => {
-        return menus.map((menu: any) => {
-            const Component = componentMap[menu.name];
-            return Component ? (
-                <Route key={menu.id} path={menu.path} element={Component} />
-            ) : null;
-        });
-    };
+  const flattenedRoutes = flattenRoutes(
+    (menus && menus.length > 0 ? menus : local_menus) as any[]
+  );
 
-    return (
-        <Router>
-            <ScrollToTop />
-            <Routes>
-                {/* ✅ Protected Layout dengan token */}
-                <Route element={<ProtectedRoute />}>
-                    <Route element={<AppLayout />}>
-                        {renderDynamicRoutes()}
-                    </Route>
-                </Route>
+  const renderDynamicRoutes = () => {
+    if (!Array.isArray(flattenedRoutes) || flattenedRoutes.length === 0) {
+      return null; // Return null if flattenedRoutes is not an array or is empty
+    }
 
-                {/* Auth Routes */}
-                <Route path="/" element={<SignIn />} />
-                <Route path="/signin" element={<SignIn />} />
-                <Route path="/signup" element={<SignUp />} />
+    return flattenedRoutes.map((menu: any) => {
+      const Component = componentMap[menu.name];
+      return Component ? (
+        <Route key={menu.id} path={menu.path} element={Component} />
+      ) : null;
+    });
+  };
 
-                {/* Not Found */}
-                <Route path="*" element={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                    <div className="spinner"></div>
-                </div>} />
-            </Routes>
-        </Router>
-    );
+  return (
+    <>
+      <ScrollToTop />
+      <Routes>
+        {/* ✅ Protected Routes */}
+        {isAuthenticated() ? (
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Callplan />} />
+            {renderDynamicRoutes()}
+          </Route>
+        ) : (
+          <Route path="*" element={<Navigate to="/signin" replace />} />
+        )}
+
+        {/* ✅ Public Routes */}
+        <Route
+          path="/signin"
+          element={isAuthenticated() ? <Navigate to="/" replace /> : <SignIn />}
+        />
+        <Route
+          path="/signup"
+          element={isAuthenticated() ? <Navigate to="/" replace /> : <SignUp />}
+        />
+      </Routes>
+    </>
+  );
 }

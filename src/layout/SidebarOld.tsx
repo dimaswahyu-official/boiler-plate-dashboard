@@ -299,7 +299,7 @@ const AppSidebar: React.FC = () => {
             <>
               <img
                 className="dark:hidden"
-                src="/images/logo/logo.svg"
+                src="/images/logo/logo_nna.png"
                 alt="Logo"
                 width={150}
                 height={40}

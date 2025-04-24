@@ -1,35 +1,78 @@
-const BASE_URL = 'https://67ff0b1e58f18d7209efe5c2.mockapi.io/api/v1/menus';
+import axiosInstance from "./AxiosInstance";
+import { showErrorToast, showSuccessToast } from "../../components/toast";
 
 interface Menu {
-    id: number;
-    name: string;
-    path: string;
-    icon: string;
-    parent_id: number | null;
-    order: number;
+  id: number;
+  name: string;
+  path: string;
+  icon: string;
+  parent_id: number | null;
+  order: number;
 }
 
-// GET all Data
 export const getAllMenus = async () => {
-    const res = await fetch(BASE_URL);
-    if (!res.ok) {
-        throw new Error('Failed to fetch menus');
-    }
-    const data = await res.json();
-    return data;
+  try {
+    const res = await axiosInstance.get("/menu");
+    showSuccessToast("Menus fetched successfully!");
+    return res.data.data;
+  } catch (error: any) {
+    showErrorToast("Failed to fetch menus.");
+    console.error(
+      "Failed to fetch menus:",
+      error.response?.data || error.message
+    );
+    throw new Error(error.response?.data?.message || "Failed to fetch menus");
+  }
 };
 
-// POST a new post
+export const getParentMenu = async () => {
+  try {
+    const res = await axiosInstance.get("/menu/parent");
+    showSuccessToast("Parent menus fetched successfully!");
+    return res.data.data;
+  } catch (error: any) {
+    showErrorToast("Failed to fetch parent menus.");
+    console.error(
+      "Failed to fetch parent menus:",
+      error.response?.data || error.message
+    );
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch parent menus"
+    );
+  }
+};
+
+export const deleteMenu = async (id: number) => {
+  try {
+    const res = await axiosInstance.delete(`/menu/${id}`);
+    showSuccessToast("Menu deleted successfully!");
+    return res.data;
+  } catch (error: any) {
+    showErrorToast("Failed to delete menu.");
+    console.error(
+      "Failed to delete menu:",
+      error.response?.data || error.message,
+      "Full error response:",
+      error.response
+    );
+    throw new Error(error.response?.data?.message || "Failed to delete menu");
+  }
+};
+
+// POST a new menu
 export const createMenus = async (menuData: Menu) => {
-    const res = await fetch(BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(menuData),
-    });
-
-    if (!res.ok) {
-        throw new Error('Failed to create menu');
-    }
-
-    return res.json();
+  try {
+    const res = await axiosInstance.post("/menu", menuData);
+    showSuccessToast("Menu created successfully!");
+    return res.data;
+  } catch (error: any) {
+    showErrorToast("Failed to create menu.");
+    console.error(
+      "Failed to create menu:",
+      error.response?.data || error.message,
+      "Full error response:",
+      error.response
+    );
+    throw new Error(error.response?.data?.message || "Failed to create menu");
+  }
 };

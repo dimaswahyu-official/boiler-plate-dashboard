@@ -1,6 +1,6 @@
 import axios from 'axios'
-// const baseURL = 'http://10.0.63.114:9002/api/v1';
-const baseURL = `https://apiryo.niaganusaabadi.co.id/api`;
+
+const baseURL = 'http://10.0.29.47/api/v1';
 
 const axiosInstance = axios.create({
     baseURL: baseURL,
@@ -10,6 +10,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
     config => {
         const accessToken = localStorage.getItem('token')
+        
         if (accessToken) {
             config.headers.Authorization = `Bearer ${accessToken}`
         }
@@ -28,7 +29,7 @@ axiosInstance.interceptors.response.use(
         if (error.response && error.response.status === 401) {
             // Clear token and redirect to login if unauthorized
             localStorage.removeItem('token')
-            window.location.href = '/SignIn'
+            window.location.href = '/signin'
         }
         return Promise.reject(error)
     }

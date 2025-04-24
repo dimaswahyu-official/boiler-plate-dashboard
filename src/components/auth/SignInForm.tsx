@@ -1,25 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import SignInInput from "../form/input/SignInInput";
-
 import Button from "../ui/button/Button";
 import { loginService } from "../../API/services/AuthService";
-import CustomToast, { showErrorToast, showSuccessToast } from '../../components/toast';
+import CustomToast, {
+  showErrorToast,
+  showSuccessToast,
+} from "../../components/toast";
+import { useMenuStore } from "../../API/store/menuStore";
 
 interface SignInFormValues {
-  username: string;
+  email: string;
   password: string;
+  ip_address: string;
+  device_info: string;
 }
 
 export default function SignInForm() {
+  const navigate = useNavigate();
+  const { fetchMenus } = useMenuStore();
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const navigate = useNavigate();
+  const [ipAddress, setIpAddress] = useState<string>("");
 
   const {
     register,
@@ -27,31 +34,42 @@ export default function SignInForm() {
     formState: { errors },
   } = useForm<SignInFormValues>();
 
+  useEffect(() => {
+    async function fetchIP() {
+      try {
+        const res = await fetch("https://api.ipify.org?format=json");
+        const data = await res.json();
+        setIpAddress(data.ip);
+      } catch (err) {
+        console.error("Failed to fetch IP address:", err);
+      }
+    }
+    fetchIP();
+  }, []);
+
   const handleLogin = async (data: SignInFormValues) => {
     setIsLoading(true);
     setError(null);
+    const deviceInfo = navigator.userAgent;
 
     try {
-      const response = await loginService(data);
-      if (!response.access) {
+      const response = await loginService({
+        ...data,
+        ip_address: ipAddress,
+        device_info: deviceInfo,
+      });
+
+      if (!response.data.accessToken) {
         showErrorToast("Login gagal!");
         return;
       } else {
-        localStorage.setItem('token', response.access);
+        localStorage.setItem("token", response.data.accessToken);
+        fetchMenus();
         showSuccessToast("Login berhasil!");
         setTimeout(() => {
-          navigate("/dashboard");
-        }, 1500);
+          navigate("/callplan");
+        }, 2000);
       }
-
-      // if (response.statusCode === 200) {
-      //   showSuccessToast("Login berhasil!");
-      //   localStorage.setItem('token', response.data.accessToken);
-
-      //   setTimeout(() => {
-      //     navigate("/dashboard");
-      //   }, 2000);
-      // }
     } catch (err: any) {
       console.log(err);
       setError(err.message || "Login gagal!");
@@ -60,14 +78,6 @@ export default function SignInForm() {
       setIsLoading(false);
     }
   };
-
-  async function getPublicIP() {
-    const res = await fetch("https://api.ipify.org?format=json");
-    const data = await res.json();
-    return data.ip;
-  }
-
-  getPublicIP().then(ip => console.log("IP:", ip));
 
   return (
     <div className="flex flex-col flex-1">
@@ -91,11 +101,11 @@ export default function SignInForm() {
                   </Label>
                   <SignInInput
                     placeholder="Enter your email"
-                    register={register("username", {
+                    register={register("email", {
                       required: "Email is required",
                     })}
-                    error={!!errors.username}
-                    hint={errors.username?.message}
+                    error={!!errors.email}
+                    hint={errors.email?.message}
                   />
                 </div>
                 <div>
