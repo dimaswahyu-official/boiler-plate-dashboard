@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { createMenus, getAllMenus, getParentMenu, deleteMenu } from '../services/MenuService'
+import { createMenus, getAllMenus, getParentMenu, deleteMenu, updateMenuById } from '../services/MenuService'
 
 interface MenuState {
   menus: any[];
@@ -10,6 +10,7 @@ interface MenuState {
   getParentMenu: () => Promise<void>;
   createMenu: (menuData: any) => Promise<void>;
   deleteMenu: (id: number) => Promise<void>;
+  updateMenuById: (id: number, menuData: any) => Promise<void>;
   reset: () => void;
 }
 
@@ -23,8 +24,6 @@ export const useMenuStore = create<MenuState>((set) => ({
     set({ loading: true, error: null });
     try {
       const data = await getAllMenus();
-      console.log('Menus fetched:', data);
-
       localStorage.setItem('local_menus', JSON.stringify(data));
       set({ menus: data, loading: false });
     } catch (err: any) {
@@ -71,6 +70,24 @@ export const useMenuStore = create<MenuState>((set) => ({
       set({ error: err.message || 'Gagal menghapus menu', loading: false });
     }
   },
+
+
+  updateMenuById: async (id, menuData) => {
+    set({ loading: true, error: null });
+    try {
+      const updatedMenu = await updateMenuById(id, menuData);
+      set((state) => ({
+        menus: state.menus.map((menu) =>
+          menu.id === id ? { ...menu, ...updatedMenu } : menu
+        ),
+        loading: false,
+      }));
+    } catch (err: any) {
+      console.error('Error updating menu:', err);
+      set({ error: err.message || 'Gagal memperbarui menu', loading: false });
+    }
+  },
+
 
   reset: () => {
     set({

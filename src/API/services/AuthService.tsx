@@ -1,4 +1,4 @@
-import axiosInstance from './AxiosInstance';
+import axiosInstance from "./AxiosInstance";
 
 interface LoginPayload {
   email: string;
@@ -7,12 +7,12 @@ interface LoginPayload {
   device_info: string;
 }
 
-export const loginService = async (payload: LoginPayload) => {  
+export const loginService = async (payload: LoginPayload) => {
   try {
-    const { data } = await axiosInstance.post('/auth/login', payload);
+    const { data } = await axiosInstance.post("/auth/login", payload);
     return data;
   } catch (error: any) {
-    console.error('Error response:', error.response?.data);
-    throw new Error(error.response?.data?.message || 'Login failed');
+    console.error("Error response:", error.response?.data);
+    throw new Error(error.response?.data?.message || "Login failed");
   }
 };

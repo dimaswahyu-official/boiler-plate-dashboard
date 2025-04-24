@@ -76,3 +76,20 @@ export const createMenus = async (menuData: Menu) => {
     throw new Error(error.response?.data?.message || "Failed to create menu");
   }
 };
+
+export const updateMenuById = async (id: number, menuData: Partial<Menu>) => {
+  try {
+    const res = await axiosInstance.put(`/menu/${id}`, menuData);
+    showSuccessToast("Menu updated successfully!");
+    return res.data;
+  } catch (error: any) {
+    showErrorToast("Failed to update menu.");
+    console.error(
+      "Failed to update menu:",
+      error.response?.data || error.message,
+      "Full error response:",
+      error.response
+    );
+    throw new Error(error.response?.data?.message || "Failed to update menu");
+  }
+};

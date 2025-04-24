@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
-import { Link, useNavigate } from "react-router-dom"; // <== make sure this is 'react-router-dom'
-import { useMenuStore } from "../../API/store/menuStore";
+import {useNavigate } from "react-router-dom"; // <== make sure this is 'react-router-dom'
+import {signOut} from '../../utils/SignOut'
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,13 +16,9 @@ export default function UserDropdown() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("local_menus");
-    useMenuStore.getState().reset();
-    console.log("Token after logout:", localStorage.getItem("token"));
     closeDropdown();
     setTimeout(() => {
-      navigate("/signin", { replace: true });
+      signOut(navigate);
     }, 1000);
   };
 

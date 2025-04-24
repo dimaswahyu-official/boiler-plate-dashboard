@@ -1,4 +1,4 @@
-import { JSX, useEffect } from "react";
+import { JSX } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
@@ -9,8 +9,11 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import SalesRoute from "./pages/SalesDistribution/SalesRoute";
 import MasterUser from "./pages/Master/MasterUser";
 import MasterMenu from "./pages/Master/MasterMenu";
-import MasterRole from "./pages/Master/MasterRole";
 import Callplan from "./pages/Callplan";
+
+// ROLES PAGE
+import MasterRole from "./pages/Master/MasterRole";
+import CreateRole from './pages/Master/MasterRole/components/CreateRole';
 
 // ✅ Import ProtectedRoute
 import { useMenuStore } from "./API/store/menuStore";
@@ -74,6 +77,7 @@ export function AppRoutes() {
         {isAuthenticated() ? (
           <Route element={<AppLayout />}>
             <Route path="/" element={<Callplan />} />
+            <Route path="/create_role" element={<CreateRole />} />
             {renderDynamicRoutes()}
           </Route>
         ) : (
