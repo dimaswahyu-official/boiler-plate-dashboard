@@ -25,7 +25,6 @@ const AdjustTableRole = ({
   setGlobalFilter,
   onDetail,
   onDelete,
-  onEdit,
 }: MenuTableProps) => {
   const navigate = useNavigate();
 

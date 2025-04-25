@@ -20,6 +20,9 @@ const ACCESS_OPTIONS = [
 
 const PERMISSION_TYPES = ["Create", "Update", "View", "Delete", "Manage"];
 
+const commonClasses =
+  "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300";
+
 // Reusable Input Component
 const InputField = ({
   label,
@@ -38,7 +41,7 @@ const InputField = ({
       id={id}
       {...register(id)}
       placeholder={placeholder}
-      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+      className={commonClasses}
       {...rest}
     />
   </div>
@@ -226,7 +229,7 @@ export default function UpdateFormWithTable(paramRole: any) {
               {...register("deskripsi")}
               placeholder="Deskripsi"
               rows={4}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className={commonClasses}
             />
           </div>
 
@@ -299,7 +302,7 @@ export default function UpdateFormWithTable(paramRole: any) {
           onClick={handleCaptureData}
           className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
         >
-          Capture Data
+          Update
         </button>
       </div>
     </div>
