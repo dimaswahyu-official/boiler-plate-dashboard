@@ -12,9 +12,9 @@ import {
   FaCreditCard,
   FaPlus,
 } from "react-icons/fa";
+import Button from "../../../../components/ui/button/Button";
 
 const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
-  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { parentMenus, createMenu } = useMenuStore();
 
@@ -96,16 +96,19 @@ const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
   };
 
   return (
-    <ReusableFormModal
-      isOpen={isModalOpen}
-      onClose={() => setIsModalOpen(false)}
-      onSubmit={handleSubmit}
-      formFields={formFields}
-      title="Create Menu"
-      triggerButtonLabel="Add Menu"
-      triggerButtonIcon={<FaPlus className="mr-2" />}
-      triggerButtonAction={() => setIsModalOpen(true)}
-    />
+    <>
+      <Button variant="primary" size="sm" onClick={() => setIsModalOpen(true)}>
+        <FaPlus className="mr-2" /> Tambah Menu
+      </Button>
+
+      <ReusableFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSubmit}
+        formFields={formFields}
+        title="Create Menu"
+      />
+    </>
   );
 };
 

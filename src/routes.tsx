@@ -13,10 +13,12 @@ import Callplan from "./pages/Callplan";
 
 // ROLES PAGE
 import MasterRole from "./pages/Master/MasterRole";
-import CreateRole from './pages/Master/MasterRole/components/CreateRole';
+import CreateRole from './pages/Master/MasterRole/Screen/CreateRole';
 
 // ✅ Import ProtectedRoute
 import { useMenuStore } from "./API/store/menuStore";
+import UpdateRole from "./pages/Master/MasterRole/Screen/UpdateRole";
+import NewUpdateRole from "./pages/Master/MasterRole/Screen/NewUpdateRole";
 
 export function AppRoutes() {
   const { menus } = useMenuStore();
@@ -78,6 +80,10 @@ export function AppRoutes() {
           <Route element={<AppLayout />}>
             <Route path="/" element={<Callplan />} />
             <Route path="/create_role" element={<CreateRole />} />
+            {/* <Route path="/update_role" element={<UpdateRole />} /> */}
+            <Route path="/update_role" element={< NewUpdateRole/>} />
+
+
             {renderDynamicRoutes()}
           </Route>
         ) : (

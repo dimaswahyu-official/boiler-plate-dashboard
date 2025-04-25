@@ -1,7 +1,6 @@
 import React from "react";
 import ModalComponent from "../../components/modal/ModalComponent";
-import CreateForm from "../form-input/createForm";
-import Button from "../../components/ui/button/Button";
+import CreateForm from "../form-input/modalForm";
 
 interface ReusableFormModalProps {
   isOpen: boolean;
@@ -9,9 +8,6 @@ interface ReusableFormModalProps {
   onSubmit: (data: any) => void;
   formFields: Array<any>;
   title: string;
-  triggerButtonLabel: string;
-  triggerButtonIcon?: React.ReactNode;
-  triggerButtonAction?: () => void;
   defaultValues?: any;
 }
 
@@ -21,9 +17,6 @@ const ReusableFormModal: React.FC<ReusableFormModalProps> = ({
   onSubmit,
   formFields,
   title,
-  triggerButtonLabel,
-  triggerButtonIcon,
-  triggerButtonAction,
   defaultValues,
 }) => {
   return (
@@ -39,10 +32,6 @@ const ReusableFormModal: React.FC<ReusableFormModalProps> = ({
           defaultValues={defaultValues}
         />
       </ModalComponent>
-
-      <Button variant="primary" size="sm" onClick={triggerButtonAction}>
-        {triggerButtonIcon} {triggerButtonLabel}
-      </Button>
     </>
   );
 };

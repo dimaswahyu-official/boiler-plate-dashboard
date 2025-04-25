@@ -1,0 +1,91 @@
+import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useRoleStore } from "../../../../API/store/roleStore";
+import { FaPlus } from "react-icons/fa";
+import Button from "../../../../components/ui/button/Button";
+
+const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
+  const { fetchRole } = useRoleStore();
+  const navigate = useNavigate();
+
+  // const parentMenuOpt = useMemo(
+  //   () => parentMenus.map((menu) => ({ value: menu.id, label: menu.name })),
+  //   [parentMenus]
+  // );
+
+  // const iconOptions = [
+  //   { value: "FaRegFileAlt", label: "Master Data", icon: <FaRegFileAlt /> },
+  //   { value: "FaDollarSign", label: "Bank Account", icon: <FaDollarSign /> },
+  //   { value: "FaClipboardList", label: "Report", icon: <FaClipboardList /> },
+  //   { value: "FaRoute", label: "Route", icon: <FaRoute /> },
+  //   { value: "FaUserTag", label: "Sales & Distribution", icon: <FaUserTag /> },
+  //   { value: "FaChartLine", label: "Target Sales", icon: <FaChartLine /> },
+  //   { value: "FaRegNewspaper", label: "News", icon: <FaRegNewspaper /> },
+  //   { value: "FaCreditCard", label: "Credit Limit", icon: <FaCreditCard /> },
+  // ];
+
+  // const formFields = [
+  //   {
+  //     name: "name",
+  //     label: "Menu Name",
+  //     type: "text",
+  //     validation: { required: "Required" },
+  //   },
+  //   {
+  //     name: "path",
+  //     label: "Path",
+  //     type: "text",
+  //     validation: { required: "Required" },
+  //   },
+  //   {
+  //     name: "icon",
+  //     label: "Icon",
+  //     type: "select",
+  //     options: iconOptions.map((option) => ({
+  //       value: option.value,
+  //       label: (
+  //         <div key={option.value} className="flex items-center space-x-1">
+  //           {option.icon}
+  //           <span>{option.label}</span>
+  //         </div>
+  //       ),
+  //     })),
+  //     styles: {
+  //       menu: (provided: any) => ({
+  //         ...provided,
+  //         maxHeight: "100px",
+  //         overflowY: "auto",
+  //       }),
+  //     },
+  //   },
+  //   {
+  //     name: "parent_id",
+  //     label: "Parent",
+  //     type: "select",
+  //     options: [{ value: 0, label: "Tidak Ada" }, ...parentMenuOpt],
+  //     validation: { required: "Required" },
+  //   },
+  //   {
+  //     name: "order",
+  //     label: "Order",
+  //     type: "text",
+  //     validation: { required: "Required" },
+  //   },
+  // ];
+
+  // const handleSubmit = async (data: any) => {};
+
+  const handleCreateRole = () => {
+    navigate("/create_role");
+  };
+
+  return (
+    <>
+      <Button variant="primary" size="sm" onClick={() => handleCreateRole()}>
+        <FaPlus className="mr-2" /> Tambah Role
+      </Button>
+    </>
+  );
+};
+
+export default MenuFormSection;

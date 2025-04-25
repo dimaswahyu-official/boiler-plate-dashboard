@@ -1,10 +1,13 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-interface BreadcrumbProps {
-  pageTitle: string;
-  parentTitle?: string;
-  parentPath?: string;
+interface BreadcrumbItem {
+  title: string;
+  path?: string; // optional, current page doesn't need path
+}
+
+interface PageBreadcrumbProps {
+  breadcrumbs: BreadcrumbItem[];
 }
 
 const BreadcrumbArrow: React.FC = () => (
@@ -26,55 +29,40 @@ const BreadcrumbArrow: React.FC = () => (
   </svg>
 );
 
-const PageBreadcrumb: React.FC<BreadcrumbProps> = ({
-  pageTitle,
-  parentTitle,
-  parentPath,
-}) => {
-  const location = useLocation();
-
-  // Split the current path into segments
-  const pathSegments = location.pathname.split("/").filter((segment) => segment);
+const PageBreadcrumb: React.FC<PageBreadcrumbProps> = ({ breadcrumbs }) => {
+  
+  if (!breadcrumbs || breadcrumbs.length === 0) return null;
+  const current = breadcrumbs[breadcrumbs.length - 1];
 
   return (
     <div className="flex flex-col gap-3 mb-6">
       <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-        {pageTitle}
+        {current.title}
       </h2>
       <nav aria-label="breadcrumb">
         <ol className="flex items-center gap-1.5">
+          {/* Home */}
           <li>
             <Link
-              className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
               to="/"
+              className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
             >
               Home
               <BreadcrumbArrow />
             </Link>
           </li>
-          {parentTitle && parentPath && (
-            <li>
-              <Link
-                className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
-                to={parentPath}
-              >
-                {parentTitle}
-                <BreadcrumbArrow />
-              </Link>
-            </li>
-          )}
-          {pathSegments.map((segment, index) => {
-            const isLast = index === pathSegments.length - 1;
-            const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
 
+          {/* Dynamic Breadcrumbs */}
+          {breadcrumbs.map((item, idx) => {
+            const isLast = idx === breadcrumbs.length - 1;
             return (
-              <li key={path}>
-                {!isLast ? (
+              <li key={idx}>
+                {!isLast && item.path ? (
                   <Link
+                    to={item.path}
                     className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
-                    to={path}
                   >
-                    {segment.replace(/-/g, " ")}
+                    {item.title}
                     <BreadcrumbArrow />
                   </Link>
                 ) : (
@@ -82,7 +70,7 @@ const PageBreadcrumb: React.FC<BreadcrumbProps> = ({
                     className="text-sm text-gray-800 dark:text-white/90"
                     aria-current="page"
                   >
-                    {segment.replace(/-/g, " ")}
+                    {item.title}
                   </span>
                 )}
               </li>

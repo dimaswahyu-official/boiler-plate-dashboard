@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import ReusableFormModal from "../../../../components/modal/ReusableFormModal";
 import { useMenuStore } from "../../../../API/store/menuStore";
 import {
@@ -10,13 +10,20 @@ import {
   FaUserTag,
   FaChartLine,
   FaCreditCard,
-  FaPlus,
 } from "react-icons/fa";
 
-const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
-  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { parentMenus, createMenu } = useMenuStore();
+const EditMenuModal = ({
+  isOpen,
+  onClose,
+  existingData,
+  onRefresh,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  existingData: any;
+  onRefresh: () => void;
+}) => {
+  const { updateMenuById, parentMenus } = useMenuStore();
 
   const parentMenuOpt = useMemo(
     () => parentMenus.map((menu) => ({ value: menu.id, label: menu.name })),
@@ -60,13 +67,6 @@ const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
           </div>
         ),
       })),
-      styles: {
-        menu: (provided: any) => ({
-          ...provided,
-          maxHeight: "100px",
-          overflowY: "auto",
-        }),
-      },
     },
     {
       name: "parent_id",
@@ -87,26 +87,49 @@ const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
     const payload = {
       ...data,
       parent_id: Number(data.parent_id.value),
-      order: Number(data.order),
       icon: data.icon.value,
+      order: Number(data.order),
     };
-    await createMenu(payload);
+
+    await updateMenuById(existingData.id, payload);
     onRefresh();
-    setIsModalOpen(false);
+    onClose();
   };
+
+  // Siapkan default values dari data lama
+  const defaultValues = {
+    ...existingData,
+    parent_id: {
+      value: existingData.parent_id || 0,
+      label: "Loading...", // Fallback jika parent_id masih null
+    },
+    icon: {
+      value: existingData.icon || "",
+      label: "Loading...", // Fallback jika icon masih null
+    },
+  };
+
+  // Isi label dari parent_id dan icon berdasarkan options
+  const parentMatch = parentMenuOpt.find(
+    (opt) => opt.value === existingData.parent_id
+  );
+  if (parentMatch) defaultValues.parent_id.label = parentMatch.label;
+
+  const iconMatch = iconOptions.find((opt) => opt.value === existingData.icon);
+  if (iconMatch) defaultValues.icon.label = iconMatch.label;
 
   return (
     <ReusableFormModal
-      isOpen={isModalOpen}
-      onClose={() => setIsModalOpen(false)}
+      isOpen={isOpen}
+      onClose={onClose}
       onSubmit={handleSubmit}
       formFields={formFields}
-      title="Create Menu"
-      triggerButtonLabel="Add Menu"
-      triggerButtonIcon={<FaPlus className="mr-2" />}
-      triggerButtonAction={() => setIsModalOpen(true)}
+      title="Edit Menu"
+      defaultValues={defaultValues}
+      // triggerButtonLabel=""
+      // triggerButtonAction={() => {}}
     />
   );
 };
 
-export default MenuFormSection;
+export default EditMenuModal;

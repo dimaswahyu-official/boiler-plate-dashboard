@@ -2,26 +2,24 @@ import React, { useMemo } from "react";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { ColumnDef } from "@tanstack/react-table";
 import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
+import { useNavigate } from "react-router-dom";
 
-type Menu = {
+type Role = {
   id: number;
   name: string;
-  path: string;
-  icon: string;
-  parent_id: number | null;
-  order: number;
+  description: string;
 };
 
 type MenuTableProps = {
-  data: Menu[];
+  data: Role[];
   globalFilter: string;
   setGlobalFilter: (value: string) => void;
   onDetail: (id: number) => void;
   onDelete: (id: number) => void;
-  onEdit?: (data: Menu) => void;
+  onEdit?: (data: Role) => void;
 };
 
-const MenuTable = ({
+const AdjustTableRole = ({
   data,
   globalFilter,
   setGlobalFilter,
@@ -29,7 +27,14 @@ const MenuTable = ({
   onDelete,
   onEdit,
 }: MenuTableProps) => {
-  const columns: ColumnDef<Menu>[] = useMemo(
+  const navigate = useNavigate();
+
+  function navigateToUpdateRole(roleData: Role) {
+    const { id } = roleData;
+    navigate(`/update_role`, { state: { id } });
+  }
+
+  const columns: ColumnDef<Role>[] = useMemo(
     () => [
       {
         accessorKey: "name",
@@ -37,32 +42,8 @@ const MenuTable = ({
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "path",
-        header: "Path",
-        cell: (info) => String(info.getValue()),
-      },
-      {
-        accessorKey: "icon",
-        header: "Icon",
-        cell: (info) => String(info.getValue()),
-      },
-      {
-        accessorKey: "parent_id",
-        header: "Parent Id",
-        cell: (info) => {
-          const val = info.getValue() as number | null;
-          return val == null
-            ? "Menu Header"
-            : val === 2
-            ? "Master"
-            : val === 5
-            ? "Report"
-            : val;
-        },
-      },
-      {
-        accessorKey: "order",
-        header: "Order",
+        accessorKey: "description",
+        header: "Deskripsi",
         cell: (info) => String(info.getValue()),
       },
       {
@@ -72,7 +53,10 @@ const MenuTable = ({
           <div className="space-x-4">
             <button
               className="text-blue-600"
-              onClick={() => onEdit?.(row.original)}
+              onClick={() => {
+                const roleData = row.original;
+                navigateToUpdateRole(roleData);
+              }}
             >
               <FaEdit />
             </button>
@@ -106,4 +90,4 @@ const MenuTable = ({
   );
 };
 
-export default MenuTable;
+export default AdjustTableRole;

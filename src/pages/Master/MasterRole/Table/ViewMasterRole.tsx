@@ -1,21 +1,20 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../../../../components/form/input/InputField";
-import { useMenuStore } from "../../../../API/store/menuStore";
-import MenuTable from "./AdjustTableMenu";
-import MenuFormSection from "./MenuFormSection";
-import EditMenuModal from "./UpdateMenu"; // baru
 
-const TableMasterMenu = () => {
+import Input from "../../../../components/form/input/InputField";
+import { useRoleStore } from "../../../../API/store/roleStore";
+import AdjustTableRole from "./AdjustTableRole";
+import MenuFormSection from "./MenuFormSection";
+import EditMenuModal from "./UpdateRole"; // baru
+
+const TableMasterRole = () => { 
   const navigate = useNavigate();
-  const { fetchMenus, menus, getParentMenu, deleteMenu } =
-    useMenuStore();
+  const { fetchRoles, roles } = useRoleStore();
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [editMenuData, setEditMenuData] = useState<any | null>(null);
 
   useEffect(() => {
-    getParentMenu();
-    fetchMenus();
+    fetchRoles();
   }, []);
 
   const handleDetail = (id: number) => {
@@ -23,23 +22,9 @@ const TableMasterMenu = () => {
   };
 
   const handleDelete = async (id: number) => {
-    await deleteMenu(id);
-    fetchMenus();
+    // await deleteMenu(id);
+    fetchRoles();
   };
-
-  const tableData = useMemo(() => {
-    const flattenMenus = (
-      menus: any[],
-      parentId: number | null = null
-    ): any[] =>
-      menus.reduce((acc, menu) => {
-        const { children, ...rest } = menu;
-        acc.push({ ...rest, parent_id: parentId });
-        if (children?.length) acc.push(...flattenMenus(children, menu.id));
-        return acc;
-      }, []);
-    return flattenMenus(menus);
-  }, [menus]);
 
   return (
     <>
@@ -52,12 +37,12 @@ const TableMasterMenu = () => {
             placeholder="🔍 Search..."
           />
 
-          <MenuFormSection onRefresh={fetchMenus} />
+          <MenuFormSection onRefresh={fetchRoles} />
         </div>
       </div>
 
-      <MenuTable
-        data={tableData}
+      <AdjustTableRole
+        data={roles}
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
         onDetail={handleDetail}
@@ -70,11 +55,11 @@ const TableMasterMenu = () => {
           isOpen={!!editMenuData}
           onClose={() => setEditMenuData(null)}
           existingData={editMenuData}
-          onRefresh={fetchMenus}
+          onRefresh={fetchRoles}
         />
       )}
     </>
   );
 };
 
-export default TableMasterMenu;
+export default TableMasterRole;

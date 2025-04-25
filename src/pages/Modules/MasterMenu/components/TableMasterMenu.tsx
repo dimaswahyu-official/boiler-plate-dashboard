@@ -308,9 +308,9 @@ const TableMasterMenu = () => {
               onSubmit={handleSubmitCreateMenu}
               formFields={formFields}
               title="Create Menu"
-              triggerButtonLabel="Add Menu"
-              triggerButtonIcon={<FaPlus className="mr-2" />}
-              triggerButtonAction={handleOpenModal}
+              // triggerButtonLabel="Add Menu"
+              // triggerButtonIcon={<FaPlus className="mr-2" />}
+              // triggerButtonAction={handleOpenModal}
             />
           </div>
         </div>
