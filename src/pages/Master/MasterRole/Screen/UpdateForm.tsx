@@ -206,6 +206,7 @@ export default function UpdateFormWithTable(paramRole: any) {
 
   return (
     <div>
+      {/* FORM */}
       <div className="p-4 bg-white shadow-md rounded-lg">
         <form>
           <h3 className="text-xl font-semibold mb-4">Update Role</h3>
@@ -259,7 +260,7 @@ export default function UpdateFormWithTable(paramRole: any) {
         </form>
       </div>
 
-      {/* Table */}
+      {/* TABLE */}
       <div className="mt-8">
         <h3 className="text-lg font-semibold mb-4">Akses Menu</h3>
 
