@@ -1,5 +1,4 @@
 import axiosInstance from "./AxiosInstance";
-import { showErrorToast, showSuccessToast } from "../../components/toast";
 
 interface Menu {
   id: number;
@@ -13,10 +12,8 @@ interface Menu {
 export const getAllMenus = async () => {
   try {
     const res = await axiosInstance.get("/menu");
-    showSuccessToast("Menus fetched successfully!");
     return res.data.data;
   } catch (error: any) {
-    showErrorToast("Failed to fetch menus.");
     console.error(
       "Failed to fetch menus:",
       error.response?.data || error.message
@@ -28,10 +25,8 @@ export const getAllMenus = async () => {
 export const getParentMenu = async () => {
   try {
     const res = await axiosInstance.get("/menu/parent");
-    showSuccessToast("Parent menus fetched successfully!");
     return res.data.data;
   } catch (error: any) {
-    showErrorToast("Failed to fetch parent menus.");
     console.error(
       "Failed to fetch parent menus:",
       error.response?.data || error.message
@@ -45,10 +40,8 @@ export const getParentMenu = async () => {
 export const deleteMenu = async (id: number) => {
   try {
     const res = await axiosInstance.delete(`/menu/${id}`);
-    showSuccessToast("Menu deleted successfully!");
     return res.data;
   } catch (error: any) {
-    showErrorToast("Failed to delete menu.");
     console.error(
       "Failed to delete menu:",
       error.response?.data || error.message,
@@ -63,10 +56,8 @@ export const deleteMenu = async (id: number) => {
 export const createMenus = async (menuData: Menu) => {
   try {
     const res = await axiosInstance.post("/menu", menuData);
-    showSuccessToast("Menu created successfully!");
     return res.data;
   } catch (error: any) {
-    showErrorToast("Failed to create menu.");
     console.error(
       "Failed to create menu:",
       error.response?.data || error.message,
@@ -80,10 +71,8 @@ export const createMenus = async (menuData: Menu) => {
 export const updateMenuById = async (id: number, menuData: Partial<Menu>) => {
   try {
     const res = await axiosInstance.put(`/menu/${id}`, menuData);
-    showSuccessToast("Menu updated successfully!");
     return res.data;
   } catch (error: any) {
-    showErrorToast("Failed to update menu.");
     console.error(
       "Failed to update menu:",
       error.response?.data || error.message,

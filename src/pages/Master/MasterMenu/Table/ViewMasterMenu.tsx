@@ -2,14 +2,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../../../components/form/input/InputField";
 import { useMenuStore } from "../../../../API/store/menuStore";
-import MenuTable from "./AdjustTableMenu";
+import AdjustTableMenu from "./AdjustTableMenu";
 import MenuFormSection from "./MenuFormSection";
-import EditMenuModal from "./UpdateMenu"; // baru
+import EditMenuModal from "./UpdateMenu";
 
 const TableMasterMenu = () => {
   const navigate = useNavigate();
-  const { fetchMenus, menus, getParentMenu, deleteMenu } =
-    useMenuStore();
+  const { fetchMenus, menus, getParentMenu, deleteMenu } = useMenuStore();
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [editMenuData, setEditMenuData] = useState<any | null>(null);
 
@@ -56,7 +55,7 @@ const TableMasterMenu = () => {
         </div>
       </div>
 
-      <MenuTable
+      <AdjustTableMenu
         data={tableData}
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import DynamicForm, {
   FieldConfig,
-} from "../../../../components/form-input/DynamicForm";
+} from "../../../../components/form-input/dynamicForm";
 import TableMenuPermission from "../Table/CreatePermission";
 import { useRoleStore } from "../../../../API/store/roleStore";
 

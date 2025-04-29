@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
-import {useNavigate } from "react-router-dom"; // <== make sure this is 'react-router-dom'
-import {signOut} from '../../utils/SignOut'
+import { useNavigate } from "react-router-dom"; // <== make sure this is 'react-router-dom'
+import { signOut } from "../../utils/SignOut";
+import { FaRegUserCircle } from "react-icons/fa";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +23,13 @@ export default function UserDropdown() {
     }, 1000);
   };
 
+  const user_login = (() => {
+    const storedUserLogin = localStorage.getItem("user_login_data");
+    return storedUserLogin && storedUserLogin !== "undefined"
+      ? JSON.parse(storedUserLogin).user
+      : null;
+  })();
+  
   return (
     <div className="relative">
       <button
@@ -29,9 +37,15 @@ export default function UserDropdown() {
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <img src="/images/user/owner.jpg" alt="User" />
+          {/* {user_login.picture ? (
+            <img src={user_login.picture} alt="User" />
+          ) : ( */}
+            <FaRegUserCircle className="h-full w-full text-gray-500" />
+          {/* )} */}
         </span>
-        <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
+        <span className="block mr-1 font-medium text-theme-sm">
+          {user_login.username}
+        </span>
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -59,10 +73,10 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            Musharof Chowdhury
+            {user_login.username}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            randomuser@pimjo.com
+            {user_login.email}
           </span>
         </div>
 

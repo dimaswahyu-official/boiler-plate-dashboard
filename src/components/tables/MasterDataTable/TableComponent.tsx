@@ -97,6 +97,9 @@ const TableComponent = <T extends { id: number }>({
         canNextPage={table.getCanNextPage()}
         selectedRowCount={table.getSelectedRowModel().rows.length}
         totalDataCount={data.length}
+        gotoPage={(page: number) =>
+          setPagination((prev) => ({ ...prev, pageIndex: page }))
+        }
       />
     </>
   );

@@ -85,17 +85,15 @@ export default function UpdateFormWithTable(paramRole: any) {
     const result: any[] = [];
     const traverse = (items: any[]) => {
       items.forEach((item) => {
+        result.push(item);
         if (item.children && item.children.length > 0) {
           traverse(item.children);
-        } else {
-          result.push(item);
         }
       });
     };
     traverse(menuData);
     return result;
   };
-
   const flattenedMenus = useMemo(() => flattenMenus(menus), [menus]);
 
   useEffect(() => {
@@ -297,7 +295,7 @@ export default function UpdateFormWithTable(paramRole: any) {
         </table>
       </div>
 
-      {/* Capture Button */}
+      {/* Submit Button */}
       <div className="flex justify-end mt-4">
         <button
           onClick={handleCaptureData}

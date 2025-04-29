@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { fetchAllRole, createRole, fetchRoleById, updateRole } from "../services/RoleService";
+import { fetchAllRole, createRole, fetchRoleById, updateRole, deleteRole } from "../services/RoleService";
 
 interface Role {
     id: number;
@@ -17,6 +17,7 @@ interface RoleStore {
     error: string | null;
     fetchRoles: () => Promise<void>;
     fetchRoleById: (id: number) => Promise<Role>;
+    deleteRole: (id: number) => Promise<void>;
 
     createRole: (payload: {
         name: string;
@@ -87,6 +88,19 @@ export const useRoleStore = create<RoleStore>((set) => ({
             set({ roles, loading: false });
         } catch (error: any) {
             set({ error: error.message, loading: false });
+        }
+    },
+
+    deleteRole: async (id) => {
+        set({ loading: true, error: null });
+        try {
+            const role = await deleteRole(id);
+            const roles = await fetchAllRole();
+            set({ roles, loading: false });
+            return role; // Ensure the deleted role is returned
+        } catch (error: any) {
+            set({ error: error.message, loading: false });
+            throw error;
         }
     },
 }));

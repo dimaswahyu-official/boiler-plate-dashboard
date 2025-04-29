@@ -63,11 +63,19 @@ export default function SignInForm() {
         showErrorToast("Login gagal!");
         return;
       } else {
+        const userData = {
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+          user: response.data.user,
+          menus: response.data.menus,
+        };
+        
+        localStorage.setItem("user_login_data", JSON.stringify(userData));
         localStorage.setItem("token", response.data.accessToken);
         fetchMenus();
         showSuccessToast("Login berhasil!");
         setTimeout(() => {
-          navigate("/callplan");
+          navigate("/master_menu");
         }, 2000);
       }
     } catch (err: any) {

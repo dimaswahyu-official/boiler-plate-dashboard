@@ -1,4 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Button from "../../../../components/ui/button/Button";
+import DatePicker from "../../../../components/form/date-picker";
+import Label from "../../../../components/form/Label";
+import Input from "../../../../components/form/input/InputField";
+import Select from "../../../../components/form/Select";
+import { useUserStore } from "../../../../API/store/masterUserStore";
+import ReusableFormModal from "../../../../components/modal/ReusableFormModal";
+import { useNavigate } from "react-router-dom";
 import {
   FaTrash,
   FaEdit,
@@ -6,16 +14,8 @@ import {
   FaFileImport,
   FaEye,
   FaUndo,
-  FaFileDownload 
+  FaFileDownload,
 } from "react-icons/fa";
-import Button from "../../../../components/ui/button/Button";
-import DatePicker from "../../../../components/form/date-picker";
-import Label from "../../../../components/form/Label";
-import Input from "../../../../components/form/input/InputField";
-import Select from "../../../../components/form/Select";
-
-import ReusableFormModal from "../../../../components/modal/ReusableFormModal";
-import { useNavigate } from "react-router-dom";
 import {
   useReactTable,
   getCoreRowModel,
@@ -28,103 +28,50 @@ import {
   getSortedRowModel,
 } from "@tanstack/react-table";
 
+
 // Define the type for the data
 interface User {
   id: number;
   name: string;
+  username: string;
   email: string;
   role: string;
+  branch?: string; // Added branch as an optional property
+  create_on: string;
 }
 
-// Dummy data
-const dummyData: User[] = [
-  { id: 1, name: "Alice Johnson", email: "alice@domain.com", role: "Admin" },
-  { id: 2, name: "Bob Smith", email: "bob@domain.com", role: "User" },
-  { id: 3, name: "Charlie Brown", email: "charlie@domain.com", role: "Editor" },
-  { id: 4, name: "Diana Prince", email: "diana@domain.com", role: "Moderator" },
-  { id: 5, name: "Evan Davis", email: "evan@domain.com", role: "User" },
-  { id: 6, name: "Fiona Gallagher", email: "fiona@domain.com", role: "Admin" },
-  { id: 7, name: "George Michael", email: "george@domain.com", role: "User" },
-  { id: 8, name: "Hannah Baker", email: "hannah@domain.com", role: "User" },
-  { id: 9, name: "Ian Curtis", email: "ian@domain.com", role: "Editor" },
-  { id: 10, name: "Jane Doe", email: "jane@domain.com", role: "User" },
-  { id: 11, name: "Kevin Hart", email: "kevin@domain.com", role: "Moderator" },
-  { id: 12, name: "Laura Palmer", email: "laura@domain.com", role: "Admin" },
-  { id: 13, name: "Michael Scott", email: "michael@domain.com", role: "User" },
-  { id: 14, name: "Nancy Drew", email: "nancy@domain.com", role: "Editor" },
-  { id: 15, name: "Oscar Wilde", email: "oscar@domain.com", role: "User" },
-  { id: 16, name: "Pam Beesly", email: "pam@domain.com", role: "Moderator" },
-  { id: 17, name: "Quincy Adams", email: "quincy@domain.com", role: "User" },
-  { id: 18, name: "Rachel Green", email: "rachel@domain.com", role: "Admin" },
-  { id: 19, name: "Steve Rogers", email: "steve@domain.com", role: "User" },
-  { id: 20, name: "Tina Fey", email: "tina@domain.com", role: "Editor" },
-  { id: 21, name: "Uma Thurman", email: "uma@domain.com", role: "User" },
-  {
-    id: 22,
-    name: "Victor Hugo",
-    email: "victor@domain.com",
-    role: "Moderator",
-  },
-  { id: 23, name: "Wanda Maximoff", email: "wanda@domain.com", role: "Admin" },
-  { id: 24, name: "Xander Cage", email: "xander@domain.com", role: "User" },
-  {
-    id: 25,
-    name: "Yvonne Strahovski",
-    email: "yvonne@domain.com",
-    role: "Editor",
-  },
-  { id: 26, name: "Zachary Levi", email: "zachary@domain.com", role: "User" },
-  { id: 27, name: "Amy Santiago", email: "amy@domain.com", role: "Moderator" },
-  { id: 28, name: "Jake Peralta", email: "jake@domain.com", role: "User" },
-  { id: 29, name: "Rosa Diaz", email: "rosa@domain.com", role: "Admin" },
-  { id: 30, name: "Terry Jeffords", email: "terry@domain.com", role: "User" },
-];
-
 const TableMasterUser = () => {
+  const navigate = useNavigate();
   const [globalFilter, setGlobalFilter] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const { fetchAllUser, user } = useUserStore();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchAllUser();
+    };
+    fetchData();
+  }, [fetchAllUser]);
+
   const handleCloseModal = () => setIsModalOpen(false);
-  const handleOpenModal = () => setIsModalOpen(true);
+
+  const handleDetail = (id: number): void => {
+    navigate(`/detail_user`, { state: { userId: id } });
+  };
 
   const columns = useMemo(
     () => [
       {
-        id: "select",
-        header: ({ table }: { table: Table<User> }) => (
-          <input
-            type="checkbox"
-            checked={table.getIsAllPageRowsSelected()}
-            onChange={table.getToggleAllPageRowsSelectedHandler()}
-            className="w-4 h-4"
-          />
-        ),
-        cell: ({ row }: { row: Row<User> }) => (
-          <input
-            type="checkbox"
-            checked={row.getIsSelected()}
-            onChange={row.getToggleSelectedHandler()}
-            className="w-4 h-4"
-          />
-        ),
-      },
-      {
         accessorKey: "name",
         header: ({ column }: { column: any }) => (
-          <div className="flex items-center space-x-2">
-            <span>Name</span>
-            <button
-              onClick={column.getToggleSortingHandler()}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              {column.getIsSorted() === "asc"
-                ? "🔼"
-                : column.getIsSorted() === "desc"
-                ? "🔽"
-                : "↕"}
-            </button>
-          </div>
+          <SortableHeader column={column} label="Name" />
         ),
+        cell: (info: CellContext<User, string>) => info.getValue(),
+      },
+      {
+        accessorKey: "username",
+        header: "Username",
         cell: (info: CellContext<User, string>) => info.getValue(),
       },
       {
@@ -134,7 +81,17 @@ const TableMasterUser = () => {
       },
       {
         accessorKey: "role",
-        header: "Role",
+        header: "Roles",
+        cell: (info: CellContext<User, string>) => info.getValue(),
+      },
+      {
+        accessorKey: "branch",
+        header: "Branch",
+        cell: (info: CellContext<User, string>) => info.getValue(),
+      },
+      {
+        accessorKey: "create_on",
+        header: "Create On",
         cell: (info: CellContext<User, string>) => info.getValue(),
       },
       {
@@ -142,20 +99,6 @@ const TableMasterUser = () => {
         header: "Actions",
         cell: ({ row }: { row: Row<User> }) => (
           <div className="space-x-4">
-            <button
-              className="text-blue-600 hover:underline"
-              onClick={() => alert(`Edit ${row.original.name}`)}
-            >
-              <FaEdit />
-            </button>
-
-            <button
-              className="text-red-600 hover:underline"
-              onClick={() => alert(`Delete ${row.original.name}`)}
-            >
-              <FaTrash />
-            </button>
-
             <button
               className="text-green-600 hover:underline"
               onClick={() => handleDetail(row.original.id)}
@@ -166,27 +109,36 @@ const TableMasterUser = () => {
         ),
       },
     ],
-    []
+    [handleDetail]
   );
 
+  const mappedUser = useMemo(() => {
+    return user.map((u) => ({
+      id: u.id,
+      name: u.name || "", // Ensure name exists
+      username: u.username,
+      email: u.email,
+      role: u.role || "", // Ensure role exists
+      branch: u.branch || "",
+      create_on: u.create_on || "", // Ensure create_on exists
+    }));
+  }, [user]);
+
   const table = useReactTable<User>({
-    data: dummyData,
+    data: mappedUser,
     columns,
-    state: {
-      globalFilter,
-    },
+    state: { globalFilter },
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    enableRowSelection: true,
   });
 
   const formFields = [
     {
       name: "name",
-      label: "Name",
+      label: "Nama",
       type: "text",
       validation: { required: "Name is required" },
     },
@@ -195,6 +147,12 @@ const TableMasterUser = () => {
       label: "Username",
       type: "text",
       validation: { required: "Username is required" },
+    },
+    {
+      name: "phone_number",
+      label: "No. Handphone Kantor",
+      type: "text",
+      validation: { required: "Phone number is required" },
     },
     {
       name: "roles",
@@ -209,7 +167,7 @@ const TableMasterUser = () => {
     },
     {
       name: "branch",
-      label: "Branch",
+      label: "Cabang",
       type: "select",
       options: [
         { value: "JAT", label: "JAT" },
@@ -227,25 +185,27 @@ const TableMasterUser = () => {
     {
       name: "password",
       label: "New Password",
-      type: "text",
-      validation: { required: "Password is required" },
+      type: "password",
+      validation: {
+        required: "Password is required",
+        minLength: {
+          value: 12,
+          message: "Password must be at least 12 characters",
+        },
+        pattern: {
+          value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+          message: "Password must include uppercase, lowercase, and a number",
+        },
+      },
     },
-
-    // { name: "upload", label: "Upload Data", type: "text", validation: { required: "Upload is required" }, enableFileUpload: true },
   ];
-
-  const navigate = useNavigate();
-
-  function handleDetail(id: number): void {
-    navigate(`/detail_user`, { state: { userId: id } });
-  }
 
   const options = [
     { value: "marketing", label: "Marketing" },
     { value: "template", label: "Template" },
     { value: "development", label: "Development" },
   ];
-  
+
   const handleSelectChange = (value: string) => {
     console.log("Selected value:", value);
   };
@@ -254,176 +214,188 @@ const TableMasterUser = () => {
     <>
       {/* ACTION SECTION */}
       <div className="p-4 bg-white shadow rounded-md mb-5">
-        <div className="flex justify-between items-center mb-4">
-          <div className="space-x-4 flex items-center">
-            <div>
-              <Label htmlFor="input">Search User</Label>
-              <Input
-                onChange={(e) => setGlobalFilter(e.target.value)}
-                type="text"
-                id="input"
-                placeholder="🔍 Search users..."
-              />
-            </div>
-          </div>
-
-          <div className="space-x-4">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => alert("Add User")}
-            >
-              <FaFileDownload  className="mr-2" /> Unduh
-            </Button>
-
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => alert("Add User")}
-            >
-              <FaFileImport className="mr-2" /> Import User
-            </Button>
-
-            <ReusableFormModal
-              isOpen={isModalOpen}
-              onClose={handleCloseModal}
-              onSubmit={(data) => {
-                console.log("Form Submitted:", data);
-              }}
-              formFields={formFields}
-              title="Create User"
-              triggerButtonLabel="Add User"
-              triggerButtonIcon={<FaPlus className="mr-2" />}
-              triggerButtonAction={handleOpenModal}
-            />
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center mb-4">
-          <div className="space-x-4 flex items-center">
-            <div>
-              <Label htmlFor="role-select">Posisi</Label>
-              <Select
-                options={options}
-                placeholder="Pilih Posisi"
-                onChange={handleSelectChange}
-                className="dark:bg-dark-900 react-select-container mr-5"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="role-select">Cabang</Label>
-              <Select
-                options={options}
-                placeholder="Pilih Cabang"
-                onChange={handleSelectChange}
-                className="dark:bg-dark-900 react-select-container mr-5"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="role-select">Wilayah</Label>
-              <Select
-                options={options}
-                placeholder="Pilih Wilayah"
-                onChange={handleSelectChange}
-                className="dark:bg-dark-900 react-select-container mr-5"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="role-select">Status</Label>
-              <Select
-                options={options}
-                placeholder="Pilih Status"
-                onChange={handleSelectChange}
-                className="dark:bg-dark-900 react-select-container mr-5"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="input">Tanggal Dibuat</Label>
-              <DatePicker
-                id="date-picker"
-                placeholder="Select a date"
-                onChange={(dates, currentDateString) => {
-                  console.log({ dates, currentDateString });
-                }}
-              />
-            </div>
-
-            <div className="mt-6">
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => alert("Add User")}
-              >
-                <FaUndo className="mr-2" />
-              </Button>
-            </div>
-          </div>
-        </div>
+        <ActionSection
+          setGlobalFilter={setGlobalFilter}
+          setIsModalOpen={setIsModalOpen}
+          options={options}
+          handleSelectChange={handleSelectChange}
+        />
+        <ReusableFormModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onSubmit={(data) => console.log("Form Submitted:", data)}
+          formFields={formFields}
+          title="Create User"
+        />
       </div>
 
       {/* TABLE SECTION */}
       <div className="p-4 bg-white shadow rounded-md">
-        <table className="min-w-full table-auto border border-gray-200">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="bg-gray-100 text-left">
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="px-4 py-2 border-b">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50">
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-2 border-b">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div className="flex justify-between items-center mt-4">
-          <div className="text-sm">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </div>
-
-          <div className="space-x-2">
-            <button
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-              className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-              Prev
-            </button>
-            <button
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-              className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        <TableSection table={table} />
       </div>
     </>
   );
 };
+
+const SortableHeader = ({ column, label }: { column: any; label: string }) => (
+  <div className="flex items-center space-x-2">
+    <span>{label}</span>
+    <button
+      onClick={column.getToggleSortingHandler()}
+      className="text-gray-500 hover:text-gray-700"
+    >
+      {column.getIsSorted() === "asc"
+        ? "🔼"
+        : column.getIsSorted() === "desc"
+        ? "🔽"
+        : "↕"}
+    </button>
+  </div>
+);
+
+const ActionSection = ({
+  setGlobalFilter,
+  setIsModalOpen,
+  options,
+  handleSelectChange,
+}: {
+  setGlobalFilter: (value: string) => void;
+  setIsModalOpen: (value: boolean) => void;
+  options: { value: string; label: string }[];
+  handleSelectChange: (value: string) => void;
+}) => (
+  <div>
+    <div className="flex justify-between items-center mb-4">
+      <div className="space-x-4 flex items-center">
+        <div>
+          <Label htmlFor="input">Search User</Label>
+          <Input
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            type="text"
+            id="input"
+            placeholder="🔍 Search users..."
+          />
+        </div>
+      </div>
+      
+      <div className="space-x-4">
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => alert("Download Users")}
+        >
+          <FaFileDownload className="mr-2" /> Unduh
+        </Button>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => alert("Import Users")}
+        >
+          <FaFileImport className="mr-2" /> Import User
+        </Button>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => setIsModalOpen(true)}
+        >
+          <FaPlus className="mr-2" /> Tambah User
+        </Button>
+      </div>
+    </div>
+
+    <div className="flex justify-between items-center mb-4">
+      <div className="space-x-4 flex items-center">
+        {["Posisi", "Cabang", "Wilayah", "Status"].map((label) => (
+          <div key={label}>
+            <Label htmlFor={`${label.toLowerCase()}-select`}>{label}</Label>
+            <Select
+              options={options}
+              placeholder={`Pilih ${label}`}
+              onChange={handleSelectChange}
+              className="dark:bg-dark-900 react-select-container mr-5"
+            />
+          </div>
+        ))}
+        <div>
+          <Label htmlFor="date-picker">Tanggal Dibuat</Label>
+          <DatePicker
+            id="date-picker"
+            placeholder="Select a date"
+            onChange={(dates, currentDateString) =>
+              console.log({ dates, currentDateString })
+            }
+          />
+        </div>
+        <div className="mt-6">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => alert("Reset Filters")}
+          >
+            <FaUndo className="mr-2" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const TableSection = ({ table }: { table: any }) => (
+  <>
+    <table className="min-w-full table-auto border border-gray-200">
+      <thead>
+        {table.getHeaderGroups().map((headerGroup: any) => (
+          <tr key={headerGroup.id} className="bg-gray-100 text-left">
+            {headerGroup.headers.map((header: any) => (
+              <th key={header.id} className="px-4 py-2 border-b">
+                {header.isPlaceholder
+                  ? null
+                  : flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+              </th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody>
+        {table.getRowModel().rows.map((row: any) => (
+          <tr key={row.id} className="hover:bg-gray-50">
+            {row.getVisibleCells().map((cell: any) => (
+              <td key={cell.id} className="px-4 py-2 border-b">
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <div className="flex justify-between items-center mt-4">
+      <div className="text-sm">
+        Page {table.getState().pagination.pageIndex + 1} of{" "}
+        {table.getPageCount()}
+      </div>
+      <div className="space-x-2">
+        <button
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+          className="px-3 py-1 border rounded disabled:opacity-50"
+        >
+          Prev
+        </button>
+        <button
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+          className="px-3 py-1 border rounded disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+
+  </>
+);
 
 export default TableMasterUser;

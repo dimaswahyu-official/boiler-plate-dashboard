@@ -17,8 +17,8 @@ type FormInputProps = {
     onSubmit: SubmitHandler<FormValues>;
     onClose: () => void;
     defaultValues?: FormValues;
-  };
-  
+};
+
 const FormInput: React.FC<FormInputProps> = ({ formFields, onSubmit, onClose, defaultValues }) => {
     const {
         register,
@@ -35,7 +35,6 @@ const FormInput: React.FC<FormInputProps> = ({ formFields, onSubmit, onClose, de
             reset(defaultValues);
         }
     }, [defaultValues, reset]);
-    
 
     const renderField = (field: FormField) => {
         const commonClasses =
@@ -85,23 +84,47 @@ const FormInput: React.FC<FormInputProps> = ({ formFields, onSubmit, onClose, de
         }
     };
 
-    
+    // Split fields into two columns only if there are more than 6 fields
+    const leftFields = formFields.length > 6 ? formFields.slice(0, Math.ceil(formFields.length / 2)) : formFields;
+    const rightFields = formFields.length > 6 ? formFields.slice(Math.ceil(formFields.length / 2)) : [];
+
     return (
         <div className="mx-auto mt-10 p-6 bg-white shadow-md rounded-md">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                {formFields.map((field) => (
-                    <div key={field.name}>
-                        <label className="block text-sm font-medium mb-1">
-                            {field.label}
-                        </label>
-                        {renderField(field)}
-                        {errors[field.name] && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {(errors[field.name] as any).message}
-                            </p>
-                        )}
+                <div className={`grid ${formFields.length > 6 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"} gap-6`}>
+                    <div>
+                        {leftFields.map((field) => (
+                            <div key={field.name} className="mb-4">
+                                <label className="block text-sm font-medium mb-1">
+                                    {field.label}
+                                </label>
+                                {renderField(field)}
+                                {errors[field.name] && (
+                                    <p className="text-red-500 text-sm mt-1">
+                                        {(errors[field.name] as any).message}
+                                    </p>
+                                )}
+                            </div>
+                        ))}
                     </div>
-                ))}
+                    {rightFields.length > 0 && (
+                        <div>
+                            {rightFields.map((field) => (
+                                <div key={field.name} className="mb-4">
+                                    <label className="block text-sm font-medium mb-1">
+                                        {field.label}
+                                    </label>
+                                    {renderField(field)}
+                                    {errors[field.name] && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {(errors[field.name] as any).message}
+                                        </p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
                 <div className="flex justify-end space-x-2 mt-10">
                     <button
                         type="submit"

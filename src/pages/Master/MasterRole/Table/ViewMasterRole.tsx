@@ -9,7 +9,7 @@ import AdjustTableRole from "./AdjustTableRole";
 
 const TableMasterRole = () => {
   const navigate = useNavigate();
-  const { fetchRoles, roles } = useRoleStore();
+  const { fetchRoles, roles, deleteRole } = useRoleStore();
   const [globalFilter, setGlobalFilter] = useState<string>("");
 
   useEffect(() => {
@@ -21,7 +21,13 @@ const TableMasterRole = () => {
   };
 
   const handleDelete = async (id: number) => {
-    console.log(`Detail role with ID: ${id}`);
+    try {
+      await deleteRole(id);
+      console.log(`Role with ID: ${id} has been deleted.`);
+      fetchRoles(); // Refresh the roles list after deletion
+    } catch (error) {
+      console.error(`Failed to delete role with ID: ${id}`, error);
+    }
   };
 
   return (

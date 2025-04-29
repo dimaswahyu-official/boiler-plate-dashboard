@@ -13,7 +13,7 @@ import Callplan from "./pages/Callplan";
 
 // ROLES PAGE
 import MasterRole from "./pages/Master/MasterRole";
-import CreateRole from './pages/Master/MasterRole/Screen/CreateRole';
+import CreateRole from "./pages/Master/MasterRole/Screen/CreateRole";
 
 // ✅ Import ProtectedRoute
 import { useMenuStore } from "./API/store/menuStore";
@@ -27,6 +27,20 @@ export function AppRoutes() {
     return storedMenus && storedMenus !== "undefined"
       ? JSON.parse(storedMenus)
       : [];
+  })();
+
+  // const user_login = (() => {
+  //   const storedUserLogin = localStorage.getItem("user_login_data");
+  //   return storedUserLogin && storedUserLogin !== "undefined"
+  //     ? JSON.parse(storedUserLogin).user
+  //     : null;
+  // })();
+
+  const user_login_menu = (() => {
+    const storedUserLogin = localStorage.getItem("user_login_data");
+    return storedUserLogin && storedUserLogin !== "undefined"
+      ? JSON.parse(storedUserLogin).menus
+      : null;
   })();
 
   const isAuthenticated = () => !!localStorage.getItem("token");
@@ -54,8 +68,12 @@ export function AppRoutes() {
   };
 
   const flattenedRoutes = flattenRoutes(
-    (menus && menus.length > 0 ? menus : local_menus) as any[]
+    (user_login_menu && user_login_menu.length > 0 ? user_login_menu : local_menus) as any[]
   );
+
+  // const flattenedRoutes = flattenRoutes(
+  //   (menus && menus.length > 0 ? menus : local_menus) as any[]
+  // );
 
   const renderDynamicRoutes = () => {
     if (!Array.isArray(flattenedRoutes) || flattenedRoutes.length === 0) {
@@ -79,10 +97,7 @@ export function AppRoutes() {
           <Route element={<AppLayout />}>
             <Route path="/" element={<Callplan />} />
             <Route path="/create_role" element={<CreateRole />} />
-            {/* <Route path="/update_role" element={<UpdateRole />} /> */}
-            <Route path="/update_role" element={< UpdateRole/>} />
-
-
+            <Route path="/update_role" element={<UpdateRole />} />
             {renderDynamicRoutes()}
           </Route>
         ) : (

@@ -83,7 +83,10 @@ export const fetchRoleById = async (id: number): Promise<Role> => {
   }
 };
 
-export const updateRole = async (id: number, payload: CreateRolePayload): Promise<void> => {
+export const updateRole = async (
+  id: number,
+  payload: CreateRolePayload
+): Promise<void> => {
   try {
     const res = await axiosInstance.put(`/roles/${id}`, payload);
     console.log("Role Update successfully!", res.data);
@@ -93,5 +96,18 @@ export const updateRole = async (id: number, payload: CreateRolePayload): Promis
       error.response?.data || error.message
     );
     throw new Error(error.response?.data?.message || "Failed to upadate role");
+  }
+};
+
+export const deleteRole = async (id: number): Promise<void> => {
+  try {
+    const res = await axiosInstance.delete(`/roles/${id}`);
+    console.log("Role deleted successfully!", res.data);
+  } catch (error: any) {
+    console.error(
+      "Failed to delete role:",
+      error.response?.data || error.message
+    );
+    throw new Error(error.response?.data?.message || "Failed to delete role");
   }
 };
