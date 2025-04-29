@@ -6,10 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Row, CellContext, Table } from "@tanstack/react-table";
 import { useMenuStore } from "../../../../API/store/menuStore";
 import TableComponent from "./TableComponent";
-// import CustomToast, {
-//   showErrorToast,
-//   showSuccessToast,
-// } from "../../../../components/toast";
+
 
 // import * as FaIcons from "react-icons/fa";
 import {
@@ -47,7 +44,6 @@ const TableMasterMenu = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCloseModal = () => setIsModalOpen(false);
-  const handleOpenModal = () => setIsModalOpen(true);
 
   useEffect(() => {
     getParentMenu();
@@ -308,9 +304,6 @@ const TableMasterMenu = () => {
               onSubmit={handleSubmitCreateMenu}
               formFields={formFields}
               title="Create Menu"
-              // triggerButtonLabel="Add Menu"
-              // triggerButtonIcon={<FaPlus className="mr-2" />}
-              // triggerButtonAction={handleOpenModal}
             />
           </div>
         </div>

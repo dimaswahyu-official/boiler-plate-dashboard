@@ -69,14 +69,16 @@ export default function SignInForm() {
           user: response.data.user,
           menus: response.data.menus,
         };
-        
+
         localStorage.setItem("user_login_data", JSON.stringify(userData));
         localStorage.setItem("token", response.data.accessToken);
+        localStorage.setItem("role_id", response.data.user.role_id);
+
         fetchMenus();
         showSuccessToast("Login berhasil!");
         setTimeout(() => {
-          navigate("/master_menu");
-        }, 2000);
+          navigate("/callplan");
+        }, 1500);
       }
     } catch (err: any) {
       console.log(err);

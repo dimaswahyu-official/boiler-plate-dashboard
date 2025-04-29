@@ -1,4 +1,5 @@
 import axiosInstance from "./AxiosInstance";
+import { showSuccessToast, showErrorToast } from "../../components/toast";
 
 interface Menu {
   id: number;
@@ -40,8 +41,13 @@ export const getParentMenu = async () => {
 export const deleteMenu = async (id: number) => {
   try {
     const res = await axiosInstance.delete(`/menu/${id}`);
-    return res.data;
+    if (res.data.statusCode === 200) {
+      showSuccessToast("Berhasil hapus menu!");
+      return res.data;
+    }
   } catch (error: any) {
+    showErrorToast(`${error.response?.data?.message}`);
+
     console.error(
       "Failed to delete menu:",
       error.response?.data || error.message,
@@ -56,8 +62,14 @@ export const deleteMenu = async (id: number) => {
 export const createMenus = async (menuData: Menu) => {
   try {
     const res = await axiosInstance.post("/menu", menuData);
-    return res.data;
+    console.log("Response from createMenus:", res.data);
+
+    if (res.data.statusCode === 200) {
+      showSuccessToast("Berhasil tambah menu!");
+      return res.data;
+    }
   } catch (error: any) {
+    showErrorToast(`${error.response?.data?.message}`);
     console.error(
       "Failed to create menu:",
       error.response?.data || error.message,
@@ -71,8 +83,13 @@ export const createMenus = async (menuData: Menu) => {
 export const updateMenuById = async (id: number, menuData: Partial<Menu>) => {
   try {
     const res = await axiosInstance.put(`/menu/${id}`, menuData);
-    return res.data;
+    if (res.data.statusCode === 200) {
+      showSuccessToast("Berhasil update menu!");
+      return res.data;
+    }
   } catch (error: any) {
+    showErrorToast(`${error.response?.data?.message}`);
+
     console.error(
       "Failed to update menu:",
       error.response?.data || error.message,

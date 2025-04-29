@@ -1,7 +1,8 @@
 import { create } from "zustand";
-import { fetchAllRole, createRole, fetchRoleById, updateRole, deleteRole } from "../services/RoleService";
+import { fetchAllRole, createRole, getRoleById, updateRole, deleteRole } from "../services/RoleService";
 
 interface Role {
+    data?: any;
     id: number;
     name: string;
     description: string;
@@ -9,6 +10,7 @@ interface Role {
         menu_id: number;
         permission_type: string;
     }[];
+    // data?: any; // Make 'data' optional to align with the returned object
 }
 
 interface RoleStore {
@@ -70,9 +72,9 @@ export const useRoleStore = create<RoleStore>((set) => ({
     fetchRoleById: async (id) => {
         set({ loading: true, error: null });
         try {
-            const role = await fetchRoleById(id);
+            const role = await getRoleById(id);
             set({ loading: false });
-            return role;
+            return role; // Ensure the fetched role is returned
         } catch (error: any) {
             set({ error: error.message, loading: false });
             throw error;

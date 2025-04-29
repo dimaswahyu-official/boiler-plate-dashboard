@@ -1,6 +1,8 @@
 import axiosInstance from "./AxiosInstance";
+import { showSuccessToast, showErrorToast } from "../../components/toast";
 
 interface Role {
+  // data: null;
   id: number;
   name: string;
   description: string;
@@ -44,8 +46,13 @@ export const fetchAllRole = async (): Promise<Role[]> => {
 export const createRole = async (payload: CreateRolePayload): Promise<void> => {
   try {
     const res = await axiosInstance.post("/roles", payload);
-    console.log("Role created successfully!", res.data);
+    if (res.data.statusCode === 200) {
+      showSuccessToast("Berhasil tambah role!");
+      return res.data;
+    }
   } catch (error: any) {
+    showErrorToast(`${error.response?.data?.message}`);
+
     console.error(
       "Failed to create role:",
       error.response?.data || error.message
@@ -54,10 +61,10 @@ export const createRole = async (payload: CreateRolePayload): Promise<void> => {
   }
 };
 
-export const fetchRoleById = async (id: number): Promise<Role> => {
+export const getRoleById = async (id: number): Promise<Role> => {
   try {
     const res = await axiosInstance.get(`/roles/${id}`);
-
+    
     // Mapping data dari API ke interface Role
     const role: Role = {
       id: res.data.data.id,
@@ -65,9 +72,9 @@ export const fetchRoleById = async (id: number): Promise<Role> => {
       description: res.data.data.description,
       permissions: Array.isArray(res.data.data.permissions)
         ? res.data.data.permissions.map((permission: any) => ({
-            menu_id: permission.menu_id,
-            permission_type: permission.permission_type,
-          }))
+          menu_id: permission.menu_id,
+          permission_type: permission.permission_type,
+        }))
         : [],
     };
 
@@ -89,8 +96,15 @@ export const updateRole = async (
 ): Promise<void> => {
   try {
     const res = await axiosInstance.put(`/roles/${id}`, payload);
-    console.log("Role Update successfully!", res.data);
+    console.log("Role updated successfully:", res.data.statusCode);
+    
+    if (res.data.statusCode === 200) {
+      showSuccessToast("Berhasil update role!");
+      return res.data;
+    }
   } catch (error: any) {
+    showErrorToast(`${error.response?.data?.message}`);
+
     console.error(
       "Failed to update role:",
       error.response?.data || error.message
@@ -102,8 +116,13 @@ export const updateRole = async (
 export const deleteRole = async (id: number): Promise<void> => {
   try {
     const res = await axiosInstance.delete(`/roles/${id}`);
-    console.log("Role deleted successfully!", res.data);
+    if (res.data.statusCode === 200) {
+      showSuccessToast("Berhasil hapus role!");
+      return res.data;
+    }
   } catch (error: any) {
+    showErrorToast(`${error.response?.data?.message}`);
+
     console.error(
       "Failed to delete role:",
       error.response?.data || error.message

@@ -1,6 +1,7 @@
 import TableMasterMenu from "./Table/ViewMasterMenu";
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 
+
 export default function MasterMenu() {
   return (
     <div>

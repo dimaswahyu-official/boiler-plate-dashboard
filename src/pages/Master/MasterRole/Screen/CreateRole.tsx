@@ -5,6 +5,7 @@ import DynamicForm, {
 } from "../../../../components/form-input/dynamicForm";
 import TableMenuPermission from "../Table/CreatePermission";
 import { useRoleStore } from "../../../../API/store/roleStore";
+import { useNavigate } from "react-router-dom";
 
 const fields: FieldConfig[] = [
   { name: "name", label: "Name", type: "text" },
@@ -39,8 +40,8 @@ const fields: FieldConfig[] = [
 ];
 
 function CreateRole() {
+  const navigate = useNavigate();
   const { createRole } = useRoleStore(); // Ambil fungsi createRole dari store
-
   const [tableData, setTableData] = useState<any>({});
 
   const handleTableChange = (data: any) => {
@@ -66,17 +67,12 @@ function CreateRole() {
       description: formData.description,
       permissions: transformedPermissions,
     };
-
-    console.log("Final Payload:", payload);
-
     try {
       // Panggil fungsi createRole dari roleStore
       await createRole(payload);
-      console.log("Role created successfully!");
-      alert("Role berhasil dibuat!");
+      navigate("/master_role");
     } catch (error: any) {
-      console.error("Failed to create role:", error.message);
-      alert("Gagal membuat role: " + error.message);
+      console.log("Gagal membuat role: " + error.message);
     }
   };
   return (
@@ -89,16 +85,11 @@ function CreateRole() {
       />
 
       <div className="p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Form Kiri */}
-          <div className="bg-white p-6 rounded-md border">
-            <DynamicForm fields={fields} onSubmit={handleSubmit} />
-          </div>
-
-          {/* Table Kanan */}
-          <div className="bg-white p-6 rounded-md border">
-            <TableMenuPermission onChange={handleTableChange} />
-          </div>
+        <div className="grid grid-cols-1">
+          <DynamicForm fields={fields} onSubmit={handleSubmit} />
+        </div>
+        <div className="mt-6">
+          <TableMenuPermission onChange={handleTableChange} />
         </div>
 
         {/* Tombol Bawah */}

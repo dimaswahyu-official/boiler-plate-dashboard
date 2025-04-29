@@ -10,10 +10,13 @@ import Button from "../../../../components/ui/button/Button";
 import DatePicker from "../../../../components/form/date-picker";
 import Label from "../../../../components/form/Label";
 import Select from "../../../../components/form/Select";
+import { usePagePermissions } from "../../../../utils/UserPagePermissions";
 
 const TableMasterMenu = () => {
   const { fetchAllUser, user, createUser } = useUserStore();
   const { fetchRoles, roles } = useRoleStore();
+
+  const { canCreate } = usePagePermissions();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [globalFilter, setGlobalFilter] = useState<string>("");
@@ -30,10 +33,6 @@ const TableMasterMenu = () => {
     fetchData();
     fetchDataRole();
   }, [fetchAllUser]);
-
-  useEffect(() => {
-    console.log("role", roles);
-  }, [roles]);
 
   const tableData = useMemo(() => {
     return user.map((u) => ({
@@ -54,88 +53,88 @@ const TableMasterMenu = () => {
     label: role.name,
   }));
 
-const formFields = [
+  const formFields = [
     {
-        name: "name",
-        label: "Nama",
-        type: "text",
-        validation: { required: "Name is required" },
+      name: "name",
+      label: "Nama",
+      type: "text",
+      validation: { required: "Name is required" },
     },
     {
-        name: "username",
-        label: "Username",
-        type: "text",
-        validation: { required: "Username is required" },
+      name: "username",
+      label: "Username",
+      type: "text",
+      validation: { required: "Username is required" },
     },
     {
-        name: "phone_number",
-        label: "No. Handphone Kantor",
-        type: "text",
-        validation: { required: "Phone number is required" },
+      name: "phone_number",
+      label: "No. Handphone Kantor",
+      type: "text",
+      validation: { required: "Phone number is required" },
     },
     {
-        name: "roles",
-        label: "Roles",
-        type: "select",
-        options: optionRoles, // Use dynamic roles here
-        validation: { required: "Role is required" },
+      name: "roles",
+      label: "Roles",
+      type: "select",
+      options: optionRoles, // Use dynamic roles here
+      validation: { required: "Role is required" },
     },
     {
-        name: "branch",
-        label: "Cabang",
-        type: "select",
-        options: [
-            { value: "JAT", label: "JAT" },
-            { value: "KDS", label: "KDS" },
-            { value: "BDG", label: "BDG" },
-        ],
-        validation: { required: "Branch is required" },
+      name: "branch",
+      label: "Cabang",
+      type: "select",
+      options: [
+        { value: "JAT", label: "JAT" },
+        { value: "KDS", label: "KDS" },
+        { value: "BDG", label: "BDG" },
+      ],
+      validation: { required: "Branch is required" },
     },
     {
-        name: "email",
-        label: "Email",
-        type: "text",
-        validation: { required: "Email is required" },
+      name: "email",
+      label: "Email",
+      type: "text",
+      validation: { required: "Email is required" },
     },
     {
-        name: "password",
-        label: "New Password",
-        type: "password",
-        validation: {
-            required: "Password is required",
-            minLength: {
-                value: 12,
-                message: "Password must be at least 12 characters",
-            },
-            pattern: {
-                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
-                message: "Password must include uppercase, lowercase, and a number",
-            },
+      name: "password",
+      label: "New Password",
+      type: "password",
+      validation: {
+        required: "Password is required",
+        minLength: {
+          value: 12,
+          message: "Password must be at least 12 characters",
         },
-    },
-    {
-        name: "password_confirm",
-        label: "Konfirmasi Password",
-        type: "password",
-        validation: {
-            required: "Password is required",
-            minLength: {
-                value: 12,
-                message: "Password must be at least 12 characters",
-            },
-            pattern: {
-                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
-                message: "Password must include uppercase, lowercase, and a number",
-            },
+        pattern: {
+          value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+          message: "Password must include uppercase, lowercase, and a number",
         },
+      },
     },
     {
-        name: "valid_to",
-        label: "Tanggal Berakhir",
-        type: "date",
-        validation: { required: "Tanggal Berakhir is required" },
+      name: "password_confirm",
+      label: "Konfirmasi Password",
+      type: "password",
+      validation: {
+        required: "Password is required",
+        minLength: {
+          value: 12,
+          message: "Password must be at least 12 characters",
+        },
+        pattern: {
+          value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+          message: "Password must include uppercase, lowercase, and a number",
+        },
+      },
     },
-];
+    {
+      name: "valid_to",
+      label: "Tanggal Berakhir",
+      type: "date",
+      validation: { required: "Tanggal Berakhir is required" },
+    },
+  ];
 
   const options = [
     { value: "marketing", label: "Marketing" },
@@ -171,19 +170,16 @@ const formFields = [
       password: payload.password,
       picture: "https://picsum.photos/seed/xvqRwaMRt/640/480", // Static picture URL
       is_active: true,
-      join_date: new Date().toISOString(), // Current date as join_date
-      valid_from: new Date().toISOString(), // Current date as valid_from
-      valid_to: new Date(
-        new Date().setFullYear(new Date().getFullYear() + 1)
-      ).toISOString(), // One year from now
-      role_id: payload.roles,
-      created_by: user_login.username, // Static created_by
-      updated_by: user_login.username, // Static updated_by
+      join_date: "2023-01-01T00:00:00Z", // Current date as join_date
+      valid_from: "2023-01-01T00:00:00Z", // Current date as valid_from
+      valid_to: "2023-01-01T00:00:00Z",
+      role_id: parseInt(payload.roles.value, 10), // Ensure role_id is sent as a number
+      created_by: user_login?.username, // Handle null user_login
+      updated_by: user_login?.username, // Handle null user_login
     };
 
     try {
       await createUser(formattedPayload);
-      console.log("User created successfully:", formattedPayload);
     } catch (error) {
       console.error("Error creating user:", error);
     }
@@ -207,6 +203,7 @@ const formFields = [
             >
               <FaFileDownload className="mr-2" /> Unduh
             </Button>
+
             <Button
               variant="primary"
               size="sm"
@@ -214,13 +211,16 @@ const formFields = [
             >
               <FaFileImport className="mr-2" /> Import User
             </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <FaPlus className="mr-2" /> Tambah User
-            </Button>
+
+            {canCreate && (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <FaPlus className="mr-2" /> Tambah User
+              </Button>
+            )}
           </div>
         </div>
 
@@ -240,7 +240,7 @@ const formFields = [
             <div>
               <Label htmlFor="date-picker">Tanggal Dibuat</Label>
               <DatePicker
-                id="date-picker"
+                id="filter-date-picker"
                 placeholder="Select a date"
                 onChange={(dates, currentDateString) =>
                   console.log({ dates, currentDateString })

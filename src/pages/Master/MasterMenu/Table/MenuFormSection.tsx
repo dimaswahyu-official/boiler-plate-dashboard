@@ -13,10 +13,21 @@ import {
   FaPlus,
 } from "react-icons/fa";
 import Button from "../../../../components/ui/button/Button";
+import { usePermission } from "../../../../utils/usePermision";
+import { getMenuIdByPath } from "../../../../utils/GetMenuId";
 
 const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { parentMenus, createMenu } = useMenuStore();
+  const { hasPermission } = usePermission();
+
+  // Dapatkan menuId berdasarkan path halaman ini
+  const menuId = getMenuIdByPath("/master_menu");
+
+  const canCreate = menuId ? hasPermission(menuId, "Create") : false;
+  // const canView = menuId ? hasPermission(menuId, "View") : false;
+  // const canUpdate = menuId ? hasPermission(menuId, "Update") : false;
+  // const canDelete = menuId ? hasPermission(menuId, "Delete") : false;
 
   const parentMenuOpt = useMemo(
     () => parentMenus.map((menu) => ({ value: menu.id, label: menu.name })),
@@ -97,9 +108,11 @@ const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
 
   return (
     <>
-      <Button variant="primary" size="sm" onClick={() => setIsModalOpen(true)}>
-        <FaPlus className="mr-2" /> Tambah Menu
-      </Button>
+      {canCreate && (
+        <Button variant="primary" size="sm" onClick={() => setIsModalOpen(true)}>
+          <FaPlus className="mr-2" /> Tambah Menu
+        </Button>
+      )}
 
       <ReusableFormModal
         isOpen={isModalOpen}

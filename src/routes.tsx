@@ -1,4 +1,4 @@
-import { JSX } from "react";
+import { JSX, useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
@@ -14,13 +14,14 @@ import Callplan from "./pages/Callplan";
 // ROLES PAGE
 import MasterRole from "./pages/Master/MasterRole";
 import CreateRole from "./pages/Master/MasterRole/Screen/CreateRole";
+import UpdateRole from "./pages/Master/MasterRole/Screen/UpdateRole";
 
 // ✅ Import ProtectedRoute
 import { useMenuStore } from "./API/store/menuStore";
-import UpdateRole from "./pages/Master/MasterRole/Screen/UpdateRole";
 
 export function AppRoutes() {
   const { menus } = useMenuStore();
+  const isAuthenticated = () => !!localStorage.getItem("token");
 
   const local_menus = (() => {
     const storedMenus = localStorage.getItem("local_menus");
@@ -29,21 +30,12 @@ export function AppRoutes() {
       : [];
   })();
 
-  // const user_login = (() => {
-  //   const storedUserLogin = localStorage.getItem("user_login_data");
-  //   return storedUserLogin && storedUserLogin !== "undefined"
-  //     ? JSON.parse(storedUserLogin).user
-  //     : null;
-  // })();
-
   const user_login_menu = (() => {
     const storedUserLogin = localStorage.getItem("user_login_data");
     return storedUserLogin && storedUserLogin !== "undefined"
       ? JSON.parse(storedUserLogin).menus
       : null;
   })();
-
-  const isAuthenticated = () => !!localStorage.getItem("token");
 
   const componentMap: Record<string, JSX.Element> = {
     SalesRoute: <SalesRoute />,
@@ -68,12 +60,10 @@ export function AppRoutes() {
   };
 
   const flattenedRoutes = flattenRoutes(
-    (user_login_menu && user_login_menu.length > 0 ? user_login_menu : local_menus) as any[]
+    (user_login_menu && user_login_menu.length > 0
+      ? user_login_menu
+      : local_menus) as any[]
   );
-
-  // const flattenedRoutes = flattenRoutes(
-  //   (menus && menus.length > 0 ? menus : local_menus) as any[]
-  // );
 
   const renderDynamicRoutes = () => {
     if (!Array.isArray(flattenedRoutes) || flattenedRoutes.length === 0) {

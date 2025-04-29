@@ -1,4 +1,6 @@
 import axiosInstance from "./AxiosInstance";
+import { showSuccessToast, showErrorToast } from "../../components/toast";
+
 
 interface User {
   name: string;
@@ -19,7 +21,6 @@ interface User {
 export const fetchAllUser = async () => {
   try {
     const res = await axiosInstance.get("/admin/user/all");
-    console.log("Fetched users from service:", res.data.data);
     return res.data.data;
   } catch (error: any) {
     console.error(
@@ -36,9 +37,13 @@ export const createUser = async (payload: User) => {
   
   try {
     const res = await axiosInstance.post("/admin/user", payload);
-    console.log("User created successfully:", res.data);
-    return res.data;
+    if (res.data.statusCode === 200) {
+      showSuccessToast("Berhasil tambah user!");
+      return res.data;
+    }
   } catch (error: any) {
+    showErrorToast(`${error.response?.data?.message}`);
+
     console.error(
       "Failed to create user:",
       error.response?.data || error.message

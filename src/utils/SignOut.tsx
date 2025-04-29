@@ -9,7 +9,6 @@ export const signOut = (navigate: NavigateFunction) => {
   localStorage.clear();
   useMenuStore.getState().reset();
   useAuthStore.getState().resetAuth();
-
   // Navigasi ke halaman SignIn
   navigate("/signin");
 };

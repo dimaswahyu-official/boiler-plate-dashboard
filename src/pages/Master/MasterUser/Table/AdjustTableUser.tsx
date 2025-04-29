@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { ColumnDef } from "@tanstack/react-table";
 import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
+import { usePagePermissions } from "../../../../utils/UserPagePermissions";
 
 type User = {
   id: number;
@@ -30,6 +31,8 @@ const MenuTable = ({
   onDelete,
   onEdit,
 }: MenuTableProps) => {
+  const { canUpdate, canDelete } = usePagePermissions();
+
   const columns: ColumnDef<User>[] = useMemo(
     () => [
       {
@@ -67,18 +70,24 @@ const MenuTable = ({
         header: "Actions",
         cell: ({ row }) => (
           <div className="space-x-4">
-            <button
-              className="text-blue-600"
-              onClick={() => onEdit?.(row.original)}
-            >
-              <FaEdit />
-            </button>
-            <button
-              className="text-red-600"
-              onClick={() => onDelete(row.original.id)}
-            >
-              <FaTrash />
-            </button>
+            {canUpdate && (
+              <button
+                className="text-blue-600"
+                onClick={() => onEdit?.(row.original)}
+              >
+                <FaEdit />
+              </button>
+            )}
+
+            {canDelete && (
+              <button
+                className="text-red-600"
+                onClick={() => onDelete(row.original.id)}
+              >
+                <FaTrash />
+              </button>
+            )}
+
             <button
               className="text-green-600"
               onClick={() => onDetail(row.original.id)}

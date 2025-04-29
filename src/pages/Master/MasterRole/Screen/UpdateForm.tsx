@@ -120,7 +120,7 @@ export default function UpdateFormWithTable(paramRole: any) {
     }
   }, [flattenedMenus, paramRole.paramRole.permissions]);
 
-  const handleCaptureData = async () => {
+  const hancleSubmitData = async () => {
     const formData = getValues();
     const tableData = flattenedMenus
       .map((menu: any, index: number) => {
@@ -163,41 +163,12 @@ export default function UpdateFormWithTable(paramRole: any) {
       return;
     }
 
-    console.log("Final Payload:", finalPayload);
-    console.log("paramRole", paramRole.paramRole.id);
-
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Authentication token is missing.");
-      }
-
-      const response = await fetch(
-        `http://10.0.29.47/api/v1/roles/${updateId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(finalPayload),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to update role: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      console.log("Role updated successfully:", result.statusCode);
-
-      if (result.statusCode === 200) {
-        setTimeout(() => {
-          navigate("/master_role");
-        }, 800);
-      }
+      await updateRole(updateId, finalPayload);
+      setTimeout(() => {
+        navigate("/master_role");
+      }, 500);
     } catch (error: any) {
-      alert(`Failed to update role: ${error.message}`);
       console.error("Failed to update role:", error.message);
     }
   };
@@ -286,7 +257,20 @@ export default function UpdateFormWithTable(paramRole: any) {
                     key={type}
                     className="border border-gray-300 px-4 py-2 text-center"
                   >
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      name={`permission-${index}`}
+                      onChange={(e) => {
+                        const checkboxes = document.getElementsByName(
+                          `permission-${index}`
+                        ) as NodeListOf<HTMLInputElement>;
+                        checkboxes.forEach((checkbox) => {
+                          if (checkbox !== e.target) {
+                            checkbox.checked = false;
+                          }
+                        });
+                      }}
+                    />
                   </td>
                 ))}
               </tr>
@@ -298,7 +282,7 @@ export default function UpdateFormWithTable(paramRole: any) {
       {/* Submit Button */}
       <div className="flex justify-end mt-4">
         <button
-          onClick={handleCaptureData}
+          onClick={hancleSubmitData}
           className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
         >
           Update
