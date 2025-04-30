@@ -1,5 +1,4 @@
 import ViewMasterUser from "./Table/ViewMasterUser";
-
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 
 export default function MasterUser() {

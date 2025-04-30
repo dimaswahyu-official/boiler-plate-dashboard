@@ -19,7 +19,7 @@ export default function RadioButtons() {
           onChange={handleRadioChange}
           label="Default"
         />
-        <Radio
+        {/* <Radio
           id="radio2"
           name="group1"
           value="option2"
@@ -35,7 +35,7 @@ export default function RadioButtons() {
           onChange={handleRadioChange}
           label="Disabled"
           disabled={true}
-        />
+        /> */}
       </div>
     </ComponentCard>
   );

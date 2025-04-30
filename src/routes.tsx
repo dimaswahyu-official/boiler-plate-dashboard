@@ -16,6 +16,11 @@ import MasterRole from "./pages/Master/MasterRole";
 import CreateRole from "./pages/Master/MasterRole/Screen/CreateRole";
 import UpdateRole from "./pages/Master/MasterRole/Screen/UpdateRole";
 
+//PAGE
+import Parameters from "./pages/Parameters";
+import ChannelTypes from "./pages/Parameters/ChannelTypes/";
+
+
 // ✅ Import ProtectedRoute
 import { useMenuStore } from "./API/store/menuStore";
 
@@ -43,6 +48,7 @@ export function AppRoutes() {
     MasterMenu: <MasterMenu />,
     Callplan: <Callplan />,
     Roles: <MasterRole />,
+    Parameters: <Parameters />,
   };
 
   const flattenRoutes = (data: any[]) => {
@@ -88,6 +94,8 @@ export function AppRoutes() {
             <Route path="/" element={<Callplan />} />
             <Route path="/create_role" element={<CreateRole />} />
             <Route path="/update_role" element={<UpdateRole />} />
+            <Route path="/channel_types" element={<ChannelTypes />} />
+
             {renderDynamicRoutes()}
           </Route>
         ) : (

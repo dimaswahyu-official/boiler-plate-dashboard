@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useMenuStore } from "../../../../API/store/menuStore";
+import Checkbox from "../../../../components/form/input/Checkbox";
 
 const permissions = ["Create", "Update", "View", "Delete", "Manage"];
 
@@ -7,6 +8,7 @@ interface TableMenuPermissionProps {
   onChange: (data: any) => void; // Prop untuk mengirim data ke parent
   defaultPermissions?: { menu_id: number; permission_type: string }[]; // Data permissions dari API
 }
+
 
 const TableMenuPermission: React.FC<TableMenuPermissionProps> = ({
   onChange,
@@ -116,10 +118,16 @@ const TableMenuPermission: React.FC<TableMenuPermissionProps> = ({
                     key={`${menu.id}-${perm}`}
                     className="border px-4 py-2 text-center"
                   >
-                    <input
+                    {/* <input
                       type="checkbox"
                       checked={selectedPermissions[menu.id]?.[perm] || false}
                       onChange={() => handleCheckboxChange(menu.id, perm)}
+                    /> */}
+
+                    <Checkbox
+                      checked={selectedPermissions[menu.id]?.[perm] || false}
+                      onChange={() => handleCheckboxChange(menu.id, perm)}
+                      label=""
                     />
                   </td>
                 ))}

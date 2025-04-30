@@ -1,7 +1,9 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
+import Checkbox from "../../../../components/form/input/Checkbox";
+
 import { useMenuStore } from "../../../../API/store/menuStore";
 import { useRoleStore } from "../../../../API/store/roleStore";
 
@@ -81,6 +83,8 @@ export default function UpdateFormWithTable(paramRole: any) {
     },
   });
 
+  const [selectedPermissions, setSelectedPermissions] = useState<any>({});
+
   const flattenMenus = (menuData: any[]) => {
     const result: any[] = [];
     const traverse = (items: any[]) => {
@@ -102,44 +106,58 @@ export default function UpdateFormWithTable(paramRole: any) {
 
   useEffect(() => {
     if (paramRole.paramRole.permissions) {
+      const permissionsMap: any = {};
       paramRole.paramRole.permissions.forEach((permission: any) => {
-        const menuIndex = flattenedMenus.findIndex(
-          (menu) => menu.id === permission.menu_id
-        );
-        if (menuIndex !== -1) {
-          const row = document.querySelectorAll("tbody tr")[menuIndex];
-          const checkboxes = row.querySelectorAll("input[type='checkbox']");
-          const permissionIndex = PERMISSION_TYPES.indexOf(
-            permission.permission_type
-          );
-          if (permissionIndex !== -1) {
-            (checkboxes[permissionIndex] as HTMLInputElement).checked = true;
-          }
+        if (!permissionsMap[permission.menu_id]) {
+          permissionsMap[permission.menu_id] = {};
         }
+        permissionsMap[permission.menu_id][permission.permission_type] = true;
       });
+      setSelectedPermissions(permissionsMap);
     }
-  }, [flattenedMenus, paramRole.paramRole.permissions]);
+  }, [paramRole.paramRole.permissions]);
+
+  // const handleCheckboxChange = (menuId: number, permissionType: string) => {
+  //   setSelectedPermissions((prev: any) => ({
+  //     ...prev,
+  //     [menuId]: {
+  //       ...prev[menuId],
+  //       [permissionType]: !prev[menuId]?.[permissionType],
+  //     },
+  //   }));
+  // };
+
+  const handleCheckboxChange = (menuId: number, permissionType: string) => {
+    setSelectedPermissions((prev: any) => {
+      const isCurrentlyChecked = prev[menuId]?.[permissionType] || false;
+  
+      return {
+        ...prev,
+        [menuId]: {
+          // Jika checkbox sudah aktif, reset semua permission ke false
+          Create: false,
+          Update: false,
+          View: false,
+          Delete: false,
+          Manage: false,
+          // Jika belum aktif, aktifkan checkbox yang dipilih
+          [permissionType]: !isCurrentlyChecked,
+        },
+      };
+    });
+  };
 
   const hancleSubmitData = async () => {
     const formData = getValues();
-    const tableData = flattenedMenus
-      .map((menu: any, index: number) => {
-        const row = document.querySelectorAll("tbody tr")[index];
-        const checkboxes = row.querySelectorAll("input[type='checkbox']");
-        return PERMISSION_TYPES.map((type, i) => {
-          if ((checkboxes[i] as HTMLInputElement).checked) {
-            return { menu_id: Number(menu.id), permission_type: type };
-          }
-          return null;
-        });
-      })
-      .flat()
-      .filter(
-        (
-          permission
-        ): permission is { menu_id: number; permission_type: string } =>
-          permission !== null
-      );
+    const tableData = Object.entries(selectedPermissions).flatMap(
+      ([menuId, permissions]: any) =>
+        Object.entries(permissions)
+          .filter(([_, isChecked]) => isChecked)
+          .map(([permissionType]) => ({
+            menu_id: Number(menuId),
+            permission_type: permissionType,
+          }))
+    );
 
     const updateId = paramRole.paramRole.id;
     if (!updateId) {
@@ -246,30 +264,21 @@ export default function UpdateFormWithTable(paramRole: any) {
             </tr>
           </thead>
           <tbody>
-            {flattenedMenus.map((menu: any, index: number) => (
-              <tr key={index}>
+            {flattenedMenus.map((menu: any) => (
+              <tr key={menu.id}>
                 <td className="border border-gray-300 px-4 py-2">{menu.id}</td>
                 <td className="border border-gray-300 px-4 py-2">
                   {menu.name}
                 </td>
-                {PERMISSION_TYPES.map((type, i) => (
+                {PERMISSION_TYPES.map((perm) => (
                   <td
-                    key={type}
+                    key={perm}
                     className="border border-gray-300 px-4 py-2 text-center"
                   >
-                    <input
-                      type="checkbox"
-                      name={`permission-${index}`}
-                      onChange={(e) => {
-                        const checkboxes = document.getElementsByName(
-                          `permission-${index}`
-                        ) as NodeListOf<HTMLInputElement>;
-                        checkboxes.forEach((checkbox) => {
-                          if (checkbox !== e.target) {
-                            checkbox.checked = false;
-                          }
-                        });
-                      }}
+                    <Checkbox
+                      checked={selectedPermissions[menu.id]?.[perm] || false}
+                      onChange={() => handleCheckboxChange(menu.id, perm)}
+                      label=""
                     />
                   </td>
                 ))}
