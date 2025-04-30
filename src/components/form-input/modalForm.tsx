@@ -7,8 +7,11 @@ type FormField = {
   name: string;
   label: string;
   type: "text" | "textarea" | "select" | "number" | "file" | "date";
-  options?: { value: string; label: string }[];
-  validation?: object;
+  options?: { value: string | boolean; label: string }[];
+  validation?: {
+    required?: boolean | string;
+    [key: string]: any;
+  };
 };
 
 type FormValues = Record<string, any>;
@@ -28,7 +31,7 @@ const FormInput: React.FC<FormInputProps> = ({
 }) => {
   const {
     register,
-    handleSubmit,
+    handleSubmit: handleFormSubmit,
     control,
     formState: { errors },
     reset,
@@ -41,6 +44,11 @@ const FormInput: React.FC<FormInputProps> = ({
       reset(defaultValues);
     }
   }, [defaultValues, reset]);
+
+  const handleSubmit = (data: FormValues) => {
+    console.log("Form Data:", data); // Log data yang dikirimkan
+    onSubmit(data); // Kirim data ke parent
+  };
 
   const renderField = (field: FormField) => {
     const commonClasses =
@@ -59,7 +67,11 @@ const FormInput: React.FC<FormInputProps> = ({
           <Controller
             name={field.name}
             control={control}
-            rules={field.validation}
+            rules={{
+              validate: (value) =>
+                (value !== undefined && value !== null) ||
+                field.validation?.required,
+            }}
             render={({ field: controllerField }) => (
               <Select
                 {...controllerField}
@@ -67,6 +79,16 @@ const FormInput: React.FC<FormInputProps> = ({
                 placeholder="Select an option"
                 className="react-select-container"
                 classNamePrefix="react-select"
+                value={field.options?.find(
+                  (option) => option.value === controllerField.value
+                )} // Pastikan nilai default ditampilkan
+                onChange={(selectedOption) => {
+                  const value =
+                    selectedOption?.value === false
+                      ? false
+                      : selectedOption?.value; // Pastikan false diteruskan sebagai boolean
+                  controllerField.onChange(value); // Perbarui nilai dengan benar
+                }}
               />
             )}
           />
@@ -119,7 +141,7 @@ const FormInput: React.FC<FormInputProps> = ({
 
   return (
     <div className="mx-auto mt-10 p-6 bg-white shadow-md rounded-md">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleFormSubmit(handleSubmit)} className="space-y-4">
         <div
           className={`grid ${
             formFields.length > 6 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"
@@ -165,7 +187,7 @@ const FormInput: React.FC<FormInputProps> = ({
           >
             Submit
           </button>
-          
+
           <button
             type="button"
             onClick={onClose}

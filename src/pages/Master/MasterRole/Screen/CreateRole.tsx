@@ -4,7 +4,7 @@ import DynamicForm, {
   FieldConfig,
 } from "../../../../components/form-input/dynamicForm";
 import TableMenuPermission from "../Table/CreatePermission";
-import { useRoleStore } from "../../../../API/store/roleStore";
+import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
 import { useNavigate } from "react-router-dom";
 
 const fields: FieldConfig[] = [

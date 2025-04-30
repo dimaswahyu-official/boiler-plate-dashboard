@@ -1,6 +1,6 @@
 import { NavigateFunction } from "react-router-dom";
-import { useMenuStore } from "../API/store/menuStore";
-import { useAuthStore } from "../API/store/authStore";
+import { useMenuStore } from "../API/store/MasterStore/masterMenuStore";
+import { useAuthStore } from "../API/store/AuthStore/authStore";
 
 
 

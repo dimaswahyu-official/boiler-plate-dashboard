@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import ReusableFormModal from "../../../../components/modal/ReusableFormModal";
-import { useMenuStore } from "../../../../API/store/menuStore";
+import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import {
   FaRegFileAlt,
   FaDollarSign,
@@ -12,7 +12,7 @@ import {
   FaCreditCard,
 } from "react-icons/fa";
 
-const EditMenuModal = ({
+const UpdateModal = ({
   isOpen,
   onClose,
   existingData,
@@ -126,10 +126,8 @@ const EditMenuModal = ({
       formFields={formFields}
       title="Edit Menu"
       defaultValues={defaultValues}
-      triggerButtonLabel=""
-      triggerButtonAction={() => {}}
     />
   );
 };
 
-export default EditMenuModal;
+export default UpdateModal;

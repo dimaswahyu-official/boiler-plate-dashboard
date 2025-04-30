@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
-import { useUserStore } from "../../../../API/store/masterUserStore";
-import { useRoleStore } from "../../../../API/store/roleStore";
+import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore";
+import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
 
 import Input from "../../../../components/form/input/InputField";
 import AdjustTableUser from "./AdjustTableUser";

@@ -5,12 +5,12 @@ import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import SignInInput from "../form/input/SignInInput";
 import Button from "../ui/button/Button";
-import { loginService } from "../../API/services/AuthService";
+import { loginService } from "../../API/services/AuthServices/AuthService";
 import CustomToast, {
   showErrorToast,
   showSuccessToast,
 } from "../../components/toast";
-import { useMenuStore } from "../../API/store/menuStore";
+import { useMenuStore } from "../../API/store/MasterStore/masterMenuStore";
 
 interface SignInFormValues {
   email: string;

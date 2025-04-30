@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import ReusableFormModal from "../../../../components/modal/ReusableFormModal";
-import { useMenuStore } from "../../../../API/store/menuStore";
+import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import {
   FaRegFileAlt,
   FaDollarSign,

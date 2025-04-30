@@ -1,5 +1,5 @@
-import axiosInstance from "./AxiosInstance";
-import { showSuccessToast, showErrorToast } from "../../components/toast";
+import axiosInstance from "../AxiosInstance";
+import { showSuccessToast, showErrorToast } from "../../../components/toast";
 
 
 interface User {

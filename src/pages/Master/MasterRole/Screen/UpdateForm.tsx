@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import Checkbox from "../../../../components/form/input/Checkbox";
 
-import { useMenuStore } from "../../../../API/store/menuStore";
-import { useRoleStore } from "../../../../API/store/roleStore";
+import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
+import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
 
 // Constants for options
 const STATUS_OPTIONS = [

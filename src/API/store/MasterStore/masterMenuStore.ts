@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { createMenus, getAllMenus, getParentMenu, deleteMenu, updateMenuById } from '../services/MenuService'
+import { createMenus, getAllMenus, getParentMenu, deleteMenu, updateMenuById } from '../../services/MasterServices/MenuService'
 
 interface MenuState {
   menus: any[];

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import { useMenuStore } from "../../../../API/store/menuStore";
+import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import Checkbox from "../../../../components/form/input/Checkbox";
 
 const permissions = ["Create", "Update", "View", "Delete", "Manage"];

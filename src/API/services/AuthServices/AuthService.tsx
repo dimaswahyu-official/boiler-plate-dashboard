@@ -1,4 +1,4 @@
-import axiosInstance from "./AxiosInstance";
+import axiosInstance from "../AxiosInstance";
 
 interface LoginPayload {
   email: string;

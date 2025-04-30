@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import ReusableFormModal from "../../../../components/modal/ReusableFormModal";
-import { useMenuStore } from "../../../../API/store/menuStore";
+import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import {
   FaRegFileAlt,
   FaDollarSign,
@@ -28,6 +28,8 @@ const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
   // const canView = menuId ? hasPermission(menuId, "View") : false;
   // const canUpdate = menuId ? hasPermission(menuId, "Update") : false;
   // const canDelete = menuId ? hasPermission(menuId, "Delete") : false;
+
+  // console.log('parentMenus', parentMenus);
 
   const parentMenuOpt = useMemo(
     () => parentMenus.map((menu) => ({ value: menu.id, label: menu.name })),
@@ -97,10 +99,13 @@ const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
   const handleSubmit = async (data: any) => {
     const payload = {
       ...data,
-      parent_id: Number(data.parent_id.value),
+      parent_id: data.parent_id?.value
+        ? Number(data.parent_id.value)
+        : Number(data.parent_id),
       order: Number(data.order),
-      icon: data.icon.value,
+      icon: data.icon?.value || data.icon,
     };
+
     await createMenu(payload);
     onRefresh();
     setIsModalOpen(false);
@@ -109,7 +114,11 @@ const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
   return (
     <>
       {canCreate && (
-        <Button variant="primary" size="sm" onClick={() => setIsModalOpen(true)}>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => setIsModalOpen(true)}
+        >
           <FaPlus className="mr-2" /> Tambah Menu
         </Button>
       )}

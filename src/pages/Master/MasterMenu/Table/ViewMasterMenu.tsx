@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../../../components/form/input/InputField";
-import { useMenuStore } from "../../../../API/store/menuStore";
+import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import AdjustTableMenu from "./AdjustTableMenu";
 import MenuFormSection from "./MenuFormSection";
-import EditMenuModal from "./UpdateMenu";
+import UpdateModal from "./UpdateMenu";
 
 const TableMasterMenu = () => {
   const navigate = useNavigate();
@@ -65,7 +65,7 @@ const TableMasterMenu = () => {
       />
 
       {editMenuData && (
-        <EditMenuModal
+        <UpdateModal
           isOpen={!!editMenuData}
           onClose={() => setEditMenuData(null)}
           existingData={editMenuData}

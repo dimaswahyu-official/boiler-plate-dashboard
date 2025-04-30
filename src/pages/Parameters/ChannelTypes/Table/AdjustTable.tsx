@@ -4,26 +4,29 @@ import { ColumnDef } from "@tanstack/react-table";
 import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
 import { usePagePermissions } from "../../../../utils/UserPagePermissions";
 
-type User = {
+type Channel = {
   id: number;
-  name: string;
-  username: string;
-  email: string;
-  role: string;
-  branch?: string; // Added branch as an optional property
-  create_on: string;
+  key: string;
+  value: string;
+  label: string;
+  is_active: boolean;
+  is_admin: boolean;
+  created_by: string;
+  created_on: string;
+  updated_on: string;
+  order: number;
 };
 
 type MenuTableProps = {
-  data: User[];
+  data: Channel[];
   globalFilter: string;
   setGlobalFilter: (value: string) => void;
   onDetail: (id: number) => void;
   onDelete: (id: number) => void;
-  onEdit?: (data: User) => void;
+  onEdit?: (data: Channel) => void;
 };
 
-const MenuTable = ({
+const ChannelTypeTable = ({
   data,
   globalFilter,
   setGlobalFilter,
@@ -31,74 +34,61 @@ const MenuTable = ({
   onDelete,
   onEdit,
 }: MenuTableProps) => {
-  const { canUpdate, canDelete } = usePagePermissions();
+  const { canUpdate } = usePagePermissions();
 
-  const columns: ColumnDef<User>[] = useMemo(
+  const columns: ColumnDef<Channel>[] = useMemo(
     () => [
       {
-        accessorKey: "name",
-        header: "Name",
+        accessorKey: "value",
+        header: "Value",
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "username",
-        header: "Username",
+        accessorKey: "label",
+        header: "Label",
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "email",
-        header: "Email",
+        accessorKey: "order",
+        header: "Order",
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "role",
-        header: "Roles",
+        accessorKey: "created_on",
+        header: "Created on",
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "branch",
-        header: "Branch",
+        accessorKey: "updated_on",
+        header: "Updated on",
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "create_on",
-        header: "Create On",
-        cell: (info) => String(info.getValue()),
-      },
-      {
-        id: "actions",
-        header: "Actions",
+        accessorKey: "action",
+        header: "Action",
         cell: ({ row }) => (
-          <div className="space-x-4">
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            
             {canUpdate && (
               <button
-                className="text-blue-600"
-                onClick={() => onEdit?.(row.original)}
+                style={{ color: "blue" }}
+                onClick={() => onEdit && onEdit(row.original)}
               >
                 <FaEdit />
               </button>
             )}
-
-            {canDelete && (
-              <button
-                className="text-red-600"
-                onClick={() => onDelete(row.original.id)}
-              >
-                <FaTrash />
-              </button>
-            )}
-
+         
             <button
-              className="text-green-600"
-              onClick={() => onDetail(row.original.id)}
+              style={{ color: "red" }}
+              onClick={() => onDelete(row.original.id)}
             >
-              <FaEye />
+              <FaTrash />
             </button>
           </div>
         ),
       },
     ],
-    [onDelete, onDetail]
+    [onDelete, onDetail, onEdit]
   );
 
   return (
@@ -109,7 +99,8 @@ const MenuTable = ({
       setGlobalFilter={setGlobalFilter}
       onDetail={onDetail}
     />
+    
   );
 };
 
-export default MenuTable;
+export default ChannelTypeTable;

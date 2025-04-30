@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 
-import { useRoleStore } from "../../../../API/store/roleStore";
+import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
 import Input from "../../../../components/form/input/InputField";
 import Button from "../../../../components/ui/button/Button";
 import AdjustTableRole from "./AdjustTableRole";

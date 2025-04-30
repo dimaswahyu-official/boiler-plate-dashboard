@@ -19,10 +19,12 @@ import UpdateRole from "./pages/Master/MasterRole/Screen/UpdateRole";
 //PAGE
 import Parameters from "./pages/Parameters";
 import ChannelTypes from "./pages/Parameters/ChannelTypes/";
+import PaymentManagement from "./pages/Parameters/PaymentManagement/";
+
 
 
 // ✅ Import ProtectedRoute
-import { useMenuStore } from "./API/store/menuStore";
+import { useMenuStore } from "./API/store/MasterStore/masterMenuStore";
 
 export function AppRoutes() {
   const { menus } = useMenuStore();
@@ -95,6 +97,8 @@ export function AppRoutes() {
             <Route path="/create_role" element={<CreateRole />} />
             <Route path="/update_role" element={<UpdateRole />} />
             <Route path="/channel_types" element={<ChannelTypes />} />
+            <Route path="/payment_management" element={<PaymentManagement />} />
+
 
             {renderDynamicRoutes()}
           </Route>

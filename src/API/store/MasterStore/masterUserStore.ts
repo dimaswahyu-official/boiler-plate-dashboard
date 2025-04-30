@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { fetchAllUser, createUser } from "../services/MasterUserService";
-import { showErrorToast, showSuccessToast } from "../../components/toast";
+import { fetchAllUser, createUser } from "../../services/MasterServices/MasterUserService";
+import { showErrorToast, showSuccessToast } from "../../../components/toast";
 
 
 interface User {

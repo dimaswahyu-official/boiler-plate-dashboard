@@ -1,57 +1,69 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { use, useEffect, useMemo, useState } from "react";
 import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
-import { useUserStore } from "../../../../API/store/masterUserStore";
-import { useRoleStore } from "../../../../API/store/roleStore";
 
 import Input from "../../../../components/form/input/InputField";
 import AdjustTableUser from "./AdjustTable";
 import ReusableFormModal from "../../../../components/modal/ReusableFormModal";
 import Button from "../../../../components/ui/button/Button";
-import DatePicker from "../../../../components/form/date-picker";
-import Label from "../../../../components/form/Label";
-import Select from "../../../../components/form/Select";
 import { usePagePermissions } from "../../../../utils/UserPagePermissions";
 
-const TableMasterMenu = () => {
-  const { fetchAllUser, user, createUser } = useUserStore();
-  const { fetchRoles, roles } = useRoleStore();
+import { useParametersStore } from "../../../../API/store/ParameterStore/parameterStore";
+import { useLocation } from "react-router-dom";
 
+// import DatePicker from "../../../../components/form/date-picker";
+// import Label from "../../../../components/form/Label";
+// import Select from "../../../../components/form/Select";
+
+const TableMasterMenu = () => {
+  const location = useLocation();
+  const currentPath = location.pathname;
   const { canCreate } = usePagePermissions();
+  const { createParameter, fetchParameter, parameters } = useParametersStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [editData, setEditData] = useState<any>(null);
+  const [tableData, setTableData] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchAllUser();
-    };
+    fetchParameter(currentPath);
+  }, []);
 
-    const fetchDataRole = async () => {
-      await fetchRoles();
-    };
+  useEffect(() => {
+    if (parameters) {
+      const formattedData = parameters.map((item: any) => ({
+        id: item.id,
+        key: item.key,
+        value: item.value,
+        label: item.label,
+        is_active: item.is_active,
+        is_admin: false, // Default value since it's not provided in the API
+        created_by: item.created_by,
+        created_on: new Date(item.created_at)
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " "),
+        updated_on: new Date(item.updated_at)
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " "),
+        order: item.order,
+      }));
+      setTableData(formattedData);
+    }
+  }, [parameters]);
 
-    fetchData();
-    fetchDataRole();
-  }, [fetchAllUser]);
+  const user_login = (() => {
+    const storedUserLogin = localStorage.getItem("user_login_data");
+    return storedUserLogin && storedUserLogin !== "undefined"
+      ? JSON.parse(storedUserLogin).user
+      : null;
+  })();
 
-  const tableData = useMemo(() => {
-    return user.map((u) => ({
-      id: u.id,
-      name: u.name || "", // Ensure name exists
-      username: u.username,
-      email: u.email,
-      role: u.role || "", // Ensure role exists
-      branch: u.branch || "",
-      create_on: u.create_on || "", // Ensure create_on exists
-    }));
-  }, [user]);
-
-  const handleCloseModal = () => setIsModalOpen(false);
-
-  const optionRoles = roles.map((role) => ({
-    value: role.id.toString(), // Convert value to string
-    label: role.name,
-  }));
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditData(null); // Reset data edit ketika modal ditutup
+  };
 
   const formFields = [
     {
@@ -76,12 +88,16 @@ const TableMasterMenu = () => {
       ],
       validation: { required: "Status is required" },
     },
-  ];
-
-  const options = [
-    { value: "marketing", label: "Marketing" },
-    { value: "template", label: "Template" },
-    { value: "development", label: "Development" },
+    {
+      name: "is_admin",
+      label: "Admin",
+      type: "select",
+      options: [
+        { value: true, label: "Yes" },
+        { value: false, label: "No" },
+      ],
+      validation: { required: "Admin is required" },
+    },
   ];
 
   const handleDetail = (id: number) => {
@@ -92,39 +108,33 @@ const TableMasterMenu = () => {
     console.log("Id", id);
   };
 
-  function handleSelectChange(value: string): void {
-    throw new Error("Function not implemented.");
-  }
-
-  const user_login = (() => {
-    const storedUserLogin = localStorage.getItem("user_login_data");
-    return storedUserLogin && storedUserLogin !== "undefined"
-      ? JSON.parse(storedUserLogin).user
-      : null;
-  })();
+  const handleEdit = (data: any) => {
+    setEditData(data); // Simpan data yang akan diedit
+    setIsModalOpen(true); // Buka modal
+  };
 
   const handleSubmit = async (payload: any) => {
-    const formattedPayload = {
-      name: payload.name, // Add the name property
-      email: payload.email,
-      username: payload.username,
-      employee_id: payload.username, // Assuming employee_id is the same as username
-      password: payload.password,
-      picture: "https://picsum.photos/seed/xvqRwaMRt/640/480", // Static picture URL
-      is_active: true,
-      join_date: "2023-01-01T00:00:00Z", // Current date as join_date
-      valid_from: "2023-01-01T00:00:00Z", // Current date as valid_from
-      valid_to: "2023-01-01T00:00:00Z",
-      role_id: parseInt(payload.roles.value, 10), // Ensure role_id is sent as a number
-      created_by: user_login?.username, // Handle null user_login
-      updated_by: user_login?.username, // Handle null user_login
-    };
+    if (editData) {
+      // Mode Update
+      console.log("Update Payload", payload);
+      console.log("Updating item with ID:", editData.id);
+      // Tambahkan logika untuk update data di sini
+    } else {
+      const formattedPayload = {
+        key: currentPath,
+        value: payload.value,
+        label: payload.label,
+        is_active: payload.is_active,
+        created_by: user_login?.username,
+      };
 
-    try {
-      await createUser(formattedPayload);
-    } catch (error) {
-      console.error("Error creating user:", error);
+      console.log("Create Payload", formattedPayload);
+      await createParameter(formattedPayload);
+
+      // Panggil ulang data setelah berhasil create
+      await fetchParameter(currentPath);
     }
+    handleCloseModal(); // Tutup modal setelah submit
   };
 
   return (
@@ -151,7 +161,7 @@ const TableMasterMenu = () => {
               size="sm"
               onClick={() => alert("Import Users")}
             >
-              <FaFileImport className="mr-2" /> Import User
+              <FaFileImport className="mr-2" /> Import
             </Button>
 
             {canCreate && (
@@ -160,46 +170,9 @@ const TableMasterMenu = () => {
                 size="sm"
                 onClick={() => setIsModalOpen(true)}
               >
-                <FaPlus className="mr-2" /> Tambah User
+                <FaPlus className="mr-2" /> Tambah Parameter
               </Button>
             )}
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center mt-5">
-          <div className="space-x-4 flex items-center">
-            {["Posisi", "Cabang", "Wilayah", "Status"].map((label) => (
-              <div key={label}>
-                <Label htmlFor={`${label.toLowerCase()}-select`}>{label}</Label>
-                <Select
-                  options={options}
-                  placeholder={`Pilih ${label}`}
-                  onChange={handleSelectChange}
-                  className="dark:bg-dark-900 react-select-container mr-5"
-                />
-              </div>
-            ))}
-            <div>
-              <Label htmlFor="date-picker">Tanggal Dibuat</Label>
-              <DatePicker
-                id="filter-date-picker"
-                placeholder="Select a date"
-                onChange={(dates, currentDateString) =>
-                  console.log({ dates, currentDateString })
-                }
-              />
-            </div>
-
-            <div className="mt-6 flex justify-center">
-              <Button
-                variant="primary"
-                size="sm"
-                className="rounded-full p-3"
-                onClick={() => alert("Reset Filters")}
-              >
-                <FaUndo />
-              </Button>
-            </div>
           </div>
         </div>
       </div>
@@ -210,6 +183,7 @@ const TableMasterMenu = () => {
         setGlobalFilter={setGlobalFilter}
         onDetail={handleDetail}
         onDelete={handleDelete}
+        onEdit={handleEdit}
       />
 
       <ReusableFormModal
@@ -217,17 +191,9 @@ const TableMasterMenu = () => {
         onClose={handleCloseModal}
         onSubmit={(data) => handleSubmit(data)}
         formFields={formFields}
-        title="Tambah Channel Type"
+        defaultValues={editData}
+        title={editData ? "Edit Channel Type" : "Tambah Channel Type"} // Ubah judul modal berdasarkan mode
       />
-
-      {/* {editMenuData && (
-        <EditMenuModal
-          isOpen={!!editMenuData}
-          onClose={() => setEditMenuData(null)}
-          existingData={editMenuData}
-          onRefresh={fetchMenus}
-        />
-      )} */}
     </>
   );
 };

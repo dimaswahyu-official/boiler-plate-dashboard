@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useRoleStore } from "../API/store/roleStore"; // Pastikan Anda memiliki fungsi ini
+import { useRoleStore } from "../API/store/MasterStore/masterRoleStore"; // Pastikan Anda memiliki fungsi ini
 
 export type Permission = {
   menu_id: number;

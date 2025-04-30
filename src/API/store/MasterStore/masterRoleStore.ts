@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { fetchAllRole, createRole, getRoleById, updateRole, deleteRole } from "../services/RoleService";
+import { fetchAllRole, createRole, getRoleById, updateRole, deleteRole } from "../../services/MasterServices/RoleService";
 
 interface Role {
     data?: any;

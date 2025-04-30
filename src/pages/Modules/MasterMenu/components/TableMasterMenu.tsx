@@ -4,7 +4,7 @@ import Input from "../../../../components/form/input/InputField";
 import ReusableFormModal from "../../../../components/modal/ReusableFormModal";
 import { useNavigate } from "react-router-dom";
 import { Row, CellContext, Table } from "@tanstack/react-table";
-import { useMenuStore } from "../../../../API/store/menuStore";
+import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import TableComponent from "./TableComponent";
 
 
