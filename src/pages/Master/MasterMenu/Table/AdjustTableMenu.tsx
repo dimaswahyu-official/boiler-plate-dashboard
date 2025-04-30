@@ -3,6 +3,7 @@ import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { ColumnDef } from "@tanstack/react-table";
 import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
 import { usePagePermissions } from "../../../../utils/UserPagePermissions";
+import Checkbox from "../../../../components/form/input/Checkbox";
 
 type Menu = {
   id: number;
@@ -30,11 +31,27 @@ const MenuTable = ({
   onDelete,
   onEdit,
 }: MenuTableProps) => {
-
   const { canUpdate, canDelete } = usePagePermissions();
 
   const columns: ColumnDef<Menu>[] = useMemo(
     () => [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <Checkbox
+            label=""
+            checked={table.getIsAllRowsSelected()}
+            onChange={(checked) => table.toggleAllRowsSelected(checked)}
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            label=""
+            checked={row.getIsSelected()}
+            onChange={(checked) => row.toggleSelected(checked)}
+          />
+        ),
+      },
       {
         accessorKey: "name",
         header: "Name",
@@ -53,16 +70,7 @@ const MenuTable = ({
       {
         accessorKey: "parent_id",
         header: "Parent Id",
-        cell: (info) => {
-          const val = info.getValue() as number | null;
-          return val == null
-            ? "Menu Header"
-            : val === 2
-            ? "Master"
-            : val === 5
-            ? "Report"
-            : val;
-        },
+        cell: (info) => String(info.getValue()),
       },
       {
         accessorKey: "order",
@@ -82,7 +90,6 @@ const MenuTable = ({
                 <FaEdit />
               </button>
             )}
-
             {canDelete && (
               <button
                 className="text-red-600"
@@ -91,18 +98,11 @@ const MenuTable = ({
                 <FaTrash />
               </button>
             )}
-
-            {/* <button
-              className="text-green-600"
-              onClick={() => onDetail(row.original.id)}
-            >
-              <FaEye />
-            </button> */}
           </div>
         ),
       },
     ],
-    [onDelete, onDetail]
+    [onDelete, onDetail, canUpdate, canDelete, onEdit]
   );
 
   return (

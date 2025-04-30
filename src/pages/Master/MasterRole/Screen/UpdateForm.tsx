@@ -117,16 +117,8 @@ export default function UpdateFormWithTable(paramRole: any) {
     }
   }, [paramRole.paramRole.permissions]);
 
-  // const handleCheckboxChange = (menuId: number, permissionType: string) => {
-  //   setSelectedPermissions((prev: any) => ({
-  //     ...prev,
-  //     [menuId]: {
-  //       ...prev[menuId],
-  //       [permissionType]: !prev[menuId]?.[permissionType],
-  //     },
-  //   }));
-  // };
-
+  // Handle checkbox change
+  // Jika checkbox sudah aktif, reset semua permission ke false
   const handleCheckboxChange = (menuId: number, permissionType: string) => {
     setSelectedPermissions((prev: any) => {
       const isCurrentlyChecked = prev[menuId]?.[permissionType] || false;

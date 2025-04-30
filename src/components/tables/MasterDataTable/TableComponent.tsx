@@ -7,8 +7,6 @@ import {
   getSortedRowModel,
   flexRender,
   ColumnDef,
-  Table as ReactTable,
-  Row,
 } from "@tanstack/react-table";
 import PaginationControls from "./Pagination";
 
