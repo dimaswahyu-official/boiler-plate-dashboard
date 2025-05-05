@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { ColumnDef } from "@tanstack/react-table";
-import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
-import { usePagePermissions } from "../../../../utils/UserPagePermissions";
+import TableComponent from "../../../components/tables/MasterDataTable/TableComponent";
+import { usePagePermissions } from "../../../utils/UserPagePermissions";
 
 type Channel = {
   id: number;
@@ -26,7 +26,7 @@ type MenuTableProps = {
   onEdit?: (data: Channel) => void;
 };
 
-const ChannelTypeTable = ({
+const AdjustTable = ({
   data,
   globalFilter,
   setGlobalFilter,
@@ -103,4 +103,4 @@ const ChannelTypeTable = ({
   );
 };
 
-export default ChannelTypeTable;
+export default AdjustTable;

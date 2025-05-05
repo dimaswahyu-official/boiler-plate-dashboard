@@ -2,6 +2,7 @@ import axiosInstance from "../AxiosInstance";
 import { showSuccessToast, showErrorToast } from "../../../components/toast";
 
 interface Parameters {
+  id: number;
   key: string;
   value: string;
   label: string;
@@ -34,7 +35,30 @@ export const createParameter = async (payload: Parameters) => {
     console.log("Response from createParameter:", res.data);
 
     if (res.data.statusCode === 200) {
-      showSuccessToast("Berhasil tambah channel type!");
+      showSuccessToast("Berhasil tambah parameter!");
+      return res.data;
+    }
+  } catch (error: any) {
+    showErrorToast(`${error.response?.data?.message}`);
+    console.error(
+      "Failed to create channel type:",
+      error.response?.data || error.message,
+      "Full error response:",
+      error.response
+    );
+    throw new Error(
+      error.response?.data?.message || "Failed to create channel type"
+    );
+  }
+};
+
+export const updateParameter = async (payload: Parameters, id: number) => {
+  try {
+    const res = await axiosInstance.put(`/parameter/${id}`, payload);
+    console.log("Response from updateParameter:", res.data);
+
+    if (res.data.statusCode === 200) {
+      showSuccessToast("Berhasil tambah parameter!");
       return res.data;
     }
   } catch (error: any) {

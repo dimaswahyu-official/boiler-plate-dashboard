@@ -1,34 +1,46 @@
-import { JSX, useState, useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { JSX, useEffect } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
+import { useAuthStore } from "./API/store/AuthStore/authStore";
+import { signOut } from "./utils/SignOut";
+
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 
-// PAGE MODULES
-import SalesRoute from "./pages/SalesDistribution/SalesRoute";
-import MasterUser from "./pages/Master/MasterUser";
-import MasterMenu from "./pages/Master/MasterMenu";
-import Callplan from "./pages/Callplan";
-
-// ROLES PAGE
-import MasterRole from "./pages/Master/MasterRole";
-import CreateRole from "./pages/Master/MasterRole/Screen/CreateRole";
-import UpdateRole from "./pages/Master/MasterRole/Screen/UpdateRole";
-
-//PAGE
-import Parameters from "./pages/Parameters";
-import ChannelTypes from "./pages/Parameters/ChannelTypes/";
-import PaymentManagement from "./pages/Parameters/PaymentManagement/";
-
-
-
-// ✅ Import ProtectedRoute
-import { useMenuStore } from "./API/store/MasterStore/masterMenuStore";
+import {
+  SalesRoute,
+  MasterUser,
+  MasterMenu,
+  Callplan,
+  MasterRole,
+  CreateRole,
+  UpdateRole,
+  Parameters,
+  ChannelTypes,
+  PaymentTypes,
+  RouteManagement,
+  VisitTypes,
+  MasterCustomer,
+} from "./utils/PagesComponent";
 
 export function AppRoutes() {
-  const { menus } = useMenuStore();
-  const isAuthenticated = () => !!localStorage.getItem("token");
+  const navigate = useNavigate();
+  const token = useAuthStore((state) => state.accessToken) || localStorage.getItem("accessToken");
+  const isAuthenticated = () => {
+    if (token) {
+      localStorage.setItem("accessToken", token); // Persist token
+      return true;
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // Jika tidak terautentikasi, panggil fungsi signOut
+      signOut(navigate);
+    }
+  }, [isAuthenticated, navigate]);
 
   const local_menus = (() => {
     const storedMenus = localStorage.getItem("local_menus");
@@ -51,6 +63,7 @@ export function AppRoutes() {
     Callplan: <Callplan />,
     Roles: <MasterRole />,
     Parameters: <Parameters />,
+    MasterCustomer: <MasterCustomer />,
   };
 
   const flattenRoutes = (data: any[]) => {
@@ -97,8 +110,9 @@ export function AppRoutes() {
             <Route path="/create_role" element={<CreateRole />} />
             <Route path="/update_role" element={<UpdateRole />} />
             <Route path="/channel_types" element={<ChannelTypes />} />
-            <Route path="/payment_management" element={<PaymentManagement />} />
-
+            <Route path="/payment_types" element={<PaymentTypes />} />
+            <Route path="/route_management" element={<RouteManagement />} />
+            <Route path="/visit_types" element={<VisitTypes />} />
 
             {renderDynamicRoutes()}
           </Route>

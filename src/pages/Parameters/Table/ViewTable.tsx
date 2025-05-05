@@ -1,24 +1,21 @@
 import React, { use, useEffect, useMemo, useState } from "react";
 import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
 
-import Input from "../../../../components/form/input/InputField";
-import AdjustTableUser from "./AdjustTable";
-import ReusableFormModal from "../../../../components/modal/ReusableFormModal";
-import Button from "../../../../components/ui/button/Button";
-import { usePagePermissions } from "../../../../utils/UserPagePermissions";
+import Input from "../../../components/form/input/InputField";
+import AdjustTable from "../Table/AdjustTable";
+import ReusableFormModal from "../../../components/modal/ReusableFormModal";
+import Button from "../../../components/ui/button/Button";
+import { usePagePermissions } from "../../../utils/UserPagePermissions";
+import { useParametersStore } from "../../../API/store/ParameterStore/parameterStore";
 
-import { useParametersStore } from "../../../../API/store/ParameterStore/parameterStore";
-import { useLocation } from "react-router-dom";
+interface ViewTableProps {
+  currentPath: string;
+}
 
-// import DatePicker from "../../../../components/form/date-picker";
-// import Label from "../../../../components/form/Label";
-// import Select from "../../../../components/form/Select";
-
-const TableMasterMenu = () => {
-  const location = useLocation();
-  const currentPath = location.pathname;
+function ViewTable({ currentPath }: ViewTableProps) {
   const { canCreate } = usePagePermissions();
-  const { createParameter, fetchParameter, parameters } = useParametersStore();
+  const { createParameter, fetchParameter, updateParameter, parameters } =
+    useParametersStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [globalFilter, setGlobalFilter] = useState<string>("");
@@ -115,10 +112,15 @@ const TableMasterMenu = () => {
 
   const handleSubmit = async (payload: any) => {
     if (editData) {
-      // Mode Update
-      console.log("Update Payload", payload);
-      console.log("Updating item with ID:", editData.id);
-      // Tambahkan logika untuk update data di sini
+      const formattedPayload = {
+        key: currentPath,
+        value: payload.value,
+        label: payload.label,
+        is_active: payload.is_active,
+        updated_by: user_login?.username,
+      };
+      await updateParameter(formattedPayload, editData.id);
+      await fetchParameter(currentPath);
     } else {
       const formattedPayload = {
         key: currentPath,
@@ -127,11 +129,7 @@ const TableMasterMenu = () => {
         is_active: payload.is_active,
         created_by: user_login?.username,
       };
-
-      console.log("Create Payload", formattedPayload);
       await createParameter(formattedPayload);
-
-      // Panggil ulang data setelah berhasil create
       await fetchParameter(currentPath);
     }
     handleCloseModal(); // Tutup modal setelah submit
@@ -177,7 +175,7 @@ const TableMasterMenu = () => {
         </div>
       </div>
 
-      <AdjustTableUser
+      <AdjustTable
         data={tableData}
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
@@ -192,10 +190,10 @@ const TableMasterMenu = () => {
         onSubmit={(data) => handleSubmit(data)}
         formFields={formFields}
         defaultValues={editData}
-        title={editData ? "Edit Channel Type" : "Tambah Channel Type"} // Ubah judul modal berdasarkan mode
+        title={editData ? "Update Parameter" : "Tambah Parameter"} // Ubah judul modal berdasarkan mode
       />
     </>
   );
-};
+}
 
-export default TableMasterMenu;
+export default ViewTable;

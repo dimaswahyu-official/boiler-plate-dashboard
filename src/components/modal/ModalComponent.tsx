@@ -1,6 +1,5 @@
 import { useState, ReactNode } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
-import Button from "../ui/button/Button";
 
 interface ModalProps {
   isOpen: boolean;
@@ -30,7 +29,9 @@ const ModalComponent = ({ isOpen, onClose, title, children }: ModalProps) => {
                   <DialogTitle as="h2" className="text-3xl font-medium leading-8 text-gray-900">
                     {title}
                   </DialogTitle>
-                  <div className="mt-6 w-full text-lg">{children}</div>
+                  <div className="mt-6 w-full text-lg" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                    {children}
+                  </div>
                 </div>
               </div>
             </div>

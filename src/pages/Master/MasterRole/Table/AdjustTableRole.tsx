@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import Badge from "../../../../components/ui/badge/Badge";
 import { ColumnDef } from "@tanstack/react-table";
 import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +11,7 @@ type Role = {
   description: string;
 };
 
-type MenuTableProps = {
+type RoleTableProps = {
   data: Role[];
   globalFilter: string;
   setGlobalFilter: (value: string) => void;
@@ -25,7 +26,7 @@ const AdjustTableRole = ({
   setGlobalFilter,
   onDetail,
   onDelete,
-}: MenuTableProps) => {
+}: RoleTableProps) => {
   const navigate = useNavigate();
 
   function navigateToUpdateRole(roleData: Role) {
@@ -44,6 +45,28 @@ const AdjustTableRole = ({
         accessorKey: "description",
         header: "Deskripsi",
         cell: (info) => String(info.getValue()),
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: (info) => {
+          const status = info.getValue() as string | undefined;
+          return (
+            <Badge
+              variant="solid"
+              size="sm"
+              color={
+                status === "Active"
+                  ? "success"
+                  : status === "Pending"
+                  ? "warning"
+                  : "error"
+              }
+            >
+              {status || "No Status"}
+            </Badge>
+          );
+        },
       },
       {
         id: "actions",

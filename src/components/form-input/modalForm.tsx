@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import Select from "react-select";
 import DatePicker from "../../components/form/date-picker";
+import Button from "../ui/button/Button";
 
 type FormField = {
   name: string;
@@ -89,6 +90,7 @@ const FormInput: React.FC<FormInputProps> = ({
                       : selectedOption?.value; // Pastikan false diteruskan sebagai boolean
                   controllerField.onChange(value); // Perbarui nilai dengan benar
                 }}
+                menuPlacement="auto" // Otomatis buka ke atas jika ruang tidak cukup ke bawah
               />
             )}
           />
@@ -140,7 +142,7 @@ const FormInput: React.FC<FormInputProps> = ({
       : [];
 
   return (
-    <div className="mx-auto mt-10 p-6 bg-white shadow-md rounded-md">
+    <div className="mx-auto mt-10 p-6 rounded-md">
       <form onSubmit={handleFormSubmit(handleSubmit)} className="space-y-4">
         <div
           className={`grid ${

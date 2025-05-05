@@ -10,6 +10,7 @@ import {
   FaUserTag,
   FaChartLine,
   FaCreditCard,
+  FaList 
 } from "react-icons/fa";
 
 const UpdateModal = ({
@@ -39,6 +40,7 @@ const UpdateModal = ({
     { value: "FaChartLine", label: "Target Sales", icon: <FaChartLine /> },
     { value: "FaRegNewspaper", label: "News", icon: <FaRegNewspaper /> },
     { value: "FaCreditCard", label: "Credit Limit", icon: <FaCreditCard /> },
+    { value: "FaList", label: "List", icon: <FaList /> },
   ];
 
   const formFields = [
@@ -83,14 +85,16 @@ const UpdateModal = ({
     },
   ];
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: any) => {    
     const payload = {
       ...data,
-      parent_id: Number(data.parent_id.value),
-      icon: data.icon.value,
+      parent_id: data.parent_id?.value
+        ? Number(data.parent_id.value)
+        : Number(data.parent_id),
       order: Number(data.order),
+      icon: data.icon?.value || data.icon,
     };
-    
+        
     await updateMenuById(existingData.id, payload);
     onRefresh();
     onClose();

@@ -11,6 +11,7 @@ import {
   FaChartLine,
   FaCreditCard,
   FaPlus,
+  FaFlag 
 } from "react-icons/fa";
 import Button from "../../../../components/ui/button/Button";
 import { usePermission } from "../../../../utils/usePermision";
@@ -25,11 +26,6 @@ const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
   const menuId = getMenuIdByPath("/master_menu");
 
   const canCreate = menuId ? hasPermission(menuId, "Create") : false;
-  // const canView = menuId ? hasPermission(menuId, "View") : false;
-  // const canUpdate = menuId ? hasPermission(menuId, "Update") : false;
-  // const canDelete = menuId ? hasPermission(menuId, "Delete") : false;
-
-  // console.log('parentMenus', parentMenus);
 
   const parentMenuOpt = useMemo(
     () => parentMenus.map((menu) => ({ value: menu.id, label: menu.name })),
@@ -45,6 +41,7 @@ const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
     { value: "FaChartLine", label: "Target Sales", icon: <FaChartLine /> },
     { value: "FaRegNewspaper", label: "News", icon: <FaRegNewspaper /> },
     { value: "FaCreditCard", label: "Credit Limit", icon: <FaCreditCard /> },
+    { value: "FaFlag", label: "Flag", icon: <FaFlag /> },
   ];
 
   const formFields = [
