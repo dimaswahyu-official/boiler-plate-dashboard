@@ -91,12 +91,6 @@ const FormInput: React.FC<FormInputProps> = ({
                   controllerField.onChange(value); // Perbarui nilai dengan benar
                 }}
                 menuPlacement="auto" // Otomatis buka ke atas jika ruang tidak cukup ke bawah
-                // styles={{
-                //   container: (provided) => ({
-                //     ...provided,
-                //     marginBottom: "50px", // Add 5px margin below the select
-                //   }),
-                // }}
               />
             )}
           />

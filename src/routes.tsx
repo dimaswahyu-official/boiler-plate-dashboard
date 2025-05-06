@@ -24,7 +24,9 @@ import {
   VisitTypes,
   MasterCustomer,
   SuratTugas,
+  DetailCustomer
 } from "./utils/PagesComponent";
+
 
 export function AppRoutes() {
   const navigate = useNavigate();
@@ -141,6 +143,7 @@ export function AppRoutes() {
             <Route path="/sales_route" element={<RouteManagement />} />
             <Route path="/visit_types" element={<VisitTypes />} />
             <Route path="/surat_tugas" element={<SuratTugas />} />
+            <Route path="/detail_customer" element={<DetailCustomer />} />
 
             {/* {renderDynamicRoutes()} */}
 

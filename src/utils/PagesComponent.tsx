@@ -18,6 +18,7 @@ import VisitTypes from "../pages/Parameters/ParameterList/VisitTypes";
 
  // MASTER CUSTOMER
  import MasterCustomer from '../pages/Master/MasterCustomer'
+ import DetailCustomer from "../pages/Master/MasterCustomer/DetailPage";
 
 //  SALES & DISTRIBUTION
 import SuratTugas from "../pages/SalesDistribution/SuratTugas";
@@ -44,6 +45,7 @@ export {
 
   // MASTER CUSTOMER
   MasterCustomer,
+  DetailCustomer,
 
   // SALES & DISTRIBUTION
   SuratTugas

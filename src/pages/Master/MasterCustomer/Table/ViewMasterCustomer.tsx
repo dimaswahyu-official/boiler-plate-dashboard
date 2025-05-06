@@ -5,6 +5,7 @@ import {
   FaFileDownload,
   FaUndo,
   FaStepForward,
+  FaDownload,
 } from "react-icons/fa";
 import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
@@ -148,7 +149,7 @@ const TableMasterCustomer = () => {
   function handleSelectChange(value: string): void {
     throw new Error("Function not implemented.");
   }
-  
+
   const handleSubmit = async (payload: any) => {
     console.log("Payload", payload);
 
@@ -179,36 +180,30 @@ const TableMasterCustomer = () => {
               size="sm"
               onClick={() => alert("Proses Data")}
             >
-              <FaStepForward className="mr-2" /> Proses
+              <FaDownload className="mr-2" /> Unduh
+            </Button>
+
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => alert("Proses Data")}
+            >
+              <FaFileImport className="mr-2" /> Import
+            </Button>
+
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => alert("Proses Data")}
+            >
+              <FaPlus className="mr-2" /> Tambah Customer
             </Button>
           </div>
         </div>
 
         <div className="flex justify-between items-center mt-3">
           <div className="space-x-4">
-            <Label htmlFor="date-picker">Tanggal Mulai</Label>
-            <DatePicker
-              id="start-date-stugas"
-              placeholder="Select a date"
-              onChange={(dates, currentDateString) =>
-                console.log({ dates, currentDateString })
-              }
-            />
-          </div>
-
-          <div className="space-x-4">
-            <Label htmlFor="date-picker">Tanggal Selesai</Label>
-            <DatePicker
-              id="end-date-stugas"
-              placeholder="Select a date"
-              onChange={(dates, currentDateString) =>
-                console.log({ dates, currentDateString })
-              }
-            />
-          </div>
-
-          <div className="space-x-4">
-            <Label htmlFor="jenis-kunjungan-select">Jenis Kunjungan</Label>
+            <Label htmlFor="jenis-kunjungan-select">Kategori</Label>
             <Select
               options={optKunjungan}
               placeholder="Pilih"
@@ -218,7 +213,27 @@ const TableMasterCustomer = () => {
           </div>
 
           <div className="space-x-4">
-            <Label htmlFor="jenis-rute-select">Jenis Rute</Label>
+            <Label htmlFor="jenis-rute-select">Cabang</Label>
+            <Select
+              options={optRoute}
+              placeholder="Pilih"
+              onChange={handleSelectChange}
+              className="dark:bg-dark-900 react-select-container"
+            />
+          </div>
+
+          <div className="space-x-4">
+            <Label htmlFor="jenis-rute-select">Channel</Label>
+            <Select
+              options={optRoute}
+              placeholder="Pilih"
+              onChange={handleSelectChange}
+              className="dark:bg-dark-900 react-select-container"
+            />
+          </div>
+
+          <div className="space-x-4">
+            <Label htmlFor="jenis-rute-select">Status</Label>
             <Select
               options={optRoute}
               placeholder="Pilih"
@@ -247,13 +262,13 @@ const TableMasterCustomer = () => {
         onDelete={handleDelete}
       />
 
-      <ReusableFormModal
+      {/* <ReusableFormModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSubmit={(data) => handleSubmit(data)}
         formFields={formFields}
         title="Create User"
-      />
+      /> */}
     </>
   );
 };

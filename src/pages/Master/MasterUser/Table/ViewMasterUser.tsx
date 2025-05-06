@@ -21,7 +21,7 @@ const TableMasterMenu = () => {
 
   const [importData, setDataImport] = useState<any[]>([]);
 
-  const { canCreate } = usePagePermissions();
+  // const { canCreate, canManage } = usePagePermissions();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [globalFilter, setGlobalFilter] = useState<string>("");
@@ -167,21 +167,26 @@ const TableMasterMenu = () => {
   })();
 
   const handleSubmit = async (payload: any) => {
+
+    console.log("Payload:", payload);
+    
     const formattedPayload = {
-      name: payload.name, // Add the name property
+      name: payload.name,
       email: payload.email,
       username: payload.username,
-      employee_id: payload.username, // Assuming employee_id is the same as username
+      employee_id: payload.username,
       password: payload.password,
-      picture: "https://picsum.photos/seed/xvqRwaMRt/640/480", // Static picture URL
+      picture: "",
       is_active: true,
-      join_date: "2023-01-01T00:00:00Z", // Current date as join_date
-      valid_from: "2023-01-01T00:00:00Z", // Current date as valid_from
+      join_date: "2023-01-01T00:00:00Z",
+      valid_from: "2023-01-01T00:00:00Z",
       valid_to: "2023-01-01T00:00:00Z",
-      role_id: parseInt(payload.roles.value, 10), // Ensure role_id is sent as a number
-      created_by: user_login?.username, // Handle null user_login
-      updated_by: user_login?.username, // Handle null user_login
+      role_id: Number(payload.roles),
+      created_by: user_login?.username,
+      updated_by: user_login?.username,
     };
+
+    console.log("Formatted Payload:", formattedPayload);
 
     try {
       await createUser(formattedPayload);
@@ -210,9 +215,9 @@ const TableMasterMenu = () => {
     fileInputRef.current?.click(); // Trigger hidden file input click
   };
 
-  useEffect(() => {
-    console.log("Import Data:", importData);
-  }, [importData]);
+  // useEffect(() => {
+  //   console.log("Import Data:", importData);
+  // }, [importData]);
 
   return (
     <>
@@ -227,7 +232,7 @@ const TableMasterMenu = () => {
               placeholder="🔍 Search..."
             />
           </div>
-          
+
           <div className="space-x-4">
             <Button variant="primary" size="sm">
               <FaFileDownload className="mr-2" /> Unduh
@@ -245,15 +250,15 @@ const TableMasterMenu = () => {
               style={{ display: "none" }}
             />
 
-            {canCreate && (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => setIsModalOpen(true)}
-              >
-                <FaPlus className="mr-2" /> Tambah User
-              </Button>
-            )}
+            {/* {canCreate && canManage && ( */}
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <FaPlus className="mr-2" /> Tambah User
+            </Button>
+            {/* )} */}
           </div>
         </div>
 

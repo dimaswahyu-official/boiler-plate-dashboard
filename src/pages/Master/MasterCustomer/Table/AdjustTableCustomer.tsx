@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
 import Checkbox from "../../../../components/form/input/Checkbox";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 type Address = {
   id: number;
@@ -55,6 +56,12 @@ const MenuTable = ({
   onDelete,
   onEdit,
 }: MenuTableProps) => {
+  const navigate = useNavigate();
+
+  function detailCustomerPage(custData: Customer) {
+    navigate(`/detail_customer`, { state: { custData } });
+  }
+
   const columns: ColumnDef<Customer>[] = useMemo(
     () => [
       {
@@ -89,13 +96,16 @@ const MenuTable = ({
       },
       {
         id: "actions",
-        header: "Actions",
+        header: "Action",
         cell: ({ row }) => (
           <button
-            className="text-green-600"
-            onClick={() => onDetail(row.original.id)}
+            className="text-blue-600"
+            onClick={() => {
+              const custData = row.original;
+              detailCustomerPage(custData);
+            }}
           >
-            <FaEye />
+            Detail
           </button>
         ),
       },
