@@ -11,21 +11,15 @@ import {
   FaChartLine,
   FaCreditCard,
   FaPlus,
-  FaFlag 
+  FaFlag,
 } from "react-icons/fa";
 import Button from "../../../../components/ui/button/Button";
-import { usePermission } from "../../../../utils/usePermision";
-import { getMenuIdByPath } from "../../../../utils/GetMenuId";
+import { usePagePermissions } from "../../../../utils/UserPagePermissions";
 
 const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { parentMenus, createMenu } = useMenuStore();
-  const { hasPermission } = usePermission();
-
-  // Dapatkan menuId berdasarkan path halaman ini
-  const menuId = getMenuIdByPath("/master_menu");
-
-  const canCreate = menuId ? hasPermission(menuId, "Create") : false;
+  const { canCreate, canManage } = usePagePermissions();
 
   const parentMenuOpt = useMemo(
     () => parentMenus.map((menu) => ({ value: menu.id, label: menu.name })),
@@ -110,7 +104,7 @@ const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
 
   return (
     <>
-      {canCreate && (
+      {canManage && canCreate && (
         <Button
           variant="primary"
           size="sm"

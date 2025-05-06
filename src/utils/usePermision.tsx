@@ -13,22 +13,28 @@ export const usePermission = () => {
 
   useEffect(() => {
     if (role_id) {
-      fetchRoleById(role_id)
-        .then((response) => {
+      if (role_id === 1) {
+        // Automatically set "Manage" permission for all menus for role_id 1
+        setPermissions([{ menu_id: -1, permission_type: "Manage" }]); // -1 indicates all menus
+      } else {
+        fetchRoleById(role_id)
+          .then((response) => {
             setPermissions(response.permissions || []);
-        })
-        .catch((error) => {
-          console.error("Failed to fetch role permissions:", error);
-        });
+          })
+          .catch((error) => {
+            console.error("Failed to fetch role permissions:", error);
+          });
+      }
     }
   }, []);
 
   const hasPermission = (menuId: number, permissionType: string): boolean => {
     return permissions.some(
       (perm) =>
-        perm.menu_id === menuId &&
-        (perm.permission_type === "Manage" ||
-          perm.permission_type === permissionType)
+        (perm.menu_id === -1 && perm.permission_type === "Manage") || // Check for global "Manage" permission
+        (perm.menu_id === menuId &&
+          (perm.permission_type === "Manage" ||
+            perm.permission_type === permissionType))
     );
   };
 

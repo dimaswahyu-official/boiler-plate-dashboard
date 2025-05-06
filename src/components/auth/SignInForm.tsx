@@ -75,7 +75,7 @@ export default function SignInForm() {
       showSuccessToast("Login successful!");
 
       setTimeout(() => {
-        navigate("/callplan");
+        navigate("/master_menu");
       }, 1000);
     } catch (err: any) {
       console.error("Login failed:", err);

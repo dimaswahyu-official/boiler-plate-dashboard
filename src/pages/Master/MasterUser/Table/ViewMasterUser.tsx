@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
 import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
+import * as XLSX from "xlsx";
 
 import Input from "../../../../components/form/input/InputField";
 import AdjustTableUser from "./AdjustTableUser";
@@ -13,8 +14,12 @@ import Select from "../../../../components/form/Select";
 import { usePagePermissions } from "../../../../utils/UserPagePermissions";
 
 const TableMasterMenu = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const { fetchAllUser, user, createUser } = useUserStore();
   const { fetchRoles, roles } = useRoleStore();
+
+  const [importData, setDataImport] = useState<any[]>([]);
 
   const { canCreate } = usePagePermissions();
 
@@ -185,32 +190,60 @@ const TableMasterMenu = () => {
     }
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const bstr = evt.target?.result;
+      const workbook = XLSX.read(bstr, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      setDataImport(jsonData);
+    };
+    reader.readAsBinaryString(file);
+  };
+
+  const onButtonClick = () => {
+    fileInputRef.current?.click(); // Trigger hidden file input click
+  };
+
+  useEffect(() => {
+    console.log("Import Data:", importData);
+  }, [importData]);
+
   return (
     <>
       <div className="p-4 bg-white shadow rounded-md mb-5">
         <div className="flex justify-between items-center">
-          <Input
-            onChange={(e) => setGlobalFilter(e.target.value)} // Pastikan ini menerima string secara langsung
-            type="text"
-            id="search"
-            placeholder="🔍 Search..."
-          />
           <div className="space-x-4">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => alert("Download Users")}
-            >
+            <Label htmlFor="date-picker">Pencarian</Label>
+            <Input
+              onChange={(e) => setGlobalFilter(e.target.value)} // Pastikan ini menerima string secara langsung
+              type="text"
+              id="search"
+              placeholder="🔍 Search..."
+            />
+          </div>
+          
+          <div className="space-x-4">
+            <Button variant="primary" size="sm">
               <FaFileDownload className="mr-2" /> Unduh
             </Button>
 
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => alert("Import Users")}
-            >
+            <Button variant="primary" size="sm" onClick={onButtonClick}>
               <FaFileImport className="mr-2" /> Import User
             </Button>
+
+            <input
+              type="file"
+              accept=".xlsx, .xls, .csv"
+              onChange={handleFileUpload}
+              ref={fileInputRef}
+              style={{ display: "none" }}
+            />
 
             {canCreate && (
               <Button
@@ -224,40 +257,66 @@ const TableMasterMenu = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center mt-5">
-          <div className="space-x-4 flex items-center">
-            {["Posisi", "Cabang", "Wilayah", "Status"].map((label) => (
-              <div key={label}>
-                <Label htmlFor={`${label.toLowerCase()}-select`}>{label}</Label>
-                <Select
-                  options={options}
-                  placeholder={`Pilih ${label}`}
-                  onChange={handleSelectChange}
-                  className="dark:bg-dark-900 react-select-container mr-5"
-                />
-              </div>
-            ))}
-            <div>
-              <Label htmlFor="date-picker">Tanggal Dibuat</Label>
-              <DatePicker
-                id="filter-date-picker"
-                placeholder="Select a date"
-                onChange={(dates, currentDateString) =>
-                  console.log({ dates, currentDateString })
-                }
-              />
-            </div>
+        <div className="flex justify-between items-center mt-3">
+          <div className="space-x-4">
+            <Label htmlFor="date-picker">Tanggal Mulai</Label>
+            <DatePicker
+              id="start-date-stugas"
+              placeholder="Select a date"
+              onChange={(dates, currentDateString) =>
+                console.log({ dates, currentDateString })
+              }
+            />
+          </div>
 
-            <div className="mt-6 flex justify-center">
-              <Button
-                variant="primary"
-                size="sm"
-                className="rounded-full p-3"
-                onClick={() => alert("Reset Filters")}
-              >
-                <FaUndo />
-              </Button>
-            </div>
+          <div className="space-x-4">
+            <Label htmlFor="jenis-kunjungan-select">Posisi</Label>
+            <Select
+              options={options}
+              placeholder="Pilih"
+              onChange={handleSelectChange}
+              className="dark:bg-dark-900 react-select-container"
+            />
+          </div>
+
+          <div className="space-x-4">
+            <Label htmlFor="jenis-kunjungan-select">Posisi</Label>
+            <Select
+              options={options}
+              placeholder="Pilih"
+              onChange={handleSelectChange}
+              className="dark:bg-dark-900 react-select-container"
+            />
+          </div>
+
+          <div className="space-x-4">
+            <Label htmlFor="jenis-kunjungan-select">Posisi</Label>
+            <Select
+              options={options}
+              placeholder="Pilih"
+              onChange={handleSelectChange}
+              className="dark:bg-dark-900 react-select-container"
+            />
+          </div>
+
+          <div className="space-x-4">
+            <Label htmlFor="jenis-kunjungan-select">Posisi</Label>
+            <Select
+              options={options}
+              placeholder="Pilih"
+              onChange={handleSelectChange}
+              className="dark:bg-dark-900 react-select-container"
+            />
+          </div>
+
+          <div className="flex justify-center items-center mt-5">
+            <Button
+              variant="rounded"
+              size="sm"
+              onClick={() => alert("Reset Filters")}
+            >
+              <FaUndo />
+            </Button>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import { useAuthStore } from "./API/store/AuthStore/authStore";
 import { signOut } from "./utils/SignOut";
+import dummyRoutes from "./helper/dummyRoutes";
 
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -22,11 +23,14 @@ import {
   RouteManagement,
   VisitTypes,
   MasterCustomer,
+  SuratTugas,
 } from "./utils/PagesComponent";
 
 export function AppRoutes() {
   const navigate = useNavigate();
-  const token = useAuthStore((state) => state.accessToken) || localStorage.getItem("accessToken");
+  const token =
+    useAuthStore((state) => state.accessToken) ||
+    localStorage.getItem("accessToken");
   const isAuthenticated = () => {
     if (token) {
       localStorage.setItem("accessToken", token); // Persist token
@@ -99,6 +103,25 @@ export function AppRoutes() {
     });
   };
 
+  const renderDummyRoutes = () => {
+    if (!Array.isArray(dummyRoutes) || dummyRoutes.length === 0) {
+      return null; // Return null if dummyRoutes is not an array or is empty
+    }
+
+    return dummyRoutes.map((menu: any) => {
+      const Component = componentMap[menu.name];
+      return Component ? (
+        <Route key={menu.id} path={menu.path} element={Component} />
+      ) : null;
+    });
+  };
+
+  useEffect(() => {
+    console.log("flattenedRoutes", flattenedRoutes);
+    console.log("dummyRoutes", dummyRoutes);
+  }, []);
+
+
   return (
     <>
       <ScrollToTop />
@@ -107,14 +130,21 @@ export function AppRoutes() {
         {isAuthenticated() ? (
           <Route element={<AppLayout />}>
             <Route path="/" element={<Callplan />} />
+            <Route path="/master_menu" element={<MasterMenu />} />
+            <Route path="/master_role" element={<MasterRole />} />
+            <Route path="/master_user" element={<MasterUser />} />
+            <Route path="/master_customer" element={<MasterCustomer />} />
             <Route path="/create_role" element={<CreateRole />} />
             <Route path="/update_role" element={<UpdateRole />} />
             <Route path="/channel_types" element={<ChannelTypes />} />
             <Route path="/payment_types" element={<PaymentTypes />} />
-            <Route path="/route_management" element={<RouteManagement />} />
+            <Route path="/sales_route" element={<RouteManagement />} />
             <Route path="/visit_types" element={<VisitTypes />} />
+            <Route path="/surat_tugas" element={<SuratTugas />} />
 
-            {renderDynamicRoutes()}
+            {/* {renderDynamicRoutes()} */}
+
+            {renderDummyRoutes()}
           </Route>
         ) : (
           <Route path="*" element={<Navigate to="/signin" replace />} />

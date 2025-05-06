@@ -57,7 +57,11 @@ const TableComponent = <T extends { id: number }>({
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id} className="bg-gray-100 text-left">
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="px-4 py-2 border-b">
+                <th
+                  key={header.id}
+                  className="px-4 py-2 border-b"
+                  style={{ textAlign: "left" }}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -71,7 +75,7 @@ const TableComponent = <T extends { id: number }>({
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:bg-gray-50">
+            <tr key={row.id} className="hover:bg-gray-50"  style={{ textAlign: "left" }}>
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-4 py-2 border-b">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

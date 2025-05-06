@@ -16,9 +16,12 @@ import PaymentTypes from "../pages/Parameters/ParameterList/PaymentTypes";
 import RouteManagement from "../pages/Parameters/ParameterList/RouteManagement";
 import VisitTypes from "../pages/Parameters/ParameterList/VisitTypes";
 
-
  // MASTER CUSTOMER
  import MasterCustomer from '../pages/Master/MasterCustomer'
+
+//  SALES & DISTRIBUTION
+import SuratTugas from "../pages/SalesDistribution/SuratTugas";
+
 
 export {
   // PAGE MASTER
@@ -40,5 +43,8 @@ export {
   VisitTypes,
 
   // MASTER CUSTOMER
-  MasterCustomer
+  MasterCustomer,
+
+  // SALES & DISTRIBUTION
+  SuratTugas
 };

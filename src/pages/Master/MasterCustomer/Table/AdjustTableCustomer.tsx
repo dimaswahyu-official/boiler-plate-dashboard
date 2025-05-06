@@ -1,26 +1,50 @@
 import React, { useMemo } from "react";
-import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { ColumnDef } from "@tanstack/react-table";
 import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
-import { usePagePermissions } from "../../../../utils/UserPagePermissions";
+import Checkbox from "../../../../components/form/input/Checkbox";
+import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 
-type User = {
+type Address = {
+  id: number;
+  customer_id: number;
+  address1: string;
+  provinsi: string;
+  kab_kodya: string;
+  kecamatan: string;
+  kelurahan: string;
+  kodepos: string | null;
+  is_active: boolean;
+  created_by: string;
+  created_at: string;
+  updated_by: string;
+  updated_at: string;
+};
+
+type Customer = {
   id: number;
   name: string;
-  username: string;
-  email: string;
-  role: string;
-  branch?: string; // Added branch as an optional property
-  create_on: string;
+  alias: string | null;
+  owner: string | null;
+  phone: string | null;
+  npwp: string | null;
+  ktp: string | null;
+  channel: string;
+  customer_number: string;
+  addresses: Address[];
+  is_active: boolean;
+  created_by: string;
+  created_at: string;
+  updated_by: string;
+  updated_at: string;
 };
 
 type MenuTableProps = {
-  data: User[];
+  data: Customer[];
   globalFilter: string;
   setGlobalFilter: (value: string) => void;
   onDetail: (id: number) => void;
   onDelete: (id: number) => void;
-  onEdit?: (data: User) => void;
+  onEdit?: (data: Customer) => void;
 };
 
 const MenuTable = ({
@@ -31,74 +55,52 @@ const MenuTable = ({
   onDelete,
   onEdit,
 }: MenuTableProps) => {
-  const { canUpdate, canDelete } = usePagePermissions();
-
-  const columns: ColumnDef<User>[] = useMemo(
+  const columns: ColumnDef<Customer>[] = useMemo(
     () => [
       {
+        accessorKey: "id",
+        header: "ID Pelanggan",
+        cell: (info) => String(info.getValue()),
+      },
+      {
         accessorKey: "name",
-        header: "Name",
+        header: "Nama Pelanggan",
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "username",
-        header: "Username",
+        accessorKey: "phone",
+        header: "Phone",
+        cell: (info) => String(info.getValue() || "-"),
+      },
+      {
+        accessorKey: "channel",
+        header: "Channel",
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "email",
-        header: "Email",
+        accessorKey: "customer_number",
+        header: "Customer Number",
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "role",
-        header: "Roles",
-        cell: (info) => String(info.getValue()),
-      },
-      {
-        accessorKey: "branch",
-        header: "Branch",
-        cell: (info) => String(info.getValue()),
-      },
-      {
-        accessorKey: "create_on",
-        header: "Create On",
-        cell: (info) => String(info.getValue()),
+        accessorKey: "is_active",
+        header: "Active",
+        cell: (info) => (info.getValue() ? "Yes" : "No"),
       },
       {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <div className="space-x-4">
-            {canUpdate && (
-              <button
-                className="text-blue-600"
-                onClick={() => onEdit?.(row.original)}
-              >
-                <FaEdit />
-              </button>
-            )}
-
-            {canDelete && (
-              <button
-                className="text-red-600"
-                onClick={() => onDelete(row.original.id)}
-              >
-                <FaTrash />
-              </button>
-            )}
-
-            <button
-              className="text-green-600"
-              onClick={() => onDetail(row.original.id)}
-            >
-              <FaEye />
-            </button>
-          </div>
+          <button
+            className="text-green-600"
+            onClick={() => onDetail(row.original.id)}
+          >
+            <FaEye />
+          </button>
         ),
       },
     ],
-    [onDelete, onDetail]
+    [onDetail]
   );
 
   return (
