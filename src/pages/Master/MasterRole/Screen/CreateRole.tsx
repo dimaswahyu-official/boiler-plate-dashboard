@@ -45,11 +45,17 @@ function CreateRole() {
   const [tableData, setTableData] = useState<any>({});
 
   const handleTableChange = (data: any) => {
+
+    console.log("Data from Table:", data);
+    
     // Use a timeout to defer the state update to avoid updating during render
     setTimeout(() => setTableData(data), 0); // Simpan data dari table
   };
 
   const handleSubmit = async (formData: any) => {
+
+    console.log("Form Data:", formData);
+    
     // Transformasikan permissions menjadi array
     const transformedPermissions = Object.entries(tableData).flatMap(
       ([menuId, permissions]) =>
@@ -61,19 +67,25 @@ function CreateRole() {
           }))
     );
 
-    // Buat payload akhir
-    const payload = {
-      name: formData.name,
-      description: formData.description,
-      permissions: transformedPermissions,
-    };
-    try {
-      // Panggil fungsi createRole dari roleStore
-      await createRole(payload);
-      navigate("/master_role");
-    } catch (error: any) {
-      console.log("Gagal membuat role: " + error.message);
-    }
+    console.log("Transformed Permissions:", transformedPermissions);
+    
+
+    // // Buat payload akhir
+    // const payload = {
+    //   name: formData.name,
+    //   description: formData.description,
+    //   permissions: transformedPermissions,
+    // };
+
+    // console.log(payload);
+
+    // try {
+    //   // Panggil fungsi createRole dari roleStore
+    //   await createRole(payload);
+    //   navigate("/master_role");
+    // } catch (error: any) {
+    //   console.log("Gagal membuat role: " + error.message);
+    // }
   };
   return (
     <>

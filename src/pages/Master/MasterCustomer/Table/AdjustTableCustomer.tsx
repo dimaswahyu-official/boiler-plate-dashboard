@@ -1,9 +1,6 @@
 import React, { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
-import Checkbox from "../../../../components/form/input/Checkbox";
-import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import TableComponent from "../../../../components/tables/MasterCustomerTable/TableComponent";
 
 type Address = {
   id: number;
@@ -12,7 +9,7 @@ type Address = {
   provinsi: string;
   kab_kodya: string;
   kecamatan: string;
-  kelurahan: string;
+  kelurahan: string | null;
   kodepos: string | null;
   is_active: boolean;
   created_by: string;
@@ -39,29 +36,35 @@ type Customer = {
   updated_at: string;
 };
 
-type MenuTableProps = {
+type CustomerTableProps = {
   data: Customer[];
   globalFilter: string;
   setGlobalFilter: (value: string) => void;
   onDetail: (id: number) => void;
   onDelete: (id: number) => void;
-  onEdit?: (data: Customer) => void;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  pageSize: number;
+  setPageSize: (size: number) => void; // Tambahkan setPageSize
+  totalDataCount: number; // Tambahkan totalDataCount
+  isLoading: boolean;
+  error: string | null;
 };
 
-const MenuTable = ({
+const AdjustTable = ({
   data,
   globalFilter,
   setGlobalFilter,
   onDetail,
   onDelete,
-  onEdit,
-}: MenuTableProps) => {
-  const navigate = useNavigate();
-
-  function detailCustomerPage(custData: Customer) {
-    navigate(`/detail_customer`, { state: { custData } });
-  }
-
+  currentPage,
+  setCurrentPage,
+  pageSize,
+  setPageSize,
+  totalDataCount,
+  isLoading,
+  error,
+}: CustomerTableProps) => {
   const columns: ColumnDef<Customer>[] = useMemo(
     () => [
       {
@@ -100,10 +103,7 @@ const MenuTable = ({
         cell: ({ row }) => (
           <button
             className="text-blue-600"
-            onClick={() => {
-              const custData = row.original;
-              detailCustomerPage(custData);
-            }}
+            onClick={() => onDetail(row.original.id)}
           >
             Detail
           </button>
@@ -113,6 +113,9 @@ const MenuTable = ({
     [onDetail]
   );
 
+  // console.log("AdjustTableCustomer - currentPage:", currentPage);
+  // console.log("AdjustTableCustomer - pageSize:", pageSize);
+
   return (
     <TableComponent
       data={data}
@@ -120,8 +123,15 @@ const MenuTable = ({
       globalFilter={globalFilter}
       setGlobalFilter={setGlobalFilter}
       onDetail={onDetail}
+      currentPage={currentPage}
+      setCurrentPage={setCurrentPage}
+      pageSize={pageSize}
+      setPageSize={setPageSize} // Teruskan setPageSize
+      totalDataCount={totalDataCount} // Teruskan totalDataCount
+      isLoading={isLoading}
+      error={error}
     />
   );
 };
 
-export default MenuTable;
+export default AdjustTable;

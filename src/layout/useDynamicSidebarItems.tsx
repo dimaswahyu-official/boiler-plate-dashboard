@@ -75,8 +75,8 @@ export const useDynamicSidebarItems = (): NavItem[] => {
     if (!effectiveMenus || effectiveMenus.length === 0) return [];
 
     // Bangun hierarki menu
-    // const menuHierarchy = buildMenuHierarchy(effectiveMenus);
-    const menuHierarchy = buildMenuHierarchy(dummyRoutes as MenuItem[]);
+    const menuHierarchy = buildMenuHierarchy(effectiveMenus);
+    // const menuHierarchy = buildMenuHierarchy(dummyRoutes as MenuItem[]);
 
 
     // Proses hierarki menu menjadi NavItem

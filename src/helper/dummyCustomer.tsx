@@ -6,9 +6,9 @@ const dummyCustomer = {
   phone: "0211234567",
   npwp: "1234567890123456",
   ktp: "999999999999999",
-  channel: "WS",
-  customer_number: "SLOWS00009",
-  cust_account_id: 218050,
+  channel: "WS", // category
+  customer_number: "SLOWS00009", //id_pelanggan
+  cust_account_id: 218050, //id_data
   bill_to_location: "MINI MOJOGEDANG",
   ship_to_location: "MINI MOJOGEDANG",
   order_type_name: "",
@@ -33,7 +33,7 @@ const dummyCustomer = {
   org_name: "NNA_SLO_OU",
   org_id: "226", //id_org
   route_id: null,
-  is_active: true,
+  is_active: true, //status
   created_by: "admin",
   created_at: "2025-05-05T16:40:41.270Z",
   updated_by: "admin",

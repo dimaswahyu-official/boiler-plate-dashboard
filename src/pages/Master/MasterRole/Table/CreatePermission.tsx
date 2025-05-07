@@ -9,7 +9,6 @@ interface TableMenuPermissionProps {
   defaultPermissions?: { menu_id: number; permission_type: string }[]; // Data permissions dari API
 }
 
-
 const TableMenuPermission: React.FC<TableMenuPermissionProps> = ({
   onChange,
   defaultPermissions = [],
@@ -22,21 +21,48 @@ const TableMenuPermission: React.FC<TableMenuPermissionProps> = ({
     fetchMenus();
   }, [fetchMenus]);
 
-  // Proses defaultPermissions menjadi format yang sesuai untuk selectedPermissions
+  // // Proses defaultPermissions menjadi format yang sesuai untuk selectedPermissions
+  // useEffect(() => {
+  //   if (defaultPermissions.length > 0) {
+  //     const initialPermissions: any = {};
+  //     defaultPermissions.forEach(({ menu_id, permission_type }) => {
+  //       if (!initialPermissions[menu_id]) {
+  //         initialPermissions[menu_id] = {};
+  //       }
+  //       initialPermissions[menu_id][permission_type] = true; // Set permission ke true
+  //     });
+  //     setSelectedPermissions(initialPermissions); // Set nilai awal checkbox
+
+  //     // Hanya panggil onChange jika komponen sudah pernah dirender
+  //     if (isMounted.current) {
+  //       onChange(initialPermissions);
+  //     }
+  //   }
+  // }, [defaultPermissions, onChange]);
+
   useEffect(() => {
     if (defaultPermissions.length > 0) {
       const initialPermissions: any = {};
       defaultPermissions.forEach(({ menu_id, permission_type }) => {
         if (!initialPermissions[menu_id]) {
-          initialPermissions[menu_id] = {};
+          initialPermissions[menu_id] = [];
         }
-        initialPermissions[menu_id][permission_type] = true; // Set permission ke true
+        if (!initialPermissions[menu_id].includes(permission_type)) {
+          initialPermissions[menu_id].push(permission_type);
+        }
       });
       setSelectedPermissions(initialPermissions); // Set nilai awal checkbox
 
-      // Hanya panggil onChange jika komponen sudah pernah dirender
+      // Kirim data ke parent
       if (isMounted.current) {
-        onChange(initialPermissions);
+        onChange(
+          Object.entries(initialPermissions).flatMap(([menuId, perms]) =>
+            (perms as string[]).map((permission) => ({
+              menu_id: Number(menuId),
+              permission_type: permission,
+            }))
+          )
+        );
       }
     }
   }, [defaultPermissions, onChange]);
@@ -73,23 +99,60 @@ const TableMenuPermission: React.FC<TableMenuPermissionProps> = ({
     setSelectedPermissions((prev: any) => {
       const updated = { ...prev };
 
-      // Pastikan hanya satu checkbox dalam kolom yang sama dapat dipilih
+      // Pastikan menuId ada di objek
       if (!updated[menuId]) {
-        updated[menuId] = {};
+        updated[menuId] = [];
       }
 
-      // Reset semua permissions untuk menuId
-      Object.keys(updated[menuId]).forEach((perm) => {
-        updated[menuId][perm] = false;
-      });
+      // Toggle permission: tambahkan jika belum ada, hapus jika sudah ada
+      if (updated[menuId].includes(permission)) {
+        updated[menuId] = updated[menuId].filter(
+          (perm: string) => perm !== permission
+        );
+      } else {
+        updated[menuId].push(permission);
+      }
 
-      // Set permission yang baru dipilih
-      updated[menuId][permission] = true;
+      // Kirim data ke parent
+      onChange(
+        Object.entries(updated).flatMap(([menuId, perms]) =>
+          (perms as string[]).map((permission) => ({
+            menu_id: Number(menuId),
+            permission_type: permission,
+          }))
+        )
+      );
 
-      onChange(updated); // Kirim data ke parent hanya saat ada perubahan
       return updated;
     });
   };
+
+  // const handleCheckboxChange = (menuId: number, permission: string) => {
+  //   if (!menuId || !permissions.includes(permission)) {
+  //     console.warn(`Invalid menu_id (${menuId}) or permission (${permission})`);
+  //     return; // Abaikan perubahan jika data tidak valid
+  //   }
+
+  //   setSelectedPermissions((prev: any) => {
+  //     const updated = { ...prev };
+
+  //     // Pastikan hanya satu checkbox dalam kolom yang sama dapat dipilih
+  //     if (!updated[menuId]) {
+  //       updated[menuId] = {};
+  //     }
+
+  //     // Reset semua permissions untuk menuId
+  //     Object.keys(updated[menuId]).forEach((perm) => {
+  //       updated[menuId][perm] = false;
+  //     });
+
+  //     // Set permission yang baru dipilih
+  //     updated[menuId][permission] = true;
+
+  //     onChange(updated); // Kirim data ke parent hanya saat ada perubahan
+  //     return updated;
+  //   });
+  // };
 
   return (
     <div className="mt-8">
@@ -124,8 +187,16 @@ const TableMenuPermission: React.FC<TableMenuPermissionProps> = ({
                       onChange={() => handleCheckboxChange(menu.id, perm)}
                     /> */}
 
-                    <Checkbox
+                    {/* <Checkbox
                       checked={selectedPermissions[menu.id]?.[perm] || false}
+                      onChange={() => handleCheckboxChange(menu.id, perm)}
+                      label=""
+                    /> */}
+
+                    <Checkbox
+                      checked={
+                        selectedPermissions[menu.id]?.includes(perm) || false
+                      }
                       onChange={() => handleCheckboxChange(menu.id, perm)}
                       label=""
                     />
