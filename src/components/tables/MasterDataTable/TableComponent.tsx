@@ -38,7 +38,7 @@ const TableComponent = <T extends { id: number }>({
       globalFilter,
       pagination,
       columnVisibility: {
-        select: enableSelection, // ✅ toggle visibility by ID
+        select: enableSelection,
       },
     },
     onPaginationChange: setPagination,
@@ -59,8 +59,9 @@ const TableComponent = <T extends { id: number }>({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-4 py-2 border-b"
+                  className="px-4 py-2 border-b cursor-pointer"
                   style={{ textAlign: "left" }}
+                  onClick={header.column.getToggleSortingHandler()} // Tambahkan handler untuk sorting
                 >
                   {header.isPlaceholder
                     ? null
@@ -68,6 +69,8 @@ const TableComponent = <T extends { id: number }>({
                         header.column.columnDef.header,
                         header.getContext()
                       )}
+                  {header.column.getIsSorted() === "asc" && " 🔼"}
+                  {header.column.getIsSorted() === "desc" && " 🔽"}
                 </th>
               ))}
             </tr>
@@ -75,7 +78,11 @@ const TableComponent = <T extends { id: number }>({
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:bg-gray-50"  style={{ textAlign: "left" }}>
+            <tr
+              key={row.id}
+              className="hover:bg-gray-50"
+              style={{ textAlign: "left" }}
+            >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-4 py-2 border-b">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

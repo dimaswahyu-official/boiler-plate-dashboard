@@ -31,49 +31,62 @@ const AdjustTable = ({
   onDelete,
   onEdit,
 }: MenuTableProps) => {
-  const columns: ColumnDef<any>[] = [
-    {
-      accessorKey: "org_id",
-      header: "Org ID",
-    },
-    {
-      accessorKey: "organization_code",
-      header: "Org Code",
-    },
-    {
-      accessorKey: "organization_name",
-      header: "Org Name",
-    },
-    {
-      accessorKey: "region_code",
-      header: "Region Code",
-    },
-    {
-      accessorKey: "address",
-      header: "Address",
-    },
-    {
-      accessorKey: "is_active",
-      header: "Is Active",
-      cell: ({ getValue }) => (getValue() ? "Yes" : "No"),
-    },
-    {
-      accessorKey: "created_at",
-      header: "Created At",
-      cell: ({ getValue }) =>
-        new Date(getValue() as string | number | Date).toLocaleDateString(
-          "en-US"
-        ),
-    },
-    {
-      accessorKey: "updated_at",
-      header: "Updated At",
-      cell: ({ getValue }) =>
-        new Date(getValue() as string | number | Date).toLocaleDateString(
-          "en-US"
-        ),
-    },
-  ];
+
+  const columns: ColumnDef<any>[] = useMemo(
+    () => [
+      {
+        accessorKey: "org_id",
+        header: "Organization ID",
+        sortingFn: "basic",
+        enableSorting: true, // Menambahkan fitur sortir
+      },
+      {
+        accessorKey: "organization_code",
+        header: "Organization Code",
+        enableSorting: true, // Menambahkan fitur sortir
+      },
+      {
+        accessorKey: "organization_name",
+        header: "Organization Name",
+        enableSorting: true, // Menambahkan fitur sortir
+      },
+      {
+        accessorKey: "region_code",
+        header: "Region Code",
+        enableSorting: true, // Menambahkan fitur sortir
+      },
+      {
+        accessorKey: "address",
+        header: "Address",
+        enableSorting: true, // Menambahkan fitur sortir
+      },
+      {
+        accessorKey: "is_active",
+        header: "Is Active",
+        cell: ({ getValue }) => (getValue() ? "Yes" : "No"),
+        enableSorting: true, // Menambahkan fitur sortir
+      },
+      {
+        accessorKey: "created_at",
+        header: "Created At",
+        cell: ({ getValue }) =>
+          new Date(getValue() as string | number | Date).toLocaleDateString(
+            "en-US"
+          ),
+        enableSorting: true, // Menambahkan fitur sortir
+      },
+      {
+        accessorKey: "updated_at",
+        header: "Updated At",
+        cell: ({ getValue }) =>
+          new Date(getValue() as string | number | Date).toLocaleDateString(
+            "en-US"
+          ),
+        enableSorting: true, // Menambahkan fitur sortir
+      },
+    ],
+    []
+  );
 
   return (
     <TableComponent
