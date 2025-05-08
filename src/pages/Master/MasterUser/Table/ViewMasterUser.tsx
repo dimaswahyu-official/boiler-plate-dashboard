@@ -21,7 +21,7 @@ const TableMasterMenu = () => {
 
   const [importData, setDataImport] = useState<any[]>([]);
 
-  // const { canCreate, canManage } = usePagePermissions();
+  const { canCreate, canManage } = usePagePermissions();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [globalFilter, setGlobalFilter] = useState<string>("");
@@ -167,9 +167,8 @@ const TableMasterMenu = () => {
   })();
 
   const handleSubmit = async (payload: any) => {
-
     console.log("Payload:", payload);
-    
+
     const formattedPayload = {
       name: payload.name,
       email: payload.email,
@@ -250,15 +249,15 @@ const TableMasterMenu = () => {
               style={{ display: "none" }}
             />
 
-            {/* {canCreate && canManage && ( */}
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <FaPlus className="mr-2" /> Tambah User
-            </Button>
-            {/* )} */}
+            {canCreate && canManage && (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <FaPlus className="mr-2" /> Tambah User
+              </Button>
+            )}
           </div>
         </div>
 
