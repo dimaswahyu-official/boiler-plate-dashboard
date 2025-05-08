@@ -27,6 +27,10 @@ const TableMasterMenu = () => {
   const [globalFilter, setGlobalFilter] = useState<string>("");
 
   useEffect(() => {
+    console.log("user", user);
+  }, [user]);
+
+  useEffect(() => {
     const fetchData = async () => {
       await fetchAllUser();
     };
@@ -45,7 +49,7 @@ const TableMasterMenu = () => {
       name: u.name || "", // Ensure name exists
       username: u.username,
       email: u.email,
-      role: u.role || "", // Ensure role exists
+      role_id: u.role_id || "", // Ensure role exists
       branch: u.branch || "",
       create_on: u.create_on || "", // Ensure create_on exists
     }));

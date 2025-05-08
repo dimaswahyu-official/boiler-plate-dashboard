@@ -51,7 +51,7 @@ const MenuTable = ({
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "role",
+        accessorKey: "role_id",
         header: "Roles",
         cell: (info) => String(info.getValue()),
       },
