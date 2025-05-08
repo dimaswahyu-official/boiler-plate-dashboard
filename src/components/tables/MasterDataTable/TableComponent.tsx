@@ -28,7 +28,7 @@ const TableComponent = <T extends { id: number }>({
 }: TableComponentProps<T>) => {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 20,
   });
 
   const table = useReactTable<T>({
@@ -52,46 +52,53 @@ const TableComponent = <T extends { id: number }>({
 
   return (
     <>
-      <table className="min-w-full table-auto border border-gray-200">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="bg-gray-100 text-left">
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="px-4 py-2 border-b cursor-pointer"
+      <div className="overflow-x-auto">
+        <div className="max-h-[600px] overflow-y-auto">
+          <table className="min-w-full table-auto border border-gray-200">
+            <thead className="sticky top-0 bg-gray-100 z-10">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id} className="text-left">
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="px-4 py-2 border-b cursor-pointer"
+                      style={{ textAlign: "left" }}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                      {header.column.getIsSorted() === "asc" && " 🔼"}
+                      {header.column.getIsSorted() === "desc" && " 🔽"}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr
+                  key={row.id}
+                  className="hover:bg-gray-50"
                   style={{ textAlign: "left" }}
-                  onClick={header.column.getToggleSortingHandler()} // Tambahkan handler untuk sorting
                 >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="px-4 py-2 border-b">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
                       )}
-                  {header.column.getIsSorted() === "asc" && " 🔼"}
-                  {header.column.getIsSorted() === "desc" && " 🔽"}
-                </th>
+                    </td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              className="hover:bg-gray-50"
-              style={{ textAlign: "left" }}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-4 py-2 border-b">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <PaginationControls
         pageIndex={table.getState().pagination.pageIndex}

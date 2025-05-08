@@ -89,7 +89,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
       </div>
 
       <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <span className="text-sm">Rows per page:</span>
           <select
             className="border rounded px-2 py-1 text-sm"
@@ -107,7 +107,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
             <option value={50}>50</option>
             <option value="all">All</option>
           </select>
-        </div>
+        </div> */}
 
         <div className="space-x-2">
           <button
