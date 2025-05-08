@@ -50,12 +50,12 @@ export function AppRoutes() {
     }
   }, [isAuthenticated, navigate]);
 
-  const local_menus = (() => {
-    const storedMenus = localStorage.getItem("local_menus");
-    return storedMenus && storedMenus !== "undefined"
-      ? JSON.parse(storedMenus)
-      : [];
-  })();
+  // const local_menus = (() => {
+  //   const storedMenus = localStorage.getItem("local_menus");
+  //   return storedMenus && storedMenus !== "undefined"
+  //     ? JSON.parse(storedMenus)
+  //     : [];
+  // })();
 
   const user_login_menu = (() => {
     const storedUserLogin = localStorage.getItem("user_login_data");
@@ -78,6 +78,7 @@ export function AppRoutes() {
   const flattenRoutes = (data: any[]) => {
     const result: any[] = [];
     const traverse = (items: any[]) => {
+      if (!Array.isArray(items)) return; // Ensure items is an array
       items.forEach((item) => {
         result.push(item);
         if (item.children && item.children.length > 0) {
@@ -89,11 +90,7 @@ export function AppRoutes() {
     return result;
   };
 
-  const flattenedRoutes = flattenRoutes(
-    (user_login_menu && user_login_menu.length > 0
-      ? user_login_menu
-      : local_menus) as any[]
-  );
+  const flattenedRoutes = flattenRoutes(user_login_menu as any[]);
   
 
   const renderDynamicRoutes = () => {

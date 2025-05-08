@@ -59,7 +59,7 @@ export default function SignInForm() {
         device_info: navigator.userAgent,
       });
 
-      const { accessToken, refreshToken, user, menus } =
+      const { accessToken, refreshToken, user, menus, permissions } =
         useAuthStore.getState();
 
       if (!accessToken) {
@@ -69,17 +69,15 @@ export default function SignInForm() {
       fetchMenus();
       localStorage.setItem(
         "user_login_data",
-        JSON.stringify({ accessToken, refreshToken, user, menus })
+        JSON.stringify({ accessToken, refreshToken, user, menus, permissions })
       );
       localStorage.setItem("token", accessToken);
       localStorage.setItem("role_id", user?.role_id.toString() || "");
       showSuccessToast("Login successful!");
 
-      console.log("User data:", user);
-
-      // setTimeout(() => {
-      //   navigate("/master_menu");
-      // }, 1000);
+      setTimeout(() => {
+        navigate("/master_menu");
+      }, 1000);
     } catch (err: any) {
       console.error("Login failed:", err);
       setError(err.message || "Login failed!");

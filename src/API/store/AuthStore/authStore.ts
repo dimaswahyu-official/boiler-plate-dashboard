@@ -9,6 +9,7 @@ interface AuthState {
   refreshToken: string | null;
   user: User | null;
   menus: Menu[] | null;
+  permissions: Permission[] | null; // Tambahkan ini
   authLogin: (data: LoginPayload) => Promise<void>;
 }
 
@@ -37,6 +38,16 @@ interface Menu {
   order: number;
   created_at: string;
   updated_at: string;
+  permissions: Permission[]; // Tambahkan ini
+}
+
+interface Permission {
+  id: number;
+  role_id: number;
+  menu_id: number;
+  permission_type: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -46,18 +57,24 @@ export const useAuthStore = create<AuthState>((set) => ({
   refreshToken: null,
   user: null,
   menus: null,
+  permissions: null,
 
   authLogin: async (data: LoginPayload) => {
     set({ isLoading: true, error: null });
     try {
       const response = await loginService(data);
       const { accessToken, refreshToken, user, menus } = response.data;
+
+      // Ekstrak permissions dari menus
+      const permissions = menus.flatMap((menu: Menu) => menu.permissions);
+
       // Simpan data hasil login ke state
       set({
         accessToken,
         refreshToken,
         user,
         menus,
+        permissions,
       });
     } catch (err: any) {
       set({ error: err.message });
@@ -74,6 +91,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       refreshToken: null,
       user: null,
       menus: null,
+      permissions: null,
     });
   },
 }));
