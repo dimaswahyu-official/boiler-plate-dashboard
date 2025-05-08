@@ -9,7 +9,7 @@ type User = {
   name: string;
   username: string;
   email: string;
-  role: string;
+  role: any;
   branch?: string; // Added branch as an optional property
   create_on: string;
 };

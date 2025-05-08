@@ -49,7 +49,7 @@ const TableMasterMenu = () => {
       name: u.name || "", // Ensure name exists
       username: u.username,
       email: u.email,
-      role_id: u.role_id || "", // Ensure role exists
+      role: u.role_id || "", // Ensure role exists
       branch: u.branch || "",
       create_on: u.create_on || "", // Ensure create_on exists
     }));

@@ -32,14 +32,14 @@ const TableMasterMenu = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://10.0.29.47/api/v1/branch?sortBy=org_id&sortOrder=asc`,
+        `http://10.0.29.47:9003/api/v1/region/meta-sync`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      const apiData = response.data.data;
+      const apiData = response.data.data.data;
       console.log("API Data:", apiData);
 
       setData(apiData);
