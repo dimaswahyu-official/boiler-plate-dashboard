@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useRoleStore } from "../API/store/MasterStore/masterRoleStore";
 
 export type GroupedPermission = {
   menu_id: number;
@@ -7,48 +6,48 @@ export type GroupedPermission = {
 };
 
 export const usePermission = () => {
-  const { fetchRoleById } = useRoleStore();
   const [permissions, setPermissions] = useState<GroupedPermission[]>([]);
-  const role_id = Number(localStorage.getItem("role_id"));
 
   useEffect(() => {
-    if (role_id) {
-      if (role_id === 1) {
-        // Jika role_id 1, otomatis Manage semua menu
-        setPermissions([{ menu_id: -1, permissions: ["Manage"] }]);
-      } else {
-        fetchRoleById(role_id)
-          .then((response) => {
-            console.log("Fetched role permissions:", response.permissions);
+    // Ambil data user login dari localStorage
+    const storedUserLogin = localStorage.getItem("user_login_data");
+    if (!storedUserLogin) {
+      console.warn("No user_login_data found in localStorage.");
+      return;
+    }
 
-            // Grouping: gabungkan permission_type untuk menu_id yang sama
-            const groupedPermissions = (response.permissions || []).reduce(
-              (acc: GroupedPermission[], curr) => {
-                const existing = acc.find(
-                  (item) => item.menu_id === curr.menu_id
-                );
-                if (existing) {
-                  if (!existing.permissions.includes(curr.permission_type)) {
-                    existing.permissions.push(curr.permission_type);
-                  }
-                } else {
-                  acc.push({
-                    menu_id: curr.menu_id,
-                    permissions: [curr.permission_type],
-                  });
-                }
-                return acc;
-              },
-              []
-            );
+    const dataUserLogin = JSON.parse(storedUserLogin);
+    const role_id = dataUserLogin?.user?.role_id;
+    const rawPermissions = dataUserLogin?.permissions || [];
 
-            console.log("Grouped Permissions:", groupedPermissions);
-            setPermissions(groupedPermissions);
-          })
-          .catch((error) => {
-            console.error("Failed to fetch role permissions:", error);
-          });
-      }
+    if (role_id === 1) {
+      // Jika role_id 1, otomatis Manage semua menu
+      setPermissions([{ menu_id: -1, permissions: ["Manage"] }]);
+    } else {
+      // Grouping: gabungkan permission_type untuk menu_id yang sama
+      const groupedPermissions = rawPermissions.reduce(
+        (
+          acc: GroupedPermission[],
+          curr: { menu_id: number; permission_type: string }
+        ) => {
+          const existing = acc.find((item) => item.menu_id === curr.menu_id);
+          if (existing) {
+            if (!existing.permissions.includes(curr.permission_type)) {
+              existing.permissions.push(curr.permission_type);
+            }
+          } else {
+            acc.push({
+              menu_id: curr.menu_id,
+              permissions: [curr.permission_type],
+            });
+          }
+          return acc;
+        },
+        []
+      );
+
+      console.log("Grouped Permissions:", groupedPermissions);
+      setPermissions(groupedPermissions);
     }
   }, []);
 

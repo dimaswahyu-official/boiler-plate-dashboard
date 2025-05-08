@@ -104,7 +104,7 @@ const AppSidebar: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
-        <Link to="/">
+        <Link to="">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <img className="dark:hidden" src="/images/logo/logo_nna.png" alt="Logo" width={150} height={40} />

@@ -24,11 +24,10 @@ import {
   VisitTypes,
   MasterCustomer,
   SuratTugas,
-  DetailCustomer
+  DetailCustomer,
 } from "./utils/PagesComponent";
 import MasterBranch from "./pages/Master/MasterBranch";
 import MasterRegion from "./pages/Master/MasterRegion";
-
 
 export function AppRoutes() {
   const navigate = useNavigate();
@@ -50,12 +49,6 @@ export function AppRoutes() {
     }
   }, [isAuthenticated, navigate]);
 
-  // const local_menus = (() => {
-  //   const storedMenus = localStorage.getItem("local_menus");
-  //   return storedMenus && storedMenus !== "undefined"
-  //     ? JSON.parse(storedMenus)
-  //     : [];
-  // })();
 
   const user_login_menu = (() => {
     const storedUserLogin = localStorage.getItem("user_login_data");
@@ -63,7 +56,6 @@ export function AppRoutes() {
       ? JSON.parse(storedUserLogin).menus
       : null;
   })();
-  
 
   const componentMap: Record<string, JSX.Element> = {
     SalesRoute: <SalesRoute />,
@@ -91,7 +83,6 @@ export function AppRoutes() {
   };
 
   const flattenedRoutes = flattenRoutes(user_login_menu as any[]);
-  
 
   const renderDynamicRoutes = () => {
     if (!Array.isArray(flattenedRoutes) || flattenedRoutes.length === 0) {
@@ -133,7 +124,6 @@ export function AppRoutes() {
             <Route path="/master_customer" element={<MasterCustomer />} />
             <Route path="/master_branch" element={<MasterBranch />} />
             <Route path="/master_region" element={<MasterRegion />} />
-
 
             <Route path="/create_role" element={<CreateRole />} />
             <Route path="/update_role" element={<UpdateRole />} />
