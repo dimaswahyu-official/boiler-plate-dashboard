@@ -1,0 +1,25 @@
+stages:
+  - deploy
+
+deploy_production:
+  stage: deploy
+  only:
+    - master
+  before_script:
+    # Install SSH agent and add the private key
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+  script:
+    - ssh $DEPLOY_USER@$SERVER_IP "
+      git config --global user.email 'bagas.mahaswara@limamail.net' &&
+      git config --global user.name 'bagas.mahasmara' &&
+      cd /var/www/html/dms-sfa-dashboard &&
+      git pull origin master &&
+      ./srvsfa.sh
+      "
+  environment:
+    name: production
