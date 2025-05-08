@@ -12,7 +12,7 @@ interface Menu {
 
 export const getAllMenus = async () => {
   try {
-    const res = await axiosInstance.get("/menu");
+    const res = await axiosInstance.get("/menu");    
     return res.data.data;
   } catch (error: any) {
     console.error(

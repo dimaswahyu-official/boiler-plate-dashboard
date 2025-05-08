@@ -23,7 +23,7 @@ export const useMenuStore = create<MenuState>((set) => ({
   fetchMenus: async () => {
     set({ loading: true, error: null });
     try {
-      const data = await getAllMenus();
+      const data = await getAllMenus();      
       localStorage.setItem('local_menus', JSON.stringify(data));
       set({ menus: data, loading: false });
     } catch (err: any) {

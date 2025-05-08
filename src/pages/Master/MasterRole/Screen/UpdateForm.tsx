@@ -72,6 +72,7 @@ export default function UpdateFormWithTable(paramRole: any) {
   const navigate = useNavigate();
   const { fetchMenus, menus } = useMenuStore();
   const { updateRole } = useRoleStore();
+    
 
   const { control, register, getValues } = useForm({
     defaultValues: {

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useRef, useEffect, useMemo } from "react";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import DynamicForm, {
   FieldConfig,
 } from "../../../../components/form-input/dynamicForm";
 import TableMenuPermission from "../Table/CreatePermission";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
+import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import { useNavigate } from "react-router-dom";
 
 const fields: FieldConfig[] = [
@@ -41,52 +42,52 @@ const fields: FieldConfig[] = [
 
 function CreateRole() {
   const navigate = useNavigate();
-  const { createRole } = useRoleStore(); // Ambil fungsi createRole dari store
-  const [tableData, setTableData] = useState<any>({});
+  const { createRole } = useRoleStore();
+  const { fetchMenus, menus } = useMenuStore();
+  const tablePermissionRef = useRef<any>(null);
 
-  const handleTableChange = (data: any) => {
-
-    console.log("Data from Table:", data);
-    
-    // Use a timeout to defer the state update to avoid updating during render
-    setTimeout(() => setTableData(data), 0); // Simpan data dari table
-  };
+  useEffect(() => {
+    fetchMenus(); // Fetch menu saat mount
+  }, [fetchMenus]);
 
   const handleSubmit = async (formData: any) => {
+    const selectedPermissions =
+      tablePermissionRef.current?.getSelectedPermissions() || [];
 
-    console.log("Form Data:", formData);
-    
-    // Transformasikan permissions menjadi array
-    const transformedPermissions = Object.entries(tableData).flatMap(
-      ([menuId, permissions]) =>
-        Object.entries(permissions as Record<string, boolean>)
-          .filter(([_, isChecked]) => isChecked) // Hanya ambil yang dicentang
-          .map(([permissionType]) => ({
-            menu_id: parseInt(menuId, 10), // Ubah menuId menjadi number
-            permission_type: permissionType,
-          }))
-    );
+    const payload = {
+      name: formData.name,
+      description: formData.description,
+      permissions: selectedPermissions,
+    };
 
-    console.log("Transformed Permissions:", transformedPermissions);
-    
+    console.log("Payload yang akan dikirim:", payload);
 
-    // // Buat payload akhir
-    // const payload = {
-    //   name: formData.name,
-    //   description: formData.description,
-    //   permissions: transformedPermissions,
-    // };
-
-    // console.log(payload);
-
-    // try {
-    //   // Panggil fungsi createRole dari roleStore
-    //   await createRole(payload);
-    //   navigate("/master_role");
-    // } catch (error: any) {
-    //   console.log("Gagal membuat role: " + error.message);
-    // }
+    try {
+      await createRole(payload);
+      navigate("/master_role");
+    } catch (error: any) {
+      console.log("Gagal membuat role: " + error.message);
+    }
   };
+
+  const flattenMenus = (menuData: any[]) => {
+    const result: any[] = [];
+    const traverse = (items: any[]) => {
+      items.forEach((item) => {
+        result.push(item);
+        if (item.children && item.children.length > 0) {
+          traverse(item.children);
+        }
+      });
+    };
+    traverse(menuData);
+    return result;
+  };
+
+  const flattenedMenus = useMemo(() => {
+    return flattenMenus(menus);
+  }, [menus]);
+
   return (
     <>
       <PageBreadcrumb
@@ -101,12 +102,21 @@ function CreateRole() {
           <DynamicForm fields={fields} onSubmit={handleSubmit} />
         </div>
         <div className="mt-6">
-          <TableMenuPermission onChange={handleTableChange} />
+          <TableMenuPermission
+            ref={tablePermissionRef}
+            menus={flattenedMenus.map((menu: any) => ({
+              id: menu.id,
+              name: menu.name, // dari API-nya kamu name bukan menu_name
+            }))}
+          />
         </div>
 
         {/* Tombol Bawah */}
         <div className="flex justify-end mt-6 gap-4">
-          <button className="px-6 py-2 border border-orange-500 text-orange-500 rounded-md hover:bg-orange-50">
+          <button
+            className="px-6 py-2 border border-orange-500 text-orange-500 rounded-md hover:bg-orange-50"
+            onClick={() => navigate(-1)}
+          >
             Kembali
           </button>
           <button
