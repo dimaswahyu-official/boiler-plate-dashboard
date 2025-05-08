@@ -19,7 +19,7 @@ deploy_production:
       git config --global user.name 'bagas.mahasmara' &&
       cd /var/www/html/dms-sfa-dashboard &&
       git pull origin master &&
-      ./srvsfa.sh
+      ./sfafe.sh
       "
   environment:
     name: production
