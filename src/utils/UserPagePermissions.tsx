@@ -9,14 +9,22 @@ export const usePagePermissions = () => {
   // Dapatkan menuId berdasarkan path halaman saat ini
   const menuId = getMenuIdByPath(location.pathname);
 
-  // Periksa izin berdasarkan menuId
   const canCreate = menuId ? hasPermission(menuId, "Create") : false;
   const canUpdate = menuId ? hasPermission(menuId, "Update") : false;
   const canDelete = menuId ? hasPermission(menuId, "Delete") : false;
   const canView = menuId ? hasPermission(menuId, "View") : false;
+  const canManageDirect = menuId ? hasPermission(menuId, "Manage") : false;
 
-  // Periksa apakah memiliki semua izin
-  const canManage = canCreate && canUpdate && canDelete && canView;
+  const canManage =
+    canManageDirect || (canCreate && canUpdate && canDelete && canView);
 
-  return { canCreate, canUpdate, canDelete, canView, canManage };
+  return {
+    canCreate,
+    canUpdate,
+    canDelete,
+    canView,
+    canManage,
+    // Bonus tambahan kalau mau expose menuId juga
+    menuId,
+  };
 };

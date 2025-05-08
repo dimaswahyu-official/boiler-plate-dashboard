@@ -63,6 +63,7 @@ export function AppRoutes() {
       ? JSON.parse(storedUserLogin).menus
       : null;
   })();
+  
 
   const componentMap: Record<string, JSX.Element> = {
     SalesRoute: <SalesRoute />,
@@ -93,6 +94,7 @@ export function AppRoutes() {
       ? user_login_menu
       : local_menus) as any[]
   );
+  
 
   const renderDynamicRoutes = () => {
     if (!Array.isArray(flattenedRoutes) || flattenedRoutes.length === 0) {
@@ -119,7 +121,6 @@ export function AppRoutes() {
   //     ) : null;
   //   });
   // };
-
 
   return (
     <>

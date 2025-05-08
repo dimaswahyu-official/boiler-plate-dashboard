@@ -72,7 +72,6 @@ export default function UpdateFormWithTable(paramRole: any) {
   const navigate = useNavigate();
   const { fetchMenus, menus } = useMenuStore();
   const { updateRole } = useRoleStore();
-    
 
   const { control, register, getValues } = useForm({
     defaultValues: {
@@ -105,6 +104,19 @@ export default function UpdateFormWithTable(paramRole: any) {
     fetchMenus();
   }, []);
 
+  // useEffect(() => {
+  //   if (paramRole.paramRole.permissions) {
+  //     const permissionsMap: any = {};
+  //     paramRole.paramRole.permissions.forEach((permission: any) => {
+  //       if (!permissionsMap[permission.menu_id]) {
+  //         permissionsMap[permission.menu_id] = {};
+  //       }
+  //       permissionsMap[permission.menu_id][permission.permission_type] = true;
+  //     });
+  //     setSelectedPermissions(permissionsMap);
+  //   }
+  // }, [paramRole.paramRole.permissions]);
+
   useEffect(() => {
     if (paramRole.paramRole.permissions) {
       const permissionsMap: any = {};
@@ -118,22 +130,14 @@ export default function UpdateFormWithTable(paramRole: any) {
     }
   }, [paramRole.paramRole.permissions]);
 
-  // Handle checkbox change
-  // Jika checkbox sudah aktif, reset semua permission ke false
   const handleCheckboxChange = (menuId: number, permissionType: string) => {
     setSelectedPermissions((prev: any) => {
       const isCurrentlyChecked = prev[menuId]?.[permissionType] || false;
-  
+
       return {
         ...prev,
         [menuId]: {
-          // Jika checkbox sudah aktif, reset semua permission ke false
-          Create: false,
-          Update: false,
-          View: false,
-          Delete: false,
-          Manage: false,
-          // Jika belum aktif, aktifkan checkbox yang dipilih
+          ...prev[menuId],
           [permissionType]: !isCurrentlyChecked,
         },
       };

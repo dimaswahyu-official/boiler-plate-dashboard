@@ -65,6 +65,7 @@ export default function SignInForm() {
       if (!accessToken) {
         throw new Error("Login failed!");
       }
+
       fetchMenus();
       localStorage.setItem(
         "user_login_data",
@@ -74,9 +75,11 @@ export default function SignInForm() {
       localStorage.setItem("role_id", user?.role_id.toString() || "");
       showSuccessToast("Login successful!");
 
-      setTimeout(() => {
-        navigate("/master_menu");
-      }, 1000);
+      console.log("User data:", user);
+
+      // setTimeout(() => {
+      //   navigate("/master_menu");
+      // }, 1000);
     } catch (err: any) {
       console.error("Login failed:", err);
       setError(err.message || "Login failed!");
