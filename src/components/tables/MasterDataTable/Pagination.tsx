@@ -28,36 +28,18 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
   gotoPage,
 }) => {
   const renderPageNumbers = () => {
-    const maxVisiblePages = 4; // Jumlah maksimal halaman yang terlihat
     const pages = [];
 
-    if (pageCount <= maxVisiblePages) {
-      // Jika jumlah halaman lebih kecil atau sama dengan maxVisiblePages, tampilkan semua
-      for (let i = 0; i < pageCount; i++) {
-        pages.push(i);
-      }
-    } else {
-      // Tambahkan halaman pertama
-      pages.push(0);
+    // Tambahkan halaman pertama
+    pages.push(0);
 
-      // Tambahkan halaman sebelum halaman aktif
-      if (pageIndex > 2) {
-        pages.push("...");
-      }
+    // Tambahkan halaman aktif
+    if (pageIndex > 0 && pageIndex < pageCount - 1) {
+      pages.push(pageIndex);
+    }
 
-      // Tambahkan halaman aktif dan sekitarnya
-      const start = Math.max(1, pageIndex - 1);
-      const end = Math.min(pageCount - 2, pageIndex + 1);
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-
-      // Tambahkan halaman setelah halaman aktif
-      if (pageIndex < pageCount - 3) {
-        pages.push("...");
-      }
-
-      // Tambahkan halaman terakhir
+    // Tambahkan halaman terakhir
+    if (pageCount > 1) {
       pages.push(pageCount - 1);
     }
 
