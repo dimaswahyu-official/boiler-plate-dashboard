@@ -82,7 +82,9 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
 
   return (
     <div className="flex justify-between items-center mt-4">
-      <div className="text-sm">Selected: {selectedRowCount}</div>
+      {selectedRowCount > 0 && (
+        <div className="text-sm">Selected: {selectedRowCount}</div>
+      )}
 
       <div className="text-sm">
         Page {pageIndex + 1} of {pageCount}
