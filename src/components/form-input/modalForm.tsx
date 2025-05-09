@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import Select from "react-select";
 import DatePicker from "../../components/form/date-picker";
@@ -40,6 +40,10 @@ const FormInput: React.FC<FormInputProps> = ({
     defaultValues,
   });
 
+  const [nikStatus, setNikStatus] = useState<
+    "valid" | "invalid" | "checking" | null
+  >(null);
+
   useEffect(() => {
     if (defaultValues) {
       reset(defaultValues);
@@ -49,6 +53,23 @@ const FormInput: React.FC<FormInputProps> = ({
   const handleSubmit = (data: FormValues) => {
     console.log("Form Data:", data); // Log data yang dikirimkan
     onSubmit(data); // Kirim data ke parent
+  };
+
+  const checkNik = async (nik: string) => {
+    setNikStatus("checking"); // Set status menjadi "checking"
+    try {
+      const response = await fetch(`/api/check-nik?nik=${nik}`);
+      const data = await response.json();
+
+      if (data.exists) {
+        setNikStatus("valid"); // Jika NIK ditemukan
+      } else {
+        setNikStatus("invalid"); // Jika NIK tidak ditemukan
+      }
+    } catch (error) {
+      console.error("Error checking NIK:", error);
+      setNikStatus("invalid"); // Set status menjadi "invalid" jika terjadi error
+    }
   };
 
   const renderField = (field: FormField) => {
@@ -118,6 +139,53 @@ const FormInput: React.FC<FormInputProps> = ({
                 }
               />
             )}
+          />
+        );
+      case "text":
+        if (field.name === "nik") {
+          return (
+            <div>
+              <input
+                type="text"
+                {...register(field.name, field.validation)}
+                className={commonClasses}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length === 5) {
+                    checkNik(value); // Panggil fungsi validasi NIK
+                  } else if (value.length > 5) {
+                    setNikStatus("invalid"); // Set status menjadi invalid jika lebih dari 5 karakter
+                  } else {
+                    setNikStatus(null); // Reset status jika kurang dari 5 karakter
+                  }
+                }}
+              />
+              {nikStatus === "checking" && (
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-blue-500"></div>
+                  <span>Checking...</span>
+                </div>
+              )}
+              {nikStatus === "valid" && (
+                <span style={{ color: "green", fontSize: "13px" }}>
+                  NIK valid
+                </span>
+              )}
+              {nikStatus === "invalid" && (
+                <span style={{ color: "red", fontSize: "13px" }}>
+                  {field.name.length > 5
+                    ? "NIK tidak boleh lebih dari 5 digit"
+                    : "NIK tidak ditemukan"}
+                </span>
+              )}
+            </div>
+          );
+        }
+        return (
+          <input
+            type={field.type}
+            {...register(field.name, field.validation)}
+            className={commonClasses}
           />
         );
       default:

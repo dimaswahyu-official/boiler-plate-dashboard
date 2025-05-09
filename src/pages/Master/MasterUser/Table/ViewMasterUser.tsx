@@ -52,6 +52,8 @@ const TableMasterMenu = () => {
       role: u.role_id || "", // Ensure role exists
       branch: u.branch || "",
       create_on: u.create_on || "", // Ensure create_on exists
+      nik: "", // Ensure nik exists
+      nik_spv: "", // Ensure nik_spv exists
     }));
   }, [user]);
 
@@ -70,24 +72,37 @@ const TableMasterMenu = () => {
       validation: { required: "Name is required" },
     },
     {
-      name: "username",
-      label: "Username",
-      type: "text",
-      validation: { required: "Username is required" },
-    },
-    {
-      name: "phone_number",
-      label: "No. Handphone Kantor",
-      type: "text",
-      validation: { required: "Phone number is required" },
-    },
-    {
       name: "roles",
       label: "Roles",
       type: "select",
       options: optionRoles, // Use dynamic roles here
       validation: { required: "Role is required" },
     },
+    // {
+    //   name: "username",
+    //   label: "Username",
+    //   type: "text",
+    //   validation: { required: "Username is required" },
+    // },
+    {
+      name: "nik",
+      label: "NIK",
+      type: "text",
+      validation: { required: "NIK Karyawan is required" },
+    },
+    {
+      name: "nik_spv",
+      label: "NIK Supervisor",
+      type: "text",
+      validation: { required: "SPV NIK is required" },
+    },
+    {
+      name: "phone_number",
+      label: "Nomor HP Kantor",
+      type: "text",
+      validation: { required: "Phone number is required" },
+    },
+
     {
       name: "branch",
       label: "Cabang",
@@ -171,33 +186,34 @@ const TableMasterMenu = () => {
   })();
 
   const handleSubmit = async (payload: any) => {
-    console.log("Payload:", payload);
+    console.log("Payload create user:", payload);
 
-    const formattedPayload = {
-      name: payload.name,
-      email: payload.email,
-      username: payload.username,
-      employee_id: payload.username,
-      password: payload.password,
-      picture: "",
-      is_active: true,
-      join_date: "2023-01-01T00:00:00Z",
-      valid_from: "2023-01-01T00:00:00Z",
-      valid_to: "2023-01-01T00:00:00Z",
-      role_id: Number(payload.roles),
-      created_by: user_login?.username,
-      updated_by: user_login?.username,
-    };
+    // const formattedPayload = {
+    //   name: payload.name,
+    //   email: payload.email,
+    //   username: payload.username,
+    //   employee_id: payload.username,
+    //   password: payload.password,
+    //   picture: "",
+    //   is_active: true,
+    //   join_date: "2023-01-01T00:00:00Z",
+    //   valid_from: "2023-01-01T00:00:00Z",
+    //   valid_to: "2023-01-01T00:00:00Z",
+    //   role_id: Number(payload.roles),
+    //   created_by: user_login?.username,
+    //   updated_by: user_login?.username,
+    // };
 
-    console.log("Formatted Payload:", formattedPayload);
+    // console.log("Formatted Payload:", formattedPayload);
 
-    try {
-      await createUser(formattedPayload);
-    } catch (error) {
-      console.error("Error creating user:", error);
-    }
+    // try {
+    //   await createUser(formattedPayload);
+    // } catch (error) {
+    //   console.error("Error creating user:", error);
+    // }
   };
 
+  // UPLOAD EXCEL
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -217,10 +233,6 @@ const TableMasterMenu = () => {
   const onButtonClick = () => {
     fileInputRef.current?.click(); // Trigger hidden file input click
   };
-
-  // useEffect(() => {
-  //   console.log("Import Data:", importData);
-  // }, [importData]);
 
   return (
     <>

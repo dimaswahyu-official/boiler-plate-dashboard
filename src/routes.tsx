@@ -28,6 +28,7 @@ import {
 } from "./utils/PagesComponent";
 import MasterBranch from "./pages/Master/MasterBranch";
 import MasterRegion from "./pages/Master/MasterRegion";
+import MasterSalesman from "./pages/Master/MasterSalesman";
 
 export function AppRoutes() {
   const navigate = useNavigate();
@@ -124,6 +125,8 @@ export function AppRoutes() {
             <Route path="/master_customer" element={<MasterCustomer />} />
             <Route path="/master_branch" element={<MasterBranch />} />
             <Route path="/master_region" element={<MasterRegion />} />
+            <Route path="/master_salesman" element={<MasterSalesman />} />
+
 
             <Route path="/create_role" element={<CreateRole />} />
             <Route path="/update_role" element={<UpdateRole />} />

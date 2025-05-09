@@ -8,6 +8,8 @@ type User = {
   id: number;
   name: string;
   username: string;
+  nik: string;
+  nik_spv: string;
   email: string;
   role: any;
   branch?: string; // Added branch as an optional property
@@ -36,13 +38,18 @@ const MenuTable = ({
   const columns: ColumnDef<User>[] = useMemo(
     () => [
       {
-        accessorKey: "name",
+        accessorKey: "username",
         header: "Name",
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "username",
-        header: "Username",
+        accessorKey: "nik",
+        header: "NIK",
+        cell: (info) => String(info.getValue()),
+      },
+      {
+        accessorKey: "nik_spv",
+        header: "NIK Supervisor",
         cell: (info) => String(info.getValue()),
       },
       {
