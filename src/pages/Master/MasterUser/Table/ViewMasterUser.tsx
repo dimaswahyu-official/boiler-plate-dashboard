@@ -188,10 +188,12 @@ const TableMasterMenu = () => {
   const handleSubmit = async (payload: any) => {
     console.log("Payload create user:", payload);
 
+    alert("Dalam proses development");
+
     // const formattedPayload = {
     //   name: payload.name,
     //   email: payload.email,
-    //   username: payload.username,
+    //   username: payload.username,sss
     //   employee_id: payload.username,
     //   password: payload.password,
     //   picture: "",
