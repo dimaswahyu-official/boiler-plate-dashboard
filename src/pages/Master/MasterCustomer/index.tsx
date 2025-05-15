@@ -1,7 +1,7 @@
 
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
-// import ViewTable from "./Table/ViewMasterCustomer";
-import ViewTable from "./Table/DataTable";
+import ViewTable from "./Table/ViewMasterCustomer";
+// import ViewTable from "./Table/DataTable";
 
 
 export default function MasterCustomer() {

@@ -13,116 +13,110 @@ type FieldConfig = BaseFieldConfig & {
 function DetailCustomerPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const custData = location.state?.custData; // Ambil custData dari state
+  const customer = location.state?.customer; // Ambil customer dari state
 
   const fields: FieldConfig[] = [
     {
       name: "cust_account_id",
       label: "ID Pelanggan",
       type: "text",
-      defaultValue: custData?.cust_account_id,
+      defaultValue: customer?.cust_account_id,
     },
     {
       name: "npwp",
       label: "NPWP",
       type: "text",
-      defaultValue: custData?.npwp,
+      defaultValue: customer?.npwp,
     },
     {
       name: "ktp",
       label: "KTP",
       type: "text",
-      defaultValue: custData?.ktp,
+      defaultValue: customer?.ktp,
     },
     {
       name: "phone",
       label: "No telepon",
       type: "text",
-      defaultValue: custData?.phone,
+      defaultValue: customer?.phone,
     },
     {
       name: "customer_number",
       label: "Kode Pelanggan",
       type: "text",
-      defaultValue: custData?.customer_number,
+      defaultValue: customer?.customer_number,
     },
     {
       name: "name",
       label: "Nama Pelanggan",
       type: "text",
-      defaultValue: custData?.name,
+      defaultValue: customer?.name,
     },
     {
       name: "alias",
       label: "Nama Alias",
       type: "text",
-      defaultValue: custData?.alias,
+      defaultValue: customer?.alias,
     },
     {
       name: "owner",
       label: "Owner",
       type: "text",
-      defaultValue: custData?.owner,
-    },
-    {
-      name: "owner",
-      label: "Owner",
-      type: "text",
-      defaultValue: custData?.owner,
+      defaultValue: customer?.owner,
     },
     {
       name: "provinsi",
       label: "Provinsi",
       type: "text",
-      defaultValue: custData?.addresses?.[0]?.provinsi,
+      defaultValue: customer?.addresses?.[0]?.provinsi,
     },
     {
       name: "kab_kodya",
       label: "Kabupaten",
       type: "text",
-      defaultValue: custData?.addresses?.[0]?.kab_kodya,
+      defaultValue: customer?.addresses?.[0]?.kab_kodya,
     },
     {
       name: "kecamatan",
       label: "Kecamatan",
       type: "text",
-      defaultValue: custData?.addresses?.[0]?.kecamatan,
+      defaultValue: customer?.addresses?.[0]?.kecamatan,
     },
     {
       name: "kelurahan",
       label: "Kelurahan",
       type: "text",
-      defaultValue: custData?.addresses?.[0]?.kelurahan,
+      defaultValue: customer?.addresses?.[0]?.kelurahan,
     },
     {
       name: "kodepos",
       label: "Kode Pos",
       type: "text",
-      defaultValue: custData?.addresses?.[0]?.kodepos,
+      defaultValue: customer?.addresses?.[0]?.kodepos,
     },
     {
       name: "address1",
       label: "Alamat",
       type: "textarea",
-      defaultValue: custData?.addresses?.[0]?.address1,
+      defaultValue: customer?.addresses?.[0]?.address1,
     },
     {
       name: "latitude",
       label: "Latitude",
       type: "text",
-      defaultValue: custData?.addresses?.[0]?.latitude,
+      defaultValue: customer?.addresses?.[0]?.latitude,
     },
     {
       name: "longitude",
       label: "Longitude",
       type: "text",
-      defaultValue: custData?.addresses?.[0]?.longitude,
+      defaultValue: customer?.addresses?.[0]?.longitude,
     },
   ];
 
   const handleSubmit = async (formData: any) => {
     console.log("Form Data:", formData);
-    console.log("Customer Data:", custData); // Gunakan custData di sini
+    console.log("Customer Data:", customer); // Gunakan customer di sini
   };
 
   return (
@@ -135,10 +129,8 @@ function DetailCustomerPage() {
       />
 
       <div className="p-4">
-        <div className="grid grid-cols-1">
-          <CustomerForm fields={fields} onSubmit={handleSubmit} />
-        </div>
-
+        <div className="grid grid-cols-1"></div>
+        <CustomerForm fields={fields} onSubmit={handleSubmit} />
         {/* Tombol Bawah */}
         <div className="flex justify-end mt-6 gap-4">
           <button

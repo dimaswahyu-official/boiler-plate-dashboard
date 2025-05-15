@@ -36,31 +36,31 @@ const AdjustTable = ({
         accessorKey: "employee_name",
         header: "Salesman Name",
         sortingFn: "basic",
-        enableSorting: true, // Menambahkan fitur sortir
+        enableSorting: true,
       },
       {
         accessorKey: "salesrep_number",
         header: "Salesman No",
         sortingFn: "basic",
-        enableSorting: true, // Menambahkan fitur sortir
+        enableSorting: true,
       },
       {
         accessorKey: "vendor_name",
         header: "Vendor Name",
         sortingFn: "basic",
-        enableSorting: true, // Menambahkan fitur sortir
+        enableSorting: true,
       },
       {
         accessorKey: "organization_name",
         header: "Organization Name",
         sortingFn: "basic",
-        enableSorting: true, // Menambahkan fitur sortir
+        enableSorting: true,
       },
       {
         accessorKey: "status",
         header: "Status",
         sortingFn: "basic",
-        enableSorting: true, // Menambahkan fitur sortir
+        enableSorting: true,
       },
       {
         accessorKey: "start_date_active",

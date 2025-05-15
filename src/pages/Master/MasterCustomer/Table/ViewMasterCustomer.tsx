@@ -1,51 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { useCustomerStore } from "../../../../API/store/MasterStore/masterCustomerStore";
-import AdjustTable from "./AdjustTableCustomer";
+import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
+
 import Button from "../../../../components/ui/button/Button";
 import Input from "../../../../components/form/input/InputField";
 import Label from "../../../../components/form/Label";
+import Select from "../../../../components/form/Select";
+
+import DataTable from "../Table/DataTable";
 
 const ViewMasterCustomer = () => {
-  const {
-    customers,
-    isLoading,
-    error,
-    fetchCustomers,
-    totalCount, // ✅ tambahkan ini
-  } = useCustomerStore();
-
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(100);
 
-  useEffect(() => {
-    console.log("currentPage:", currentPage);
-
-    console.log(
-      "Fetching data for page:",
-      currentPage + 1,
-      "with pageSize:",
-      pageSize
-    );
-    fetchCustomers(currentPage + 1, pageSize); // ✅ lebih clean
-  }, [currentPage, pageSize, fetchCustomers]);
-
-  const handleDetail = (id: number) => {
-    console.log("Detail ID:", id);
-  };
-
-  const handleDelete = (id: number) => {
-    console.log("Delete ID:", id);
-  };
+  const options = [{ value: "A", label: "Active" }];
 
   return (
     <div>
       <div className="p-4 bg-white shadow rounded-md mb-5">
         <div className="flex justify-between items-center">
-          <div className="space-x-4">
-            <Label htmlFor="search">Pencarian</Label>
+          <div
+            className="space-x-4"
+            title="tekan enter setelah input nama/id pelanggan untuk mendapatkan hasil pencarian"
+          >
+            <Label htmlFor="search">Nama/ID Pelanggan</Label>
             <Input
-              onChange={(e) => setGlobalFilter(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  setGlobalFilter(e.currentTarget.value);
+                }
+              }}
               type="text"
               id="search"
               placeholder="🔍 Search..."
@@ -58,6 +41,7 @@ const ViewMasterCustomer = () => {
               size="sm"
               onClick={() => alert("Unduh Data")}
             >
+              <FaFileDownload />
               Unduh
             </Button>
             <Button
@@ -65,6 +49,7 @@ const ViewMasterCustomer = () => {
               size="sm"
               onClick={() => alert("Import Data")}
             >
+              <FaFileImport />
               Import
             </Button>
             <Button
@@ -72,26 +57,74 @@ const ViewMasterCustomer = () => {
               size="sm"
               onClick={() => alert("Tambah Customer")}
             >
+              <FaPlus />
               Tambah Customer
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center mt-3">
+          <div
+            className="space-x-4"
+            style={{ zIndex: 9999, position: "relative" }}
+          >
+            <Label htmlFor="jenis-kunjungan-select">Cabang</Label>
+            <Select
+              options={options}
+              placeholder="Pilih"
+              value=""
+              className="dark:bg-dark-900 react-select-container"
+              onChange={(value) => {
+                console.log("Selected Status:", value);
+              }}
+            />
+          </div>
+
+          <div
+            className="space-x-4"
+            style={{ zIndex: 9999, position: "relative" }}
+          >
+            <Label htmlFor="jenis-kunjungan-select">Tipe Channel</Label>
+            <Select
+              options={options}
+              placeholder="Pilih"
+              value=""
+              className="dark:bg-dark-900 react-select-container"
+              onChange={(value) => {
+                console.log("Selected Status:", value);
+              }}
+            />
+          </div>
+
+          <div
+            className="space-x-4"
+            style={{ zIndex: 9999, position: "relative" }}
+          >
+            <Label htmlFor="jenis-kunjungan-select">Status</Label>
+            <Select
+              options={options}
+              placeholder="Pilih"
+              value=""
+              className="dark:bg-dark-900 react-select-container"
+              onChange={(value) => {
+                console.log("Selected Status:", value);
+              }}
+            />
+          </div>
+
+          <div className="flex justify-center items-center mt-5">
+            <Button
+              variant="rounded"
+              size="sm"
+              onClick={() => alert("Reset Filter")}
+            >
+              <FaUndo />
             </Button>
           </div>
         </div>
       </div>
 
-      <AdjustTable
-        data={customers}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-        onDetail={handleDetail}
-        onDelete={handleDelete}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        pageSize={pageSize}
-        setPageSize={(size) => setPageSize(size)} // ✅
-        totalDataCount={customers.length} // ❗️
-        isLoading={isLoading}
-        error={error}
-      />
+      <DataTable globalFilter={globalFilter} />
     </div>
   );
 };

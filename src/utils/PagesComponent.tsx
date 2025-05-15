@@ -18,7 +18,7 @@ import VisitTypes from "../pages/Parameters/ParameterList/VisitTypes";
 
  // MASTER CUSTOMER
  import MasterCustomer from '../pages/Master/MasterCustomer'
- import DetailCustomer from "../pages/Master/MasterCustomer/DetailPage";
+ import DetailCustomer from "../pages/Master/MasterCustomer/DetailPage/DetailCustomerPage";
 
 //  SALES & DISTRIBUTION
 import SuratTugas from "../pages/SalesDistribution/SuratTugas";

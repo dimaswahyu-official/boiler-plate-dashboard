@@ -65,48 +65,39 @@ interface Customer {
 }
 
 interface FetchCustomersResponse {
-  statusCode: number;
-  message: string;
-  data: {
-    data: Customer[];
-    count: number;
-    totalPages: number;
-    currentPage: number;
-    limit: number;
-    message: string;
-    status: boolean;
-  };
+  data: Customer[];
+  totalPages: number;
+  currentPage: number;
+  count: number;
 }
 
 export const fetchCustomers = async (
-  page?: number,
-  limit?: number,
+  page: number,
+  limit: number,
   sortBy?: string,
   sortOrder?: string,
   search?: string
-): Promise<{ customers: Customer[]; totalCount: number }> => {
+): Promise<FetchCustomersResponse> => {
   try {
     const queryParams = new URLSearchParams();
-
-    if (page) queryParams.append("page", page.toString());
-    if (limit) queryParams.append("limit", limit.toString());
+    queryParams.append("page", page.toString());
+    queryParams.append("limit", limit.toString());
     if (sortBy) queryParams.append("sortBy", sortBy);
     if (sortOrder) queryParams.append("sortOrder", sortOrder);
     if (search) queryParams.append("search", search);
 
-    const response = await axiosInstance.get<FetchCustomersResponse>(
+    const response = await axiosInstance.get(
       `/customer?${queryParams.toString()}`
     );
 
-    if (response.data.data.status) {
-      return {
-        customers: response.data.data.data,
-        totalCount: response.data.data.count,
-      };
-    } else {
-      showErrorToast(response.data.data.message);
-      return { customers: [], totalCount: 0 };
-    }
+    const apiData = response.data.data;
+
+    return {
+      data: apiData.data,
+      totalPages: apiData.totalPages,
+      currentPage: apiData.currentPage,
+      count: apiData.count,
+    };
   } catch (error: any) {
     showErrorToast(
       error.response?.data?.message || "Failed to fetch customers"

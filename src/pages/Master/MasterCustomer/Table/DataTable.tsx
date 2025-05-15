@@ -1,81 +1,91 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import {
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
   ColumnDef,
   flexRender,
+  SortingState,
+  getSortedRowModel,
 } from "@tanstack/react-table";
+import { useCustomerStore } from "../../../../API/store/MasterStore/masterCustomerStore";
 
-const DataTable: React.FC = () => {
-  const [data, setData] = useState<any[]>([]);
+interface DataTableProps {
+  globalFilter: string; // Tambahkan prop globalFilter
+}
+
+const DataTable: React.FC<DataTableProps> = ({ globalFilter }) => {
+  const navigate = useNavigate();
+  const { customers, totalPages, fetchCustomers } = useCustomerStore();
+
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  const fetchData = async (page: number) => {
-    console.log("Fetching data for page:", page);
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `http://10.0.29.47/api/v1/customer?page=${page}&limit=50`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const apiData = response.data.data;
-      console.log("API Data:", apiData);
-
-      setData(apiData.data);
-      setTotalPages(apiData.totalPages);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
-    fetchData(page);
-  }, [page]);
+    const sortBy = sorting[0]?.id ?? "customer_number"; // default kolom
+    const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
+    fetchCustomers(page, 50, sortBy, sortOrder, globalFilter);
+  }, [page, globalFilter, sorting]);
 
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: "id",
-      header: "ID",
+      accessorKey: "customer_number",
+      header: "ID Pelanggan",
     },
     {
       accessorKey: "name",
-      header: "Name",
+      header: "Nama pelanggan",
     },
     {
       accessorKey: "channel",
       header: "Channel",
     },
     {
-      accessorKey: "customer_number",
-      header: "Customer Number",
+      accessorKey: "is_active",
+      header: "Status",
+      cell: ({ getValue }) => (getValue() ? "Aktif" : "Non Aktif"),
     },
     {
-      accessorKey: "organization_name",
-      header: "Organization",
+      accessorKey: "organization_code",
+      header: "Cabang",
     },
     {
-      accessorKey: "term_name",
-      header: "Term",
-    },
-    {
-      accessorKey: "price_list_name",
-      header: "Price List",
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <a
+          href="#"
+          className="text-blue-500 underline"
+          onClick={(e) => {
+            e.preventDefault();
+            handleDetailClick(row.original);
+          }}
+        >
+          Detail
+        </a>
+      ),
     },
   ];
 
+  const handleDetailClick = (customer: any) => {
+    console.log("Customer details:", customer);
+    navigate("/detail_customer", { state: { customer } });
+  };
+
   const table = useReactTable({
-    data,
+    data: customers,
     columns,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(), // tetap dibutuhkan walau sorting-nya server-side
+    manualSorting: true, // ⬅️ penting agar TanStack tidak melakukan sorting lokal
     initialState: {
       pagination: {
         pageSize: 50,
@@ -85,11 +95,8 @@ const DataTable: React.FC = () => {
 
   const renderPageNumbers = () => {
     const pages = [];
-    const maxVisiblePages = 5; // Jumlah maksimal halaman yang terlihat
-    const startPage = Math.max(2, page - 1); // Halaman sebelum halaman aktif
-    const endPage = Math.min(totalPages - 1, page + 1); // Halaman setelah halaman aktif
 
-    // Tambahkan halaman pertama
+    // Halaman pertama
     pages.push(
       <button
         key={1}
@@ -102,40 +109,20 @@ const DataTable: React.FC = () => {
       </button>
     );
 
-    // Tambahkan "..." jika ada gap antara halaman pertama dan halaman aktif
-    if (startPage > 2) {
-      pages.push(
-        <span key="start-ellipsis" className="px-2 py-1">
-          ...
-        </span>
-      );
-    }
-
-    // Tambahkan halaman aktif dan sekitarnya
-    for (let i = startPage; i <= endPage; i++) {
+    // Halaman aktif (current page)
+    if (page !== 1 && page !== totalPages) {
       pages.push(
         <button
-          key={i}
-          onClick={() => setPage(i)}
-          className={`px-2 py-1 border rounded ${
-            page === i ? "bg-blue-500 text-white" : ""
-          }`}
+          key={page}
+          className="px-2 py-1 border rounded bg-blue-500 text-white"
+          disabled
         >
-          {i}
+          {page}
         </button>
       );
     }
 
-    // Tambahkan "..." jika ada gap antara halaman terakhir dan halaman aktif
-    if (endPage < totalPages - 1) {
-      pages.push(
-        <span key="end-ellipsis" className="px-2 py-1">
-          ...
-        </span>
-      );
-    }
-
-    // Tambahkan halaman terakhir
+    // Halaman terakhir
     if (totalPages > 1) {
       pages.push(
         <button
@@ -154,48 +141,55 @@ const DataTable: React.FC = () => {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Customer Data Table</h1>
+    <div>
       <div className="overflow-x-auto">
         <div className="overflow-auto max-h-[500px] border border-gray-300">
           <table className="min-w-full border-collapse">
             <thead className="bg-gray-100 sticky top-0 z-10">
               {table.getHeaderGroups().map((headerGroup: any) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header: any) => (
-                <th
-                  key={header.id}
-                  className="px-4 py-2 border border-gray-300 text-left"
-                >
-                  {header.isPlaceholder
-                ? null
-                : flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                </th>
-              ))}
-            </tr>
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header: any) => (
+                    <th
+                      key={header.id}
+                      className="px-4 py-2 border border-gray-300 text-left cursor-pointer"
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      <div className="flex items-center gap-1">
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {{
+                          asc: " 🔼",
+                          desc: " 🔽",
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                    </th>
+                  ))}
+                </tr>
               ))}
             </thead>
             <tbody>
               {table.getRowModel().rows.map((row: any) => (
-            <tr key={row.id} className="hover:bg-gray-50">
-              {row.getVisibleCells().map((cell: any) => (
-                <td
-                  key={cell.id}
-                  className="px-4 py-2 border border-gray-300"
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
+                <tr key={row.id} className="hover:bg-gray-50">
+                  {row.getVisibleCells().map((cell: any) => (
+                    <td
+                      key={cell.id}
+                      className="px-4 py-2 border border-gray-300"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex justify-center items-center mt-4 space-x-4">
         <button
           className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
@@ -203,7 +197,7 @@ const DataTable: React.FC = () => {
         >
           Previous
         </button>
-        <div className="flex space-x-2">{renderPageNumbers()}</div>
+        <div className="flex space-x-2 items-center">{renderPageNumbers()}</div>
         <button
           className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
           onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}

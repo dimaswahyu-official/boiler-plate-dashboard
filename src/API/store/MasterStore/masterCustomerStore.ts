@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { fetchCustomers } from '../../services/MasterServices/MasterCustomerService';
+import { create } from "zustand";
+import { fetchCustomers } from "../../services/MasterServices/MasterCustomerService";
 
 interface Address {
     id: number;
@@ -66,7 +66,9 @@ interface Customer {
 
 interface CustomersState {
     customers: Customer[];
-    totalCount: number; // ✅ TAMBAH total count
+    totalPages: number;
+    currentPage: number;
+    totalCount: number;
     isLoading: boolean;
     error: string | null;
     fetchCustomers: (
@@ -78,45 +80,36 @@ interface CustomersState {
     ) => Promise<void>;
 }
 
-
-export const useCustomerStore = create<CustomersState>((set, get) => ({
+export const useCustomerStore = create<CustomersState>((set) => ({
     customers: [],
-    totalCount: 0, // ✅
+    totalPages: 0,
+    currentPage: 1,
+    totalCount: 0,
     isLoading: false,
     error: null,
 
     fetchCustomers: async (
-        page,
-        limit,
-        sortBy,
-        sortOrder,
-        search
+        page: number,
+        limit = 50,
+        sortBy = "",
+        sortOrder = "",
+        search = ""
     ) => {
-
-        console.log("Fetching data for page:", page, "with limit:", limit, "sortBy:", sortBy, "sortOrder:", sortOrder, "search:", search);
-        console.log("totalCount", get().totalCount);
-        
-
         set({ isLoading: true, error: null });
         try {
-            const { customers, totalCount } = await fetchCustomers(
-                Number(page),
-                Number(limit),
-                sortBy?.toString() || '',
-                sortOrder || '',
-                search || ''
-            );
+            const response = await fetchCustomers(page, limit, sortBy, sortOrder, search);
             set({
-                customers,
-                totalCount, // ✅ simpan totalCount
+                customers: response.data,
+                totalPages: response.totalPages,
+                currentPage: response.currentPage,
+                totalCount: response.count,
             });
-        } catch (err: any) {
+        } catch (error: any) {
             set({
-                error: err.response?.data?.message || "Failed to fetch customers"
+                error: error.response?.data?.message || "Failed to fetch customers",
             });
         } finally {
             set({ isLoading: false });
         }
     },
-
 }));
