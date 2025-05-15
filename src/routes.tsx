@@ -29,6 +29,8 @@ import {
 import MasterBranch from "./pages/Master/MasterBranch";
 import MasterRegion from "./pages/Master/MasterRegion";
 import MasterSalesman from "./pages/Master/MasterSalesman";
+import ManagementTerritory from "./pages/Master/ManagementTerritory";
+import SelectTerritory from "./pages/Master/ManagementTerritory/selectTerritory";
 
 export function AppRoutes() {
   const navigate = useNavigate();
@@ -126,6 +128,7 @@ export function AppRoutes() {
             <Route path="/master_branch" element={<MasterBranch />} />
             <Route path="/master_region" element={<MasterRegion />} />
             <Route path="/master_salesman" element={<MasterSalesman />} />
+            <Route path="/management_territory" element={<ManagementTerritory />} />
 
 
             <Route path="/create_role" element={<CreateRole />} />
@@ -136,6 +139,9 @@ export function AppRoutes() {
             <Route path="/visit_types" element={<VisitTypes />} />
             <Route path="/surat_tugas" element={<SuratTugas />} />
             <Route path="/detail_customer" element={<DetailCustomer />} />
+            <Route path="/select_territory" element={<SelectTerritory />} />
+
+
 
             {renderDynamicRoutes()}
 
