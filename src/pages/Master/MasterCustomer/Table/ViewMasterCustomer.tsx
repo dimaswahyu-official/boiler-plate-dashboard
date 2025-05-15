@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useCustomerStore } from "../../../../API/store/MasterStore/masterCustomerStore";
 import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
-
 import Button from "../../../../components/ui/button/Button";
 import Input from "../../../../components/form/input/InputField";
 import Label from "../../../../components/form/Label";
 import Select from "../../../../components/form/Select";
-
 import DataTable from "../Table/DataTable";
 
 const ViewMasterCustomer = () => {
   const [globalFilter, setGlobalFilter] = useState<string>("");
-
   const options = [{ value: "A", label: "Active" }];
-
+  
   return (
     <div>
       <div className="p-4 bg-white shadow rounded-md mb-5">

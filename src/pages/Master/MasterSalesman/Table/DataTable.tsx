@@ -153,7 +153,7 @@ const TableMasterMenu = () => {
     <>
       {isLoading ? (
         <div className="flex justify-center items-center h-screen">
-          <Spinner /> {/* Spinner component */}
+          <Spinner />
         </div>
       ) : (
         <>

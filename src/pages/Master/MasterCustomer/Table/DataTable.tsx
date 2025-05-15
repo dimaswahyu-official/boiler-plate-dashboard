@@ -11,6 +11,7 @@ import {
   getSortedRowModel,
 } from "@tanstack/react-table";
 import { useCustomerStore } from "../../../../API/store/MasterStore/masterCustomerStore";
+import Spinner from "../../../../components/ui/spinner";
 
 interface DataTableProps {
   globalFilter: string; // Tambahkan prop globalFilter
@@ -18,10 +19,13 @@ interface DataTableProps {
 
 const DataTable: React.FC<DataTableProps> = ({ globalFilter }) => {
   const navigate = useNavigate();
-  const { customers, totalPages, fetchCustomers } = useCustomerStore();
+  const { customers, totalPages, fetchCustomers, isLoading } =
+    useCustomerStore();
 
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<SortingState>([]);
+
+  console.log("isLoading", isLoading);
 
   useEffect(() => {
     const sortBy = sorting[0]?.id ?? "customer_number"; // default kolom
@@ -141,72 +145,82 @@ const DataTable: React.FC<DataTableProps> = ({ globalFilter }) => {
   };
 
   return (
-    <div>
-      <div className="overflow-x-auto">
-        <div className="overflow-auto max-h-[500px] border border-gray-300">
-          <table className="min-w-full border-collapse">
-            <thead className="bg-gray-100 sticky top-0 z-10">
-              {table.getHeaderGroups().map((headerGroup: any) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header: any) => (
-                    <th
-                      key={header.id}
-                      className="px-4 py-2 border border-gray-300 text-left cursor-pointer"
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      <div className="flex items-center gap-1">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: " 🔼",
-                          desc: " 🔽",
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row: any) => (
-                <tr key={row.id} className="hover:bg-gray-50">
-                  {row.getVisibleCells().map((cell: any) => (
-                    <td
-                      key={cell.id}
-                      className="px-4 py-2 border border-gray-300"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-screen">
+          <Spinner />
         </div>
-      </div>
-      <div className="flex justify-center items-center mt-4 space-x-4">
-        <button
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          disabled={page === 1}
-        >
-          Previous
-        </button>
-        <div className="flex space-x-2 items-center">{renderPageNumbers()}</div>
-        <button
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={page === totalPages}
-        >
-          Next
-        </button>
-      </div>
-    </div>
+      ) : (
+        <div>
+          <div className="overflow-x-auto">
+            <div className="overflow-auto max-h-[500px] border border-gray-300">
+              <table className="min-w-full border-collapse">
+                <thead className="bg-gray-100 sticky top-0 z-10">
+                  {table.getHeaderGroups().map((headerGroup: any) => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map((header: any) => (
+                        <th
+                          key={header.id}
+                          className="px-4 py-2 border border-gray-300 text-left cursor-pointer"
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          <div className="flex items-center gap-1">
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                            {{
+                              asc: " 🔼",
+                              desc: " 🔽",
+                            }[header.column.getIsSorted() as string] ?? null}
+                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody>
+                  {table.getRowModel().rows.map((row: any) => (
+                    <tr key={row.id} className="hover:bg-gray-50">
+                      {row.getVisibleCells().map((cell: any) => (
+                        <td
+                          key={cell.id}
+                          className="px-4 py-2 border border-gray-300"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="flex justify-center items-center mt-4 space-x-4">
+            <button
+              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              disabled={page === 1}
+            >
+              Previous
+            </button>
+            <div className="flex space-x-2 items-center">
+              {renderPageNumbers()}
+            </div>
+            <button
+              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+              onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={page === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
