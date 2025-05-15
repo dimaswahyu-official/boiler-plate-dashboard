@@ -142,7 +142,6 @@ export function AppRoutes() {
             <Route path="/select_territory" element={<SelectTerritory />} />
 
 
-
             {renderDynamicRoutes()}
 
             {/* {renderDummyRoutes()} */}
