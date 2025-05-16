@@ -153,18 +153,9 @@ const SelectTerritory = () => {
   };
 
   /* filter provinsi */
-  const filteredGeoTrees = geoTrees
-    .map((prov) => ({
-      ...prov,
-      kotamadya: prov.kotamadya.filter((kota: any) =>
-        kota.kotamadya.toLowerCase().includes(searchQuery.toLowerCase())
-      ),
-    }))
-    .filter(
-      (prov) =>
-        prov.provinsi.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        prov.kotamadya.length > 0
-    );
+  const filteredGeoTrees = geoTrees.filter((prov) =>
+    prov.provinsi.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   /* ─── UI ───────────────────────────────────────────────────────── */
   return (
@@ -188,11 +179,11 @@ const SelectTerritory = () => {
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="relative group">
                   <Label htmlFor="search">
-                    Pencarian Provinsi atau Kabupaten
+                    Pencarian Provinsi
                   </Label>
                   <Input
                     id="search"
-                    placeholder="🔍 Masukan Provinsi atau Kabupaten"
+                    placeholder="🔍 Masukan Provinsi"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         setSearchQuery(e.currentTarget.value);
