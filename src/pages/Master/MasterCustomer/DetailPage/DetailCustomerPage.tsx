@@ -4,7 +4,7 @@ import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import DynamicForm, {
   FieldConfig as BaseFieldConfig,
 } from "../../../../components/form-input/dynamicForm";
-import CustomerForm from "./customerForm";
+import CustomerForm from "./MainCustomerForm";
 
 type FieldConfig = BaseFieldConfig & {
   defaultValue?: any;

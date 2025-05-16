@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Input from "../../../../components/form/input/InputField";
 import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import AdjustTableMenu from "./AdjustTableMenu";
-import MenuFormSection from "./MenuFormSection";
-import UpdateModal from "./UpdateMenu";
+import MenuFormSection from "./FormCreateMenu";
+import UpdateModal from "./FormUpdateMenu";
 
 const TableMasterMenu = () => {
   const navigate = useNavigate();

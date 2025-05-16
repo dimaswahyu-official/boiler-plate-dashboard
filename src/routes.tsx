@@ -52,7 +52,6 @@ export function AppRoutes() {
     }
   }, [isAuthenticated, navigate]);
 
-
   const user_login_menu = (() => {
     const storedUserLogin = localStorage.getItem("user_login_data");
     return storedUserLogin && storedUserLogin !== "undefined"
@@ -100,19 +99,6 @@ export function AppRoutes() {
     });
   };
 
-  // const renderDummyRoutes = () => {
-  //   if (!Array.isArray(dummyRoutes) || dummyRoutes.length === 0) {
-  //     return null; // Return null if dummyRoutes is not an array or is empty
-  //   }
-
-  //   return dummyRoutes.map((menu: any) => {
-  //     const Component = componentMap[menu.name];
-  //     return Component ? (
-  //       <Route key={menu.id} path={menu.path} element={Component} />
-  //     ) : null;
-  //   });
-  // };
-
   return (
     <>
       <ScrollToTop />
@@ -128,8 +114,10 @@ export function AppRoutes() {
             <Route path="/master_branch" element={<MasterBranch />} />
             <Route path="/master_region" element={<MasterRegion />} />
             <Route path="/master_salesman" element={<MasterSalesman />} />
-            <Route path="/management_territory" element={<ManagementTerritory />} />
-
+            <Route
+              path="/management_territory"
+              element={<ManagementTerritory />}
+            />
 
             <Route path="/create_role" element={<CreateRole />} />
             <Route path="/update_role" element={<UpdateRole />} />
@@ -140,7 +128,6 @@ export function AppRoutes() {
             <Route path="/surat_tugas" element={<SuratTugas />} />
             <Route path="/detail_customer" element={<DetailCustomer />} />
             <Route path="/select_territory" element={<SelectTerritory />} />
-
 
             {renderDynamicRoutes()}
 

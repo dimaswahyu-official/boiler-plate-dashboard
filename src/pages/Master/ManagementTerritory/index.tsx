@@ -5,15 +5,21 @@ import axios from "axios";
 import Spinner from "../../../components/ui/spinner";
 
 export default function ManagementTerritory() {
-  const [selectedRegion, setSelectedRegion] = useState("Regional Jakarta 2");
+  const [selectedRegion, setSelectedRegion] = useState("Regional Jakarta 1");
   const [regions, setRegions] = useState<any[]>([]);
   const [branches, setBranches] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true); // State untuk menyimpan branches
 
   const navigate = useNavigate();
 
-  const handleSelectBranch = (branchCode: string) => {
-    navigate("/select_territory", { state: { branchCode } });
+  const handleSelectBranch = (branch: any) => {
+    console.log("Selected branch:", branch);
+    const { id, region_code, organization_code, organization_name } = branch;
+
+    // Navigasi ke halaman berikutnya dengan state
+    navigate("/select_territory", {
+      state: { id, region_code, organization_code, organization_name },
+    });
   };
 
   const fetchData = async () => {
@@ -21,7 +27,7 @@ export default function ManagementTerritory() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "http://10.0.29.47/api/v1/geotree/get-mapped-tree",
+        "http://10.0.29.47/api/v1/region/with-branch",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -29,19 +35,27 @@ export default function ManagementTerritory() {
         }
       );
 
-      const fetchedRegions = Array.isArray(response.data.data.regions)
-        ? response.data.data.regions
+      const fetchedRegions = Array.isArray(response.data.data)
+        ? response.data.data
         : [];
 
       setIsLoading(false);
       setRegions(fetchedRegions);
 
-      // Set branches untuk region yang dipilih pertama kali
+      // Tambahkan region_code ke setiap branch
       const initialRegion = fetchedRegions.find(
-        (region: { region_name: string; branches: any[] }) =>
+        (region: { region_name: string }) =>
           region.region_name === selectedRegion
       );
-      setBranches(initialRegion?.branches || []);
+
+      const branchesWithRegionCode = initialRegion?.branches.map(
+        (branch: any) => ({
+          ...branch,
+          region_code: initialRegion.region_code, // Tambahkan region_code
+        })
+      );
+
+      setBranches(branchesWithRegionCode || []);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -72,12 +86,12 @@ export default function ManagementTerritory() {
           {/* Search Box */}
           <div className="bg-white rounded shadow p-4 mb-4">
             <label className="block mb-2 font-medium text-gray-700">
-              Wilayah
+              Pencarian Region
             </label>
             <div className="flex items-center">
               <input
                 type="text"
-                placeholder="Telusuri atau masukkan perintah"
+                placeholder="Search Region..."
                 className="w-full border border-gray-300 rounded-l px-4 py-2 focus:outline-none focus:ring focus:border-orange-400 text-sm"
               />
               <button className="bg-orange-500 text-white px-4 py-2 rounded-r hover:bg-orange-600">
@@ -112,15 +126,15 @@ export default function ManagementTerritory() {
             {/* Branch List */}
             <div className="w-2/3">
               <h2 className="font-semibold text-gray-800 mb-1">Branch List</h2>
-              <p className="text-sm text-gray-500 mb-4">
-                Pilih lokasi cabang yang ingin Anda akses
+              <p className="text-sm text-orange-500 mb-4">
+                <em>Pilih lokasi cabang yang ingin Anda akses</em>
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-orange-50 p-4 rounded-xl shadow-inner">
                 {branches.map((branch: any) => (
                   <button
                     key={branch.organization_code}
-                    onClick={() => handleSelectBranch(branch.organization_code)}
-                    className="flex flex-col items-center justify-center border-2 border-orange-300 rounded-lg p-4 hover:shadow transition w-full"
+                    onClick={() => handleSelectBranch(branch)} // Kirim region_code
+                    className="flex flex-col items-center justify-center border-2 border-orange-300 rounded-lg p-4 hover:shadow-lg hover:bg-orange-300 transition-transform transform hover:scale-105 w-full"
                   >
                     <div className="text-4xl mb-2">🏠</div>
                     <div className="text-lg font-bold">

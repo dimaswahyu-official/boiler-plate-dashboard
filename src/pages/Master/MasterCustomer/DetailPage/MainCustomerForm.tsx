@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { InfoTambahan, InfoTagihan, InfoPembayaranTagihan } from "./TabInfo/";
+import { InfoTambahan, InfoTagihan, InfoPembayaranTagihan } from "./TabInfo";
 import Select from "react-select";
 
 interface Field {

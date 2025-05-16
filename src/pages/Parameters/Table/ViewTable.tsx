@@ -145,6 +145,7 @@ function ViewTable({ currentPath }: ViewTableProps) {
             id="search"
             placeholder="🔍 Search..."
           />
+          
           <div className="space-x-4">
             <Button
               variant="primary"

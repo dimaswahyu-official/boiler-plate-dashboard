@@ -1,6 +1,7 @@
 import axios from "axios";
+import EnPoint from "../../utils/EndPoint";
 
-const baseURL = "http://10.0.29.47:9003/api/v1";
+const baseURL = EnPoint;
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
