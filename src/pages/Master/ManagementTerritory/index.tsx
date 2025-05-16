@@ -83,23 +83,6 @@ export default function ManagementTerritory() {
         </div>
       ) : (
         <div className="min-h-screen bg-gray-100 p-6">
-          {/* Search Box */}
-          <div className="bg-white rounded shadow p-4 mb-4">
-            <label className="block mb-2 font-medium text-gray-700">
-              Pencarian Region
-            </label>
-            <div className="flex items-center">
-              <input
-                type="text"
-                placeholder="Search Region..."
-                className="w-full border border-gray-300 rounded-l px-4 py-2 focus:outline-none focus:ring focus:border-orange-400 text-sm"
-              />
-              <button className="bg-orange-500 text-white px-4 py-2 rounded-r hover:bg-orange-600">
-                🔍
-              </button>
-            </div>
-          </div>
-
           {/* Content */}
           <div className="bg-white rounded shadow p-4 flex gap-4">
             {/* Region List */}

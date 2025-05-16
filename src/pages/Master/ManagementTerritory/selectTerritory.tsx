@@ -153,9 +153,18 @@ const SelectTerritory = () => {
   };
 
   /* filter provinsi */
-  const filteredGeoTrees = geoTrees.filter((p) =>
-    p.provinsi.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredGeoTrees = geoTrees
+    .map((prov) => ({
+      ...prov,
+      kotamadya: prov.kotamadya.filter((kota: any) =>
+        kota.kotamadya.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    }))
+    .filter(
+      (prov) =>
+        prov.provinsi.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        prov.kotamadya.length > 0
+    );
 
   /* ─── UI ───────────────────────────────────────────────────────── */
   return (
@@ -163,48 +172,61 @@ const SelectTerritory = () => {
       <PageBreadcrumb
         breadcrumbs={[
           { title: "Management Territory", path: "/management_territory" },
-          //   { title: `Branch, ${organizationCode}` },
           { title: `Branch` },
         ]}
       />
 
-      {/* toolbar */}
-      <div className="p-4 bg-white shadow rounded-md mb-5">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <Label htmlFor="search">Pencarian</Label>
-            <Input
-              id="search"
-              placeholder="🔍 Cari Provinsi…"
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          <div className="space-x-4">
-            <p>
-              {organizationCode} - {organizationName}
-            </p>
-          </div>
-
-          <div className="space-x-4">
-            <Button size="sm" variant="primary" onClick={handleUncheckAll}>
-              <FaBan /> Batalkan Pilihan
-            </Button>
-            <Button size="sm" variant="primary" onClick={handleSubmit}>
-              <FaCheck /> Simpan
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* tree */}
-      <div className="p-6 space-y-4">
+      <div>
         {isLoading ? (
           <div className="flex justify-center items-center h-40">
             <Spinner />
           </div>
         ) : (
-            filteredGeoTrees.map((prov) => (
+          <>
+            {/* Toolbar */}
+            <div className="p-4 bg-white shadow rounded-md mb-5">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="relative group">
+                  <Label htmlFor="search">
+                    Pencarian Provinsi atau Kabupaten
+                  </Label>
+                  <Input
+                    id="search"
+                    placeholder="🔍 Masukan Provinsi atau Kabupaten"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        setSearchQuery(e.currentTarget.value);
+                      }
+                    }}
+                  />
+                  {/* <div className="absolute left-0 mt-1 text-sm text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    Tekan Enter untuk mencari
+                  </div> */}
+                </div>
+
+                <div className="space-x-4">
+                  <p>
+                    {organizationCode} - {organizationName}
+                  </p>
+                </div>
+
+                <div className="space-x-4">
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    onClick={handleUncheckAll}
+                  >
+                    <FaBan /> Batalkan Pilihan
+                  </Button>
+                  <Button size="sm" variant="primary" onClick={handleSubmit}>
+                    <FaCheck /> Simpan
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Tree */}
+            {filteredGeoTrees.map((prov) => (
               <div key={prov.provinsi_code} className="ml-2">
                 {/* provinsi */}
                 <div
@@ -223,7 +245,7 @@ const SelectTerritory = () => {
                   )}
                   {prov.provinsi}
                 </div>
-  
+
                 {expanded[prov.provinsi_code] &&
                   prov.kotamadya.map((kota: any) => {
                     const kotaSelectable = selectableIds(
@@ -232,7 +254,7 @@ const SelectTerritory = () => {
                     const kotaAllChecked = kotaSelectable.every((id) =>
                       checkedIds.includes(id)
                     );
-  
+
                     return (
                       <div key={kota.kotamadya_code} className="ml-5 mt-1">
                         {/* kotamadya */}
@@ -241,7 +263,9 @@ const SelectTerritory = () => {
                             type="checkbox"
                             className="accent-orange-500 w-4 h-4"
                             checked={kotaAllChecked}
-                            onChange={() => handleKotamadyaToggle(kota.kecamatan)}
+                            onChange={() =>
+                              handleKotamadyaToggle(kota.kecamatan)
+                            }
                           />
                           <div
                             className="flex items-center gap-2 cursor-pointer text-base font-medium text-gray-700 hover:text-blue-600"
@@ -260,16 +284,19 @@ const SelectTerritory = () => {
                             {kota.kotamadya}
                           </div>
                         </div>
-  
+
                         {/* kecamatan */}
                         {expanded[kota.kotamadya_code] &&
                           kota.kecamatan.map((kec: any) => {
                             const kelList: KelurahanT[] = kec.kelurahan;
                             const kecAllChecked =
                               areAllSelectableChecked(kelList);
-  
+
                             return (
-                              <div key={kec.kecamatan_code} className="ml-6 mt-1">
+                              <div
+                                key={kec.kecamatan_code}
+                                className="ml-6 mt-1"
+                              >
                                 <div className="flex items-center gap-2">
                                   <input
                                     type="checkbox"
@@ -297,7 +324,7 @@ const SelectTerritory = () => {
                                     {kec.kecamatan}
                                   </div>
                                 </div>
-  
+
                                 {/* kelurahan */}
                                 {expanded[kec.kecamatan_code] &&
                                   kelList.map((kel) => (
@@ -334,7 +361,8 @@ const SelectTerritory = () => {
                     );
                   })}
               </div>
-            ))
+            ))}
+          </>
         )}
       </div>
     </>
