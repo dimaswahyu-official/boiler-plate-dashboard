@@ -114,7 +114,7 @@ export const fetchCustomers = async (
   } catch (error: any) {
     // Cegah toast jika request dibatalkan (normal)
     if (error.name === "CanceledError" || error.code === "ERR_CANCELED") {
-      console.log("Request dibatalkan");
+      console.log("Request aborted");
       return Promise.reject(); // atau bisa return null
     }
 

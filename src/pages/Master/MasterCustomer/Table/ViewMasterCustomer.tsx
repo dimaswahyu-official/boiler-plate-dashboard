@@ -5,30 +5,18 @@ import Input from "../../../../components/form/input/InputField";
 import Label from "../../../../components/form/Label";
 import Select from "../../../../components/form/Select";
 import DataTable from "../Table/DataTable";
+import { useDebounce } from "../../../../helper/useDebounce";
 
 const ViewMasterCustomer = () => {
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  const [debouncedGlobalFilter, setDebouncedGlobalFilter] =
-    useState<string>("");
   const [page, setPage] = useState<number>(1);
-  const options = [{ value: "A", label: "Active" }];
-
-  const DEBOUNCE_DELAY = 700;
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedGlobalFilter(globalFilter);
-    }, DEBOUNCE_DELAY);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [globalFilter]);
+  const debouncedGlobalFilter = useDebounce(globalFilter, 500);
 
   useEffect(() => {
     setPage(1);
   }, [debouncedGlobalFilter]);
 
+  const options = [{ value: "A", label: "Active" }];
   return (
     <div>
       <div className="p-4 bg-white shadow rounded-md mb-5">

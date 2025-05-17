@@ -14,6 +14,7 @@ import Label from "../../../components/form/Label";
 import Button from "../../../components/ui/button/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { showSuccessToast } from "../../../components/toast";
+import { useDebounce } from "../../../helper/useDebounce";
 
 /* ─── TYPE ──────────────────────────────────────────────────────── */
 type KelurahanT = {
@@ -40,7 +41,8 @@ const SelectTerritory = () => {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [checkedIds, setCheckedIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const debouncedQuery = useDebounce(searchQuery, 500);
+
   const [isLoading, setIsLoading] = useState(true);
 
   /* ─── FETCH TREE + PRE-CHECK ──────────────────────────────────── */
@@ -153,20 +155,21 @@ const SelectTerritory = () => {
     }
   };
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-    }, 300); // tunggu 300ms setelah user berhenti mengetik
+  //   useEffect(() => {
+  //     const handler = setTimeout(() => {
+  //       setDebouncedQuery(searchQuery);
+  //     }, 600); // tunggu 300ms setelah user berhenti mengetik
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchQuery]);
+  //     return () => {
+  //       clearTimeout(handler);
+  //     };
+  //   }, [searchQuery]);
 
   /* filter provinsi */
   const filteredGeoTrees = geoTrees.filter((prov) =>
-    prov.provinsi.toLowerCase().includes(searchQuery.toLowerCase())
+    prov.provinsi.toLowerCase().includes(debouncedQuery.toLowerCase())
   );
+
 
   /* ─── UI ───────────────────────────────────────────────────────── */
   return (

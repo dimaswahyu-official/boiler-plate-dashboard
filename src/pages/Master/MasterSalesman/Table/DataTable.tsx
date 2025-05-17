@@ -12,6 +12,7 @@ import Spinner from "../../../../components/ui/spinner";
 
 import { usePagePermissions } from "../../../../utils/UserPagePermissions";
 import { useSalesmanStore } from "../../../../API/store/MasterStore/masterSalesmanStore";
+import { useDebounce } from "../../../../helper/useDebounce";
 
 interface Option {
   value: string;
@@ -24,6 +25,7 @@ const TableMasterMenu = () => {
   const { fetchSalesman, salesman, isLoading } = useSalesmanStore();
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [editMenuData, setEditMenuData] = useState<any | null>(null);
+  const debouncedFilter = useDebounce(globalFilter, 500);
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -160,12 +162,12 @@ const TableMasterMenu = () => {
           <div className="p-4 bg-white shadow rounded-md mb-5">
             <div className="flex justify-between items-center">
               <div className="space-x-4">
-                <Label htmlFor="search">Pencarian</Label>
+                <Label htmlFor="search">Nama Salesman</Label>
                 <Input
                   onChange={(e) => setGlobalFilter(e.target.value)}
                   type="text"
                   id="search"
-                  placeholder="🔍 Search..."
+                  placeholder="🔍 Masukan nama salesman..."
                 />
               </div>
             </div>
@@ -252,7 +254,7 @@ const TableMasterMenu = () => {
 
           <AdjustTable
             data={filteredData}
-            globalFilter={globalFilter}
+            globalFilter={debouncedFilter}
             setGlobalFilter={setGlobalFilter}
             onDetail={handleDetail}
             onDelete={handleDelete}
