@@ -71,6 +71,8 @@ interface FetchCustomersResponse {
   count: number;
 }
 
+let abortController: AbortController | null = null;
+
 export const fetchCustomers = async (
   page: number,
   limit: number,
@@ -79,6 +81,14 @@ export const fetchCustomers = async (
   search?: string
 ): Promise<FetchCustomersResponse> => {
   try {
+    // Abort request sebelumnya (jika masih berjalan)
+    if (abortController) {
+      abortController.abort();
+    }
+
+    // Buat request baru
+    abortController = new AbortController();
+
     const queryParams = new URLSearchParams();
     queryParams.append("page", page.toString());
     queryParams.append("limit", limit.toString());
@@ -87,7 +97,10 @@ export const fetchCustomers = async (
     if (search) queryParams.append("search", search);
 
     const response = await axiosInstance.get(
-      `/customer?${queryParams.toString()}`
+      `/customer?${queryParams.toString()}`,
+      {
+        signal: abortController.signal, // ← penting
+      }
     );
 
     const apiData = response.data.data;
@@ -99,6 +112,12 @@ export const fetchCustomers = async (
       count: apiData.count,
     };
   } catch (error: any) {
+    // Cegah toast jika request dibatalkan (normal)
+    if (error.name === "CanceledError" || error.code === "ERR_CANCELED") {
+      console.log("Request dibatalkan");
+      return Promise.reject(); // atau bisa return null
+    }
+
     showErrorToast(
       error.response?.data?.message || "Failed to fetch customers"
     );

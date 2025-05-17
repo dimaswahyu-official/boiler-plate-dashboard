@@ -14,18 +14,22 @@ import { useCustomerStore } from "../../../../API/store/MasterStore/masterCustom
 import Spinner from "../../../../components/ui/spinner";
 
 interface DataTableProps {
-  globalFilter: string; // Tambahkan prop globalFilter
+  globalFilter: string;
+  page: number;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const DataTable: React.FC<DataTableProps> = ({ globalFilter }) => {
+const DataTable: React.FC<DataTableProps> = ({
+  globalFilter,
+  page,
+  setPage,
+}) => {
   const navigate = useNavigate();
   const { customers, totalPages, fetchCustomers, isLoading } =
     useCustomerStore();
 
-  const [page, setPage] = useState(1);
+  // const [page, setPage] = useState<number>(1);
   const [sorting, setSorting] = useState<SortingState>([]);
-
-  console.log("isLoading", isLoading);
 
   useEffect(() => {
     const sortBy = sorting[0]?.id ?? "customer_number"; // default kolom

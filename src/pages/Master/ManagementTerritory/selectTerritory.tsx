@@ -40,6 +40,7 @@ const SelectTerritory = () => {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [checkedIds, setCheckedIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   /* ─── FETCH TREE + PRE-CHECK ──────────────────────────────────── */
@@ -152,6 +153,16 @@ const SelectTerritory = () => {
     }
   };
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300); // tunggu 300ms setelah user berhenti mengetik
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
   /* filter provinsi */
   const filteredGeoTrees = geoTrees.filter((prov) =>
     prov.provinsi.toLowerCase().includes(searchQuery.toLowerCase())
@@ -178,17 +189,11 @@ const SelectTerritory = () => {
             <div className="p-4 bg-white shadow rounded-md mb-5">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="relative group">
-                  <Label htmlFor="search">
-                    Pencarian Provinsi
-                  </Label>
+                  <Label htmlFor="search">Pencarian Provinsi</Label>
                   <Input
                     id="search"
                     placeholder="🔍 Masukan Provinsi"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        setSearchQuery(e.currentTarget.value);
-                      }
-                    }}
+                    onChange={(e) => setSearchQuery(e.currentTarget.value)}
                   />
                   {/* <div className="absolute left-0 mt-1 text-sm text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
                     Tekan Enter untuk mencari

@@ -8,8 +8,27 @@ import DataTable from "../Table/DataTable";
 
 const ViewMasterCustomer = () => {
   const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [debouncedGlobalFilter, setDebouncedGlobalFilter] =
+    useState<string>("");
+  const [page, setPage] = useState<number>(1);
   const options = [{ value: "A", label: "Active" }];
-  
+
+  const DEBOUNCE_DELAY = 700;
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedGlobalFilter(globalFilter);
+    }, DEBOUNCE_DELAY);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [globalFilter]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedGlobalFilter]);
+
   return (
     <div>
       <div className="p-4 bg-white shadow rounded-md mb-5">
@@ -20,10 +39,8 @@ const ViewMasterCustomer = () => {
           >
             <Label htmlFor="search">Nama/ID Pelanggan</Label>
             <Input
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  setGlobalFilter(e.currentTarget.value);
-                }
+              onChange={(e) => {
+                setGlobalFilter(e.currentTarget.value);
               }}
               type="text"
               id="search"
@@ -120,7 +137,11 @@ const ViewMasterCustomer = () => {
         </div>
       </div>
 
-      <DataTable globalFilter={globalFilter} />
+      <DataTable
+        globalFilter={debouncedGlobalFilter}
+        page={page}
+        setPage={setPage}
+      />
     </div>
   );
 };
