@@ -21,10 +21,7 @@ const ViewMasterCustomer = () => {
     <div>
       <div className="p-4 bg-white shadow rounded-md mb-5">
         <div className="flex justify-between items-center">
-          <div
-            className="space-x-4"
-            title="tekan enter setelah input nama/id pelanggan untuk mendapatkan hasil pencarian"
-          >
+          <div className="space-x-4">
             <Label htmlFor="search">Nama/ID Pelanggan</Label>
             <Input
               onChange={(e) => {
@@ -32,7 +29,7 @@ const ViewMasterCustomer = () => {
               }}
               type="text"
               id="search"
-              placeholder="🔍 Search..."
+              placeholder="🔍 Masukan nama/id pelang...."
             />
           </div>
 

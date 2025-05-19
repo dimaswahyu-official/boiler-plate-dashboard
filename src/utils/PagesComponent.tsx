@@ -13,7 +13,7 @@ import UpdateRole from "../pages/Master/MasterRole/Screen/UpdateRole";
 import Parameters from "../pages/Parameters";
 import ChannelTypes from "../pages/Parameters/ParameterList/ChannelTypes";
 import PaymentTypes from "../pages/Parameters/ParameterList/PaymentTypes";
-import RouteManagement from "../pages/Parameters/ParameterList/RouteManagement";
+import RouteManagement from "../pages/Parameters/ParameterList/SalesRouteManagement";
 import VisitTypes from "../pages/Parameters/ParameterList/VisitTypes";
 
  // MASTER CUSTOMER
