@@ -3,16 +3,26 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import Select from "react-select";
 import DatePicker from "../../components/form/date-picker";
 import Button from "../ui/button/Button";
+import Checkbox from "../form/input/Checkbox";
+import { showErrorToast } from "../toast";
 
 type FormField = {
   name: string;
   label: string;
-  type: "text" | "textarea" | "select" | "number" | "file" | "date";
+  type:
+    | "text"
+    | "textarea"
+    | "select"
+    | "number"
+    | "file"
+    | "date"
+    | "checkbox";
   options?: { value: string | boolean; label: string }[];
   validation?: {
     required?: boolean | string;
     [key: string]: any;
   };
+  info?: string;
 };
 
 type FormValues = Record<string, any>;
@@ -40,10 +50,6 @@ const FormInput: React.FC<FormInputProps> = ({
     defaultValues,
   });
 
-  const [nikStatus, setNikStatus] = useState<
-    "valid" | "invalid" | "checking" | null
-  >(null);
-
   useEffect(() => {
     if (defaultValues) {
       reset(defaultValues);
@@ -51,30 +57,15 @@ const FormInput: React.FC<FormInputProps> = ({
   }, [defaultValues, reset]);
 
   const handleSubmit = (data: FormValues) => {
-    console.log("Form Data:", data); // Log data yang dikirimkan
     onSubmit(data); // Kirim data ke parent
-  };
-
-  const checkNik = async (nik: string) => {
-    setNikStatus("checking"); // Set status menjadi "checking"
-    try {
-      const response = await fetch(`/api/check-nik?nik=${nik}`);
-      const data = await response.json();
-
-      if (data.exists) {
-        setNikStatus("valid"); // Jika NIK ditemukan
-      } else {
-        setNikStatus("invalid"); // Jika NIK tidak ditemukan
-      }
-    } catch (error) {
-      console.error("Error checking NIK:", error);
-      setNikStatus("invalid"); // Set status menjadi "invalid" jika terjadi error
-    }
   };
 
   const renderField = (field: FormField) => {
     const commonClasses =
       "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300";
+
+    const errorClasses =
+      "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-red-300";
 
     switch (field.type) {
       case "textarea":
@@ -103,15 +94,15 @@ const FormInput: React.FC<FormInputProps> = ({
                 classNamePrefix="react-select"
                 value={field.options?.find(
                   (option) => option.value === controllerField.value
-                )} // Pastikan nilai default ditampilkan
+                )}
                 onChange={(selectedOption) => {
                   const value =
                     selectedOption?.value === false
                       ? false
-                      : selectedOption?.value; // Pastikan false diteruskan sebagai boolean
-                  controllerField.onChange(value); // Perbarui nilai dengan benar
+                      : selectedOption?.value;
+                  controllerField.onChange(value);
                 }}
-                menuPlacement="auto" // Otomatis buka ke atas jika ruang tidak cukup ke bawah
+                menuPlacement="auto"
               />
             )}
           />
@@ -141,46 +132,26 @@ const FormInput: React.FC<FormInputProps> = ({
             )}
           />
         );
+      case "checkbox":
+        return (
+          <div>
+            <Controller
+              name={field.name}
+              control={control}
+              render={({ field: controllerField }) => (
+                <Checkbox
+                  label={field.name}
+                  checked={controllerField.value || false}
+                  onChange={(checked) => controllerField.onChange(checked)}
+                />
+              )}
+            />
+            {field.info && (
+              <p className="text-sm text-gray-500 mt-1 italic">{field.info}</p>
+            )}
+          </div>
+        );
       case "text":
-        if (field.name === "nik") {
-          return (
-            <div>
-              <input
-                type="text"
-                {...register(field.name, field.validation)}
-                className={commonClasses}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value.length === 5) {
-                    checkNik(value); // Panggil fungsi validasi NIK
-                  } else if (value.length > 5) {
-                    setNikStatus("invalid"); // Set status menjadi invalid jika lebih dari 5 karakter
-                  } else {
-                    setNikStatus(null); // Reset status jika kurang dari 5 karakter
-                  }
-                }}
-              />
-              {nikStatus === "checking" && (
-                <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-blue-500"></div>
-                  <span>Checking...</span>
-                </div>
-              )}
-              {nikStatus === "valid" && (
-                <span style={{ color: "green", fontSize: "13px" }}>
-                  NIK valid
-                </span>
-              )}
-              {nikStatus === "invalid" && (
-                <span style={{ color: "red", fontSize: "13px" }}>
-                  {field.name.length > 5
-                    ? "NIK tidak boleh lebih dari 5 digit"
-                    : "NIK tidak ditemukan"}
-                </span>
-              )}
-            </div>
-          );
-        }
         return (
           <input
             type={field.type}
@@ -251,20 +222,17 @@ const FormInput: React.FC<FormInputProps> = ({
           )}
         </div>
         <div className="flex justify-end space-x-2 mt-10">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white py-2 px-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-          >
+          <Button className="bg-blue-500 text-white py-2 px-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">
             Submit
-          </button>
+          </Button>
 
-          <button
+          {/* <button
             type="button"
             onClick={onClose}
             className="bg-gray-500 text-white py-2 px-3 rounded-md hover:bg-gray-600 focus:outline-none focus:ring focus:ring-gray-300"
           >
             Close
-          </button>
+          </button> */}
         </div>
       </form>
     </div>

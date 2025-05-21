@@ -55,7 +55,7 @@ const TableComponent = <T extends { id: number }>({
       <div className="overflow-x-auto">
         <div className="max-h-[600px] overflow-y-auto">
           <table className="min-w-full table-auto border border-gray-200">
-            <thead className="sticky top-0 bg-gray-100 z-50">
+            <thead className="sticky top-0 bg-gray-100">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="text-left">
                   {headerGroup.headers.map((header) => (

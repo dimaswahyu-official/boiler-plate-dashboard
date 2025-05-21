@@ -60,7 +60,7 @@ const TableMasterMenu = () => {
   const handleCloseModal = () => setIsModalOpen(false);
 
   const optionRoles = roles.map((role) => ({
-    value: role.id.toString(), // Convert value to string
+    value: role.id,
     label: role.name,
   }));
 
@@ -73,17 +73,11 @@ const TableMasterMenu = () => {
     },
     {
       name: "roles",
-      label: "Roles",
+      label: "Posisi",
       type: "select",
       options: optionRoles, // Use dynamic roles here
       validation: { required: "Role is required" },
     },
-    // {
-    //   name: "username",
-    //   label: "Username",
-    //   type: "text",
-    //   validation: { required: "Username is required" },
-    // },
     {
       name: "nik",
       label: "NIK",
@@ -102,17 +96,12 @@ const TableMasterMenu = () => {
       type: "text",
       validation: { required: "Phone number is required" },
     },
-
     {
-      name: "branch",
-      label: "Cabang",
-      type: "select",
-      options: [
-        { value: "JAT", label: "JAT" },
-        { value: "KDS", label: "KDS" },
-        { value: "BDG", label: "BDG" },
-      ],
-      validation: { required: "Branch is required" },
+      name: "is_employee",
+      label: "Jenis Karyawan",
+      type: "checkbox",
+      validation: {},
+      info: "Centang jika pengguna bukan karyawan (non-employee)",
     },
     {
       name: "email",
@@ -137,19 +126,11 @@ const TableMasterMenu = () => {
       },
     },
     {
-      name: "password_confirm",
+      name: "confirm_password",
       label: "Konfirmasi Password",
       type: "password",
       validation: {
-        required: "Password is required",
-        minLength: {
-          value: 12,
-          message: "Password must be at least 12 characters",
-        },
-        pattern: {
-          value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
-          message: "Password must include uppercase, lowercase, and a number",
-        },
+        required: "Konfirmasi password wajib diisi",
       },
     },
     {
@@ -157,6 +138,17 @@ const TableMasterMenu = () => {
       label: "Tanggal Berakhir",
       type: "date",
       validation: { required: "Tanggal Berakhir is required" },
+    },
+    {
+      name: "branch",
+      label: "Cabang",
+      type: "select",
+      options: [
+        { value: "JAT", label: "JAT" },
+        { value: "KDS", label: "KDS" },
+        { value: "BDG", label: "BDG" },
+      ],
+      validation: { required: "Branch is required" },
     },
   ];
 
@@ -188,12 +180,12 @@ const TableMasterMenu = () => {
   const handleSubmit = async (payload: any) => {
     console.log("Payload create user:", payload);
 
-    alert("Dalam proses development");
+    // alert("Dalam proses development");
 
     // const formattedPayload = {
     //   name: payload.name,
     //   email: payload.email,
-    //   username: payload.username,sss
+    //   username: payload.username,
     //   employee_id: payload.username,
     //   password: payload.password,
     //   picture: "",
@@ -243,7 +235,7 @@ const TableMasterMenu = () => {
           <div className="space-x-4">
             <Label htmlFor="date-picker">Pencarian</Label>
             <Input
-              onChange={(e) => setGlobalFilter(e.target.value)} // Pastikan ini menerima string secara langsung
+              onChange={(e) => setGlobalFilter(e.target.value)}
               type="text"
               id="search"
               placeholder="🔍 Search..."
@@ -281,53 +273,53 @@ const TableMasterMenu = () => {
 
         <div className="flex justify-between items-center mt-3">
           <div className="space-x-4">
-            <Label htmlFor="date-picker">Tanggal Mulai</Label>
+            <Label htmlFor="jenis-kunjungan-select">Posisi</Label>
+            <Select
+              options={options}
+              placeholder="Pilih"
+              onChange={handleSelectChange}
+              className="dark:bg-dark-900 react-select-container"
+            />
+          </div>
+
+          <div className="space-x-4">
+            <Label htmlFor="jenis-kunjungan-select">Region</Label>
+            <Select
+              options={options}
+              placeholder="Pilih"
+              onChange={handleSelectChange}
+              className="dark:bg-dark-900 react-select-container"
+            />
+          </div>
+
+          <div className="space-x-4">
+            <Label htmlFor="jenis-kunjungan-select">Cabang</Label>
+            <Select
+              options={options}
+              placeholder="Pilih"
+              onChange={handleSelectChange}
+              className="dark:bg-dark-900 react-select-container"
+            />
+          </div>
+
+          <div className="space-x-4">
+            <Label htmlFor="jenis-kunjungan-select">Status</Label>
+            <Select
+              options={options}
+              placeholder="Pilih"
+              onChange={handleSelectChange}
+              className="dark:bg-dark-900 react-select-container"
+            />
+          </div>
+
+          <div className="space-x-4">
+            <Label htmlFor="date-picker">Tanggal Dibuat</Label>
             <DatePicker
-              id="start-date-stugas"
+              id="create-date"
               placeholder="Select a date"
               onChange={(dates, currentDateString) =>
                 console.log({ dates, currentDateString })
               }
-            />
-          </div>
-
-          <div className="space-x-4">
-            <Label htmlFor="jenis-kunjungan-select">Posisi</Label>
-            <Select
-              options={options}
-              placeholder="Pilih"
-              onChange={handleSelectChange}
-              className="dark:bg-dark-900 react-select-container"
-            />
-          </div>
-
-          <div className="space-x-4">
-            <Label htmlFor="jenis-kunjungan-select">Posisi</Label>
-            <Select
-              options={options}
-              placeholder="Pilih"
-              onChange={handleSelectChange}
-              className="dark:bg-dark-900 react-select-container"
-            />
-          </div>
-
-          <div className="space-x-4">
-            <Label htmlFor="jenis-kunjungan-select">Posisi</Label>
-            <Select
-              options={options}
-              placeholder="Pilih"
-              onChange={handleSelectChange}
-              className="dark:bg-dark-900 react-select-container"
-            />
-          </div>
-
-          <div className="space-x-4">
-            <Label htmlFor="jenis-kunjungan-select">Posisi</Label>
-            <Select
-              options={options}
-              placeholder="Pilih"
-              onChange={handleSelectChange}
-              className="dark:bg-dark-900 react-select-container"
             />
           </div>
 

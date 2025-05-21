@@ -81,9 +81,51 @@ const TableMasterMenu = () => {
     getOrgName();
   }, []);
 
+  // const filteredData = useMemo(() => {
+  //   return salesman
+  //     .filter((item) => {
+  //       const matchesStartDate =
+  //         !filters.startDate ||
+  //         new Date(item.start_date_active).toISOString().split("T")[0] ===
+  //           filters.startDate;
+
+  //       const matchesEndDate =
+  //         !filters.endDate ||
+  //         (item.end_date_active &&
+  //           new Date(item.end_date_active).toISOString().split("T")[0] ===
+  //             filters.endDate);
+
+  //       const matchesOrganizationName =
+  //         !filters.organizationName ||
+  //         item.organization_name === filters.organizationName;
+  //       const matchesStatus = !filters.status || item.status === filters.status;
+
+  //       return (
+  //         matchesStartDate &&
+  //         matchesEndDate &&
+  //         matchesOrganizationName &&
+  //         matchesStatus
+  //       );
+  //     })
+  //     .map((item, index) => ({
+  //       id: index, // Assign a unique ID for each item
+  //       employee_name: item.employee_name,
+  //       salesrep_id: String(item.salesrep_id), // Convert salesrep_id to string
+  //       vendor_name: item.vendor_name,
+  //       organization_name: item.organization_name,
+  //     }));
+  // }, [salesman, filters]);
+
   const filteredData = useMemo(() => {
     return salesman
       .filter((item) => {
+        // Filter berdasarkan globalFilter (hanya untuk employee_name)
+        const matchesGlobalFilter =
+          !debouncedFilter ||
+          item.employee_name
+            .toLowerCase()
+            .includes(debouncedFilter.toLowerCase());
+
         const matchesStartDate =
           !filters.startDate ||
           new Date(item.start_date_active).toISOString().split("T")[0] ===
@@ -98,9 +140,11 @@ const TableMasterMenu = () => {
         const matchesOrganizationName =
           !filters.organizationName ||
           item.organization_name === filters.organizationName;
+
         const matchesStatus = !filters.status || item.status === filters.status;
 
         return (
+          matchesGlobalFilter &&
           matchesStartDate &&
           matchesEndDate &&
           matchesOrganizationName &&
@@ -114,7 +158,7 @@ const TableMasterMenu = () => {
         vendor_name: item.vendor_name,
         organization_name: item.organization_name,
       }));
-  }, [salesman, filters]);
+  }, [salesman, debouncedFilter, filters]);
 
   function handleSelectOrgName(value: string): void {
     setFilters((prev) => ({ ...prev, organizationName: value }));
