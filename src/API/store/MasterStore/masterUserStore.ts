@@ -1,12 +1,14 @@
 import { create } from "zustand";
 import { fetchAllUser, createUser as createUserService } from "../../services/MasterServices/MasterUserService";
 
+// Define Role interface
 interface Role {
     id: number;
     name: string;
     description: string;
 }
 
+// Define base payload structure
 interface BasePayload {
     supervisor_number: string;
     email: string;
@@ -26,6 +28,7 @@ interface BasePayload {
     updated_by: string;
 }
 
+// Extend BasePayload for Employee-specific data
 interface EmployeePayload extends BasePayload {
     employee: {
         employee_id: string;
@@ -51,6 +54,7 @@ interface EmployeePayload extends BasePayload {
     };
 }
 
+// Extend BasePayload for Salesman-specific data
 interface SalesmanPayload extends BasePayload {
     salesman: {
         salesrep_number: string;
@@ -82,8 +86,10 @@ interface SalesmanPayload extends BasePayload {
     };
 }
 
+// Union type for all payloads
 type FinalPayload = BasePayload | EmployeePayload | SalesmanPayload;
 
+// Define User interface
 interface User {
     id: number;
     email: string;
@@ -118,6 +124,7 @@ interface User {
     employee: any | null;
 }
 
+// Define the Zustand store interface
 interface UserStore {
     user: User[];
     loading: boolean;
@@ -126,32 +133,35 @@ interface UserStore {
     createUser: (payload: FinalPayload) => Promise<void>;
 }
 
+// Zustand store implementation
 export const useUserStore = create<UserStore>((set) => ({
     user: [],
     loading: false,
     error: null,
 
+    // Fetch all users
     fetchAllUser: async () => {
         set({ loading: true, error: null });
         try {
-            const user = await fetchAllUser(); // Pastikan fetchAllUser mengembalikan User[]
-            set({ user, loading: false });
+            const users = await fetchAllUser(); // Ensure fetchAllUser returns User[]
+            set({ user: users, loading: false });
         } catch (error: any) {
-            set({ error: error.message, loading: false });
+            set({ error: error.message || "Failed to fetch users", loading: false });
         }
     },
 
+    // Create a new user
     createUser: async (payload) => {
         set({ loading: true, error: null });
         try {
-            // Kirim payload ke API
-            await createUserService(payload as unknown as User); // Cast FinalPayload to User
+            // Send payload to the API
+            await createUserService(payload as unknown as User);
 
-            // Refresh data user setelah berhasil membuat user baru
-            const user = await fetchAllUser();
-            set({ user, loading: false });
+            // Refresh user data after successfully creating a new user
+            const users = await fetchAllUser();
+            set({ user: users, loading: false });
         } catch (error: any) {
-            set({ error: error.message, loading: false });
+            set({ error: error.message || "Failed to create user", loading: false });
         }
     },
 }));
