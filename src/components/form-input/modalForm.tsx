@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import Select from "react-select";
-import DatePicker from "../../components/form/date-picker";
+import DatePicker from "../form/date-picker";
 import Button from "../ui/button/Button";
 import Checkbox from "../form/input/Checkbox";
-import { showErrorToast } from "../toast";
 
 type FormField = {
   name: string;
@@ -34,7 +33,7 @@ type FormInputProps = {
   defaultValues?: FormValues;
 };
 
-const FormInput: React.FC<FormInputProps> = ({
+const ModalForm: React.FC<FormInputProps> = ({
   formFields,
   onSubmit,
   onClose,
@@ -226,17 +225,17 @@ const FormInput: React.FC<FormInputProps> = ({
             Submit
           </Button>
 
-          {/* <button
+          <button
             type="button"
             onClick={onClose}
             className="bg-gray-500 text-white py-2 px-3 rounded-md hover:bg-gray-600 focus:outline-none focus:ring focus:ring-gray-300"
           >
             Close
-          </button> */}
+          </button>
         </div>
       </form>
     </div>
   );
 };
 
-export default FormInput;
+export default ModalForm;

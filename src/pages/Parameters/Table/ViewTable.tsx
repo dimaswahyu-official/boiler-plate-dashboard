@@ -5,7 +5,7 @@ import Input from "../../../components/form/input/InputField";
 import AdjustTable from "../Table/AdjustTable";
 import ReusableFormModal from "../../../components/modal/ReusableFormModal";
 import Button from "../../../components/ui/button/Button";
-import { usePagePermissions } from "../../../utils/UserPagePermissions";
+import { usePagePermissions } from "../../../utils/UserPermission/UserPagePermissions";
 import { useParametersStore } from "../../../API/store/ParameterStore/parameterStore";
 
 interface ViewTableProps {

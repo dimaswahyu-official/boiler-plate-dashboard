@@ -10,7 +10,7 @@ import Button from "../../../../components/ui/button/Button";
 import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
 import Spinner from "../../../../components/ui/spinner";
 
-import { usePagePermissions } from "../../../../utils/UserPagePermissions";
+import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 import { useSalesmanStore } from "../../../../API/store/MasterStore/masterSalesmanStore";
 import { useDebounce } from "../../../../helper/useDebounce";
 

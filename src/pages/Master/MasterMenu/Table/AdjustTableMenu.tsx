@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { ColumnDef } from "@tanstack/react-table";
 import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
-import { usePagePermissions } from "../../../../utils/UserPagePermissions";
+import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 import Checkbox from "../../../../components/form/input/Checkbox";
 
 type Menu = {

@@ -1,7 +1,7 @@
 import React, { useState, forwardRef, useImperativeHandle } from "react";
 import Checkbox from "../../../../components/form/input/Checkbox";
 
-type PermissionType = "Create" | "View" | "Update" | "Delete";
+type PermissionType = "Create" | "View" | "Update" | "Delete" | "Manage";
 
 type MenuItem = {
   id: number;

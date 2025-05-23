@@ -20,35 +20,27 @@ export const usePermission = () => {
     const role_id = dataUserLogin?.user?.role_id;
     const rawPermissions = dataUserLogin?.permissions || [];
 
-    if (role_id === 1) {
-      // Jika role_id 1, otomatis Manage semua menu
-      setPermissions([{ menu_id: -1, permissions: ["Manage"] }]);
-    } else {
-      // Grouping: gabungkan permission_type untuk menu_id yang sama
-      const groupedPermissions = rawPermissions.reduce(
-        (
-          acc: GroupedPermission[],
-          curr: { menu_id: number; permission_type: string }
-        ) => {
-          const existing = acc.find((item) => item.menu_id === curr.menu_id);
-          if (existing) {
-            if (!existing.permissions.includes(curr.permission_type)) {
-              existing.permissions.push(curr.permission_type);
-            }
-          } else {
-            acc.push({
-              menu_id: curr.menu_id,
-              permissions: [curr.permission_type],
-            });
+    const groupedPermissions = rawPermissions.reduce(
+      (
+        acc: GroupedPermission[],
+        curr: { menu_id: number; permission_type: string }
+      ) => {
+        const existing = acc.find((item) => item.menu_id === curr.menu_id);
+        if (existing) {
+          if (!existing.permissions.includes(curr.permission_type)) {
+            existing.permissions.push(curr.permission_type);
           }
-          return acc;
-        },
-        []
-      );
-
-      console.log("Grouped Permissions:", groupedPermissions);
-      setPermissions(groupedPermissions);
-    }
+        } else {
+          acc.push({
+            menu_id: curr.menu_id,
+            permissions: [curr.permission_type],
+          });
+        }
+        return acc;
+      },
+      []
+    );
+    setPermissions(groupedPermissions);
   }, []);
 
   const hasPermission = (menuId: number, permissionType: string): boolean => {

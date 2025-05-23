@@ -1,6 +1,6 @@
 import React from "react";
-import ModalComponent from "../../components/modal/ModalComponent";
-import ModalForm from "../form-input/ModalForm";
+import ModalComponent from "../../../../components/modal/ModalComponent";
+import FormCreateUser from "../Form/FormCreateUser";
 
 interface ReusableFormModalProps {
   isOpen: boolean;
@@ -11,7 +11,7 @@ interface ReusableFormModalProps {
   defaultValues?: any;
 }
 
-const ReusableFormModal: React.FC<ReusableFormModalProps> = ({
+const FormModal: React.FC<ReusableFormModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
@@ -25,9 +25,9 @@ const ReusableFormModal: React.FC<ReusableFormModalProps> = ({
         isOpen={isOpen}
         onClose={onClose}
         title={title}
-        size="large"
+        size="medium"
       >
-        <ModalForm
+        <FormCreateUser
           formFields={formFields}
           onSubmit={(data) => {
             onSubmit(data);
@@ -40,4 +40,4 @@ const ReusableFormModal: React.FC<ReusableFormModalProps> = ({
   );
 };
 
-export default ReusableFormModal;
+export default FormModal;

@@ -73,26 +73,6 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
       </div>
 
       <div className="flex items-center space-x-4">
-        {/* <div className="flex items-center space-x-2">
-          <span className="text-sm">Rows per page:</span>
-          <select
-            className="border rounded px-2 py-1 text-sm"
-            value={pageSize}
-            onChange={(e) => {
-              const selected = e.target.value;
-              const newSize =
-                selected === "all" ? totalDataCount : Number(selected);
-              setPageSize(newSize);
-            }}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value="all">All</option>
-          </select>
-        </div> */}
-
         <div className="space-x-2">
           <button
             onClick={previousPage}

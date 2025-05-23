@@ -34,7 +34,6 @@ export const fetchAllRole = async (): Promise<Role[]> => {
 
     return roles;
   } catch (error: any) {
-    console.log("Failed to fetch role.");
     console.error(
       "Failed to fetch role:",
       error.response?.data || error.message
@@ -64,7 +63,7 @@ export const createRole = async (payload: CreateRolePayload): Promise<void> => {
 export const getRoleById = async (id: number): Promise<Role> => {
   try {
     const res = await axiosInstance.get(`/roles/${id}`);
-    
+
     // Mapping data dari API ke interface Role
     const role: Role = {
       id: res.data.data.id,
@@ -72,9 +71,9 @@ export const getRoleById = async (id: number): Promise<Role> => {
       description: res.data.data.description,
       permissions: Array.isArray(res.data.data.permissions)
         ? res.data.data.permissions.map((permission: any) => ({
-          menu_id: permission.menu_id,
-          permission_type: permission.permission_type,
-        }))
+            menu_id: permission.menu_id,
+            permission_type: permission.permission_type,
+          }))
         : [],
     };
 
@@ -97,7 +96,7 @@ export const updateRole = async (
   try {
     const res = await axiosInstance.put(`/roles/${id}`, payload);
     console.log("Role updated successfully:", res.data.statusCode);
-    
+
     if (res.data.statusCode === 200) {
       showSuccessToast("Berhasil update role!");
       return res.data;

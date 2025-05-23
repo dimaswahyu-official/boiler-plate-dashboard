@@ -2,18 +2,19 @@ import React, { useMemo } from "react";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { ColumnDef } from "@tanstack/react-table";
 import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
-import { usePagePermissions } from "../../../../utils/UserPagePermissions";
+import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 
 type User = {
   id: number;
   name: string;
-  username: string;
+  email: string;
+  role: string;
+  branch: string;
+  created_on: string;
   nik: string;
   nik_spv: string;
-  email: string;
-  role: any;
-  branch?: string; // Added branch as an optional property
-  create_on: string;
+  is_active: string;
+  valid_to: string;
 };
 
 type MenuTableProps = {
@@ -38,7 +39,7 @@ const MenuTable = ({
   const columns: ColumnDef<User>[] = useMemo(
     () => [
       {
-        accessorKey: "username",
+        accessorKey: "name",
         header: "Name",
         cell: (info) => String(info.getValue()),
       },
@@ -48,18 +49,8 @@ const MenuTable = ({
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "nik_spv",
-        header: "NIK Supervisor",
-        cell: (info) => String(info.getValue()),
-      },
-      {
-        accessorKey: "email",
-        header: "Email",
-        cell: (info) => String(info.getValue()),
-      },
-      {
-        accessorKey: "role_id",
-        header: "Roles",
+        accessorKey: "role",
+        header: "Role",
         cell: (info) => String(info.getValue()),
       },
       {
@@ -68,8 +59,13 @@ const MenuTable = ({
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "create_on",
-        header: "Create On",
+        accessorKey: "region_code",
+        header: "Region",
+        cell: (info) => String(info.getValue()),
+      },
+      {
+        accessorKey: "created_on",
+        header: "Created On",
         cell: (info) => String(info.getValue()),
       },
       {
@@ -77,24 +73,6 @@ const MenuTable = ({
         header: "Actions",
         cell: ({ row }) => (
           <div className="space-x-4">
-            {canUpdate && (
-              <button
-                className="text-blue-600"
-                onClick={() => onEdit?.(row.original)}
-              >
-                <FaEdit />
-              </button>
-            )}
-
-            {canDelete && (
-              <button
-                className="text-red-600"
-                onClick={() => onDelete(row.original.id)}
-              >
-                <FaTrash />
-              </button>
-            )}
-
             <button
               className="text-green-600"
               onClick={() => onDetail(row.original.id)}
@@ -105,7 +83,7 @@ const MenuTable = ({
         ),
       },
     ],
-    [onDelete, onDetail]
+    [onDelete, onDetail, canUpdate, canDelete, onEdit]
   );
 
   return (

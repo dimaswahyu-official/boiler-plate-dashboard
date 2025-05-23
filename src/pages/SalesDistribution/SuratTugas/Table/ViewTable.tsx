@@ -16,7 +16,7 @@ import Button from "../../../../components/ui/button/Button";
 import DatePicker from "../../../../components/form/date-picker";
 import Label from "../../../../components/form/Label";
 import Select from "../../../../components/form/Select";
-import { usePagePermissions } from "../../../../utils/UserPagePermissions";
+import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 
 const TableMasterCustomer = () => {
   const { fetchAllUser, user, createUser } = useUserStore();

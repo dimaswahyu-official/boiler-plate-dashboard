@@ -14,7 +14,7 @@ import {
   FaFlag,
 } from "react-icons/fa";
 import Button from "../../../../components/ui/button/Button";
-import { usePagePermissions } from "../../../../utils/UserPagePermissions";
+import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 
 const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useMemo } from "react";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import DynamicForm, {
   FieldConfig,
-} from "../../../../components/form-input/dynamicForm";
+} from "../../../../components/form-input/DynamicForm";
 import TableMenuPermission from "../Table/CreatePermission";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
 import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
@@ -55,7 +55,7 @@ function CreateRole() {
       tablePermissionRef.current?.getSelectedPermissions() || [];
 
     const payload = {
-      name: formData.name,
+      name: formData.name.toUpperCase(),
       description: formData.description,
       permissions: selectedPermissions,
     };

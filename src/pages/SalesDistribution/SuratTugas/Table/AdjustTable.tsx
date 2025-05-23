@@ -3,7 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
 import Checkbox from "../../../../components/form/input/Checkbox";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
-import { usePagePermissions } from "../../../../utils/UserPagePermissions";
+import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 
 type SuratTugas = {
   id: number;

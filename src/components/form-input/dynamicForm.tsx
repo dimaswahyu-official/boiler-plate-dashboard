@@ -44,7 +44,16 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
             {field.label}
           </label>
 
-          {field.type === "text" && (
+          {field.type === "text" && field.name === "name" && (
+            <input
+              type="text"
+              {...register(field.name)}
+              className={commonClasses}
+              style={{ textTransform: "uppercase" }}
+            />
+          )}
+
+          {field.type === "text" && field.name !== "name" && (
             <input
               type="text"
               {...register(field.name)}

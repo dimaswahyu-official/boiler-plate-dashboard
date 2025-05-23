@@ -2,22 +2,25 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
 import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
+import { useBranchStore } from "../../../../API/store/MasterStore/masterBranchStore";
+
 import * as XLSX from "xlsx";
 
 import Input from "../../../../components/form/input/InputField";
 import AdjustTableUser from "./AdjustTableUser";
-import ReusableFormModal from "../../../../components/modal/ReusableFormModal";
+import FormModal from "../Form/FormModal";
 import Button from "../../../../components/ui/button/Button";
 import DatePicker from "../../../../components/form/date-picker";
 import Label from "../../../../components/form/Label";
 import Select from "../../../../components/form/Select";
-import { usePagePermissions } from "../../../../utils/UserPagePermissions";
+import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 
 const TableMasterMenu = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { fetchAllUser, user, createUser } = useUserStore();
   const { fetchRoles, roles } = useRoleStore();
+  const { fetchBranches, branches } = useBranchStore();
 
   const [importData, setDataImport] = useState<any[]>([]);
 
@@ -25,10 +28,6 @@ const TableMasterMenu = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [globalFilter, setGlobalFilter] = useState<string>("");
-
-  useEffect(() => {
-    console.log("user", user);
-  }, [user]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,21 +38,28 @@ const TableMasterMenu = () => {
       await fetchRoles();
     };
 
+    const fetchDataBranches = async () => {
+      await fetchBranches();
+    };
+
     fetchData();
     fetchDataRole();
+    fetchDataBranches();
   }, [fetchAllUser]);
 
   const tableData = useMemo(() => {
     return user.map((u) => ({
       id: u.id,
-      name: u.name || "", // Ensure name exists
-      username: u.username,
+      name: u.employee_name || "",
       email: u.email,
-      role: u.role_id || "", // Ensure role exists
-      branch: u.branch || "",
-      create_on: u.create_on || "", // Ensure create_on exists
-      nik: "", // Ensure nik exists
-      nik_spv: "", // Ensure nik_spv exists
+      role: u.role?.name || u.role_name || "",
+      branch: String(u.organization_code || ""),
+      created_on: u.created_at || "",
+      nik: u.employee_id || "",
+      nik_spv: u.supervisor_number || "",
+      is_active: u.is_active ? "Active" : "Inactive",
+      valid_to: u.valid_to || "",
+      region_code: u.region_code || "",
     }));
   }, [user]);
 
@@ -62,6 +68,11 @@ const TableMasterMenu = () => {
   const optionRoles = roles.map((role) => ({
     value: role.id,
     label: role.name,
+  }));
+
+  const optionBranch = branches.map((branch) => ({
+    value: branch.id,
+    label: `${branch.organization_name} (${branch.region_code || "No Region"})`,
   }));
 
   const formFields = [
@@ -74,15 +85,53 @@ const TableMasterMenu = () => {
     {
       name: "roles",
       label: "Posisi",
-      type: "select",
-      options: optionRoles, // Use dynamic roles here
+      type: "select", 
+      options: optionRoles,
       validation: { required: "Role is required" },
+      placeholder: "pilih posisi",
+    },
+    {
+      name: "is_employee",
+      label: "Jenis Karyawan",
+      type: "checkbox",
+      validation: {},
+      info: "Centang jika pengguna bukan karyawan (non-employee)",
+    },
+    {
+      name: "tsf_type",
+      label: "Tipe TSF",
+      type: "select",
+      options: [
+        { value: "internal", label: "Internal" },
+        { value: "external", label: "External" },
+      ],
+      validation: {},
+      placeholder: "pilih tipe TSF",
+    },
+    {
+      name: "branch",
+      label: "Cabang",
+      type: "select",
+      options: optionBranch,
+      validation: {},
+      placeholder: "pilih cabang",
+    },
+    {
+      name: "region",
+      label: "Region",
+      type: "select",
+      options: [
+        { value: "region_1", label: "region_1" },
+        { value: "region_2", label: "region_2" },
+      ],
+      validation: {},
+      placeholder: "pilih region",
     },
     {
       name: "nik",
-      label: "NIK",
+      label: "NIK Pegawai",
       type: "text",
-      validation: { required: "NIK Karyawan is required" },
+      validation: { required: "NIK Pegawai is required" },
     },
     {
       name: "nik_spv",
@@ -96,13 +145,7 @@ const TableMasterMenu = () => {
       type: "text",
       validation: { required: "Phone number is required" },
     },
-    {
-      name: "is_employee",
-      label: "Jenis Karyawan",
-      type: "checkbox",
-      validation: {},
-      info: "Centang jika pengguna bukan karyawan (non-employee)",
-    },
+
     {
       name: "email",
       label: "Email",
@@ -139,17 +182,6 @@ const TableMasterMenu = () => {
       type: "date",
       validation: { required: "Tanggal Berakhir is required" },
     },
-    {
-      name: "branch",
-      label: "Cabang",
-      type: "select",
-      options: [
-        { value: "JAT", label: "JAT" },
-        { value: "KDS", label: "KDS" },
-        { value: "BDG", label: "BDG" },
-      ],
-      validation: { required: "Branch is required" },
-    },
   ];
 
   const options = [
@@ -170,41 +202,12 @@ const TableMasterMenu = () => {
     throw new Error("Function not implemented.");
   }
 
-  const user_login = (() => {
-    const storedUserLogin = localStorage.getItem("user_login_data");
-    return storedUserLogin && storedUserLogin !== "undefined"
-      ? JSON.parse(storedUserLogin).user
-      : null;
-  })();
-
   const handleSubmit = async (payload: any) => {
-    console.log("Payload create user:", payload);
-
-    // alert("Dalam proses development");
-
-    // const formattedPayload = {
-    //   name: payload.name,
-    //   email: payload.email,
-    //   username: payload.username,
-    //   employee_id: payload.username,
-    //   password: payload.password,
-    //   picture: "",
-    //   is_active: true,
-    //   join_date: "2023-01-01T00:00:00Z",
-    //   valid_from: "2023-01-01T00:00:00Z",
-    //   valid_to: "2023-01-01T00:00:00Z",
-    //   role_id: Number(payload.roles),
-    //   created_by: user_login?.username,
-    //   updated_by: user_login?.username,
-    // };
-
-    // console.log("Formatted Payload:", formattedPayload);
-
-    // try {
-    //   await createUser(formattedPayload);
-    // } catch (error) {
-    //   console.error("Error creating user:", error);
-    // }
+    try {
+      await createUser(payload);
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
   };
 
   // UPLOAD EXCEL
@@ -343,22 +346,13 @@ const TableMasterMenu = () => {
         onDelete={handleDelete}
       />
 
-      <ReusableFormModal
+      <FormModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSubmit={(data) => handleSubmit(data)}
         formFields={formFields}
         title="Create User"
       />
-
-      {/* {editMenuData && (
-        <EditMenuModal
-          isOpen={!!editMenuData}
-          onClose={() => setEditMenuData(null)}
-          existingData={editMenuData}
-          onRefresh={fetchMenus}
-        />
-      )} */}
     </>
   );
 };

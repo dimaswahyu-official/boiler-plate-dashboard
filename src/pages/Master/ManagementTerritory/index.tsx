@@ -58,6 +58,8 @@ export default function ManagementTerritory() {
       setBranches(branchesWithRegionCode || []);
     } catch (error) {
       console.error("Error fetching data:", error);
+    }finally {
+      setIsLoading(false);
     }
   };
 
