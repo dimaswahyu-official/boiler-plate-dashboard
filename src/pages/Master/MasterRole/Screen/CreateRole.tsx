@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useMemo } from "react";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import DynamicForm, {FieldConfig} from "../../../../components/form-input/DynamicForm";
-
 import TableMenuPermission from "../Table/CreatePermission";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
 import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
