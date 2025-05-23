@@ -59,14 +59,13 @@ export const createUser = async (payload: User) => {
   try {
     const res = await axiosInstance.post("/admin/user", payload);
     console.log("Response from createUser:", res);
-    
+
     if (res.data.statusCode === 200) {
       showSuccessToast("Berhasil tambah user!");
       return res.data;
     }
   } catch (error: any) {
     showErrorToast(`${error.response?.data?.message}`);
-
     console.error(
       "Failed to create user:",
       error.response?.data || error.message

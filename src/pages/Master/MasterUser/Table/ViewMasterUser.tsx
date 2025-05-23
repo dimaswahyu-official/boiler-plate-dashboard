@@ -14,11 +14,13 @@ import DatePicker from "../../../../components/form/date-picker";
 import Label from "../../../../components/form/Label";
 import Select from "../../../../components/form/Select";
 import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
+import { useNavigate } from "react-router";
 
 const TableMasterMenu = () => {
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { fetchAllUser, user, createUser } = useUserStore();
+  const { fetchAllUser, user, createUser, error } = useUserStore();
   const { fetchRoles, roles } = useRoleStore();
   const { fetchBranches, branches } = useBranchStore();
 
@@ -85,7 +87,7 @@ const TableMasterMenu = () => {
     {
       name: "roles",
       label: "Posisi",
-      type: "select", 
+      type: "select",
       options: optionRoles,
       validation: { required: "Role is required" },
       placeholder: "pilih posisi",
@@ -205,6 +207,11 @@ const TableMasterMenu = () => {
   const handleSubmit = async (payload: any) => {
     try {
       await createUser(payload);
+      if (!error) {
+        setIsModalOpen(false);
+      } else {
+        console.error("Error creating user:", error);
+      }
     } catch (error) {
       console.error("Error creating user:", error);
     }

@@ -142,9 +142,6 @@ export const useUserStore = create<UserStore>((set) => ({
     },
 
     createUser: async (payload) => {
-
-        console.log("Payload yang akan dikirim:", payload);
-
         set({ loading: true, error: null });
         try {
             // Kirim payload ke API
