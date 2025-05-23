@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import DynamicForm, {
   FieldConfig as BaseFieldConfig,
-} from "../../../../components/form-input/dynamicForm";
+} from "../../../../components/form-input/DynamicForm";
 import CustomerForm from "./MainCustomerForm";
 
 type FieldConfig = BaseFieldConfig & {
