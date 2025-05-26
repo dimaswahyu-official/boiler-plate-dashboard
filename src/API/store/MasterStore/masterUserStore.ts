@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { fetchAllUser, createUser as createUserService } from "../../services/MasterServices/MasterUserService";
+import { fetchAllUser, createUser as createUserService, fetchDetailUser } from "../../services/MasterServices/MasterUserService";
+import { showErrorToast } from "../../../components/toast";
 
 // Define Role interface
 interface Role {
@@ -31,7 +32,6 @@ interface BasePayload {
 // Extend BasePayload for Employee-specific data
 interface EmployeePayload extends BasePayload {
     employee: {
-        employee_id: string;
         employee_number: string;
         employee_name: string;
         flag_salesman: string;
@@ -91,7 +91,11 @@ type FinalPayload = BasePayload | EmployeePayload | SalesmanPayload;
 
 // Define User interface
 interface User {
+    region_id: number;
+    sales_name: string | null;
     id: number;
+    salesman_name: string | null;
+    salesrep_number: string | null;
     email: string;
     username: string;
     role_id: number;
@@ -127,15 +131,20 @@ interface User {
 // Define the Zustand store interface
 interface UserStore {
     user: User[];
+    userDetail: User | null; // Add userDetail property
     loading: boolean;
     error: string | null;
-    fetchAllUser: () => Promise<void>;
-    createUser: (payload: FinalPayload) => Promise<void>;
+    fetchAllUser: () => Promise<{ ok: boolean; message?: string }>;
+    createUser: (payload: FinalPayload) => Promise<{ ok: boolean; message?: string }>;
+    fetchDetailUser: (
+        employee_id: string
+    ) => Promise<{ ok: boolean; message?: string; data?: User }>;
 }
 
 // Zustand store implementation
 export const useUserStore = create<UserStore>((set) => ({
     user: [],
+    userDetail: null,
     loading: false,
     error: null,
 
@@ -143,25 +152,53 @@ export const useUserStore = create<UserStore>((set) => ({
     fetchAllUser: async () => {
         set({ loading: true, error: null });
         try {
-            const users = await fetchAllUser(); // Ensure fetchAllUser returns User[]
+            const users = await fetchAllUser();
+            // console.log("FETCH ALL USER", users);
+
             set({ user: users, loading: false });
-        } catch (error: any) {
-            set({ error: error.message || "Failed to fetch users", loading: false });
+            return { ok: true };
+        } catch (err: any) {
+            const msg = err.message ?? "Gagal ambil user";
+            showErrorToast(msg);
+            set({ error: msg, loading: false });
+            return { ok: false, message: msg };
         }
     },
 
-    // Create a new user
+
     createUser: async (payload) => {
         set({ loading: true, error: null });
         try {
-            // Send payload to the API
             await createUserService(payload as unknown as User);
-
-            // Refresh user data after successfully creating a new user
             const users = await fetchAllUser();
+
             set({ user: users, loading: false });
-        } catch (error: any) {
-            set({ error: error.message || "Failed to create user", loading: false });
+            return { ok: true };
+        } catch (err: any) {
+            const msg = err.message ?? "Gagal tambah user";
+            showErrorToast(msg);
+            set({ error: msg, loading: false });
+            return { ok: false, message: msg };
         }
     },
+
+    fetchDetailUser: async (employee_id: string) => {
+        set({ loading: true, error: null });
+        try {
+            const userDetail = await fetchDetailUser(employee_id);
+            console.log("FETCH DETAIL USER", userDetail);
+
+            set({ userDetail }); // Simpan detail user ke state
+            return { ok: true, data: userDetail };
+        } catch (err: any) {
+            const msg = err.message ?? "Gagal ambil detail user";
+            showErrorToast(msg);
+            set({ error: msg, loading: false });
+            return { ok: false, message: msg };
+        } finally {
+            set({ loading: false });
+        }
+    },
+
+
 }));

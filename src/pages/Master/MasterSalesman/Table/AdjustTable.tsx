@@ -30,6 +30,7 @@ const AdjustTable = ({
   onDelete,
   onEdit,
 }: MenuTableProps) => {
+
   const columns: ColumnDef<any>[] = useMemo(
     () => [
       {
@@ -39,8 +40,14 @@ const AdjustTable = ({
         enableSorting: true,
       },
       {
+        accessorKey: "salesrep_id",
+        header: "salesrep_id",
+        sortingFn: "basic",
+        enableSorting: true,
+      },
+      {
         accessorKey: "salesrep_number",
-        header: "Salesman No",
+        header: "salesrep_number",
         sortingFn: "basic",
         enableSorting: true,
       },
@@ -76,7 +83,7 @@ const AdjustTable = ({
       },
     ],
     []
-  );
+  );  
 
   return (
     <TableComponent

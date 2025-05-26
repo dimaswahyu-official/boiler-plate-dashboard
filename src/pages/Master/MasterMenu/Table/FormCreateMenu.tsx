@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa";
 import Button from "../../../../components/ui/button/Button";
 import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
+import { showErrorToast, showSuccessToast } from "../../../../components/toast";
 
 const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -97,9 +98,15 @@ const MenuFormSection = ({ onRefresh }: { onRefresh: () => void }) => {
       icon: data.icon?.value || data.icon,
     };
 
-    await createMenu(payload);
+    const res = await createMenu(payload);
+    if (!res.ok) {
+      return;
+    }
     onRefresh();
-    setIsModalOpen(false);
+    showSuccessToast("Menu berhasil ditambahkan");
+    setTimeout(() => {
+      setIsModalOpen(false);
+    }, 500);
   };
 
   return (

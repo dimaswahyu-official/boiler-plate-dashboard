@@ -10,12 +10,12 @@ const TableMasterMenu = () => {
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
 
-  const { fetchMenus, menus, getParentMenu, deleteMenu } = useMenuStore();
+  const { fetchMenus, menus, fetchParentMenus, deleteMenu } = useMenuStore();
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [editMenuData, setEditMenuData] = useState<any | null>(null);
 
   useEffect(() => {
-    getParentMenu();
+    fetchParentMenus();
     fetchMenus();
   }, []);
 

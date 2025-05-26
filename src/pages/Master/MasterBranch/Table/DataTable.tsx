@@ -4,18 +4,19 @@ import Input from "../../../../components/form/input/InputField";
 import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import AdjustTable from "./AdjustTable";
 import axios from "axios";
+import { showErrorToast, showSuccessToast } from "../../../../components/toast";
 
 const TableMasterMenu = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
 
-  const { fetchMenus, menus, getParentMenu, deleteMenu } = useMenuStore();
+  const { fetchMenus, fetchParentMenus, deleteMenu } = useMenuStore();
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [editMenuData, setEditMenuData] = useState<any | null>(null);
 
   useEffect(() => {
-    getParentMenu();
+    fetchParentMenus();
     fetchMenus();
   }, []);
 
@@ -24,11 +25,18 @@ const TableMasterMenu = () => {
   };
 
   const handleDelete = async (id: number) => {
-    await deleteMenu(id);
-    fetchMenus();
+    // // await deleteMenu(id);
+    
+    // const res = await deleteMenu(id);
+    // if (!res.ok) {
+    //   showErrorToast(res.message);
+    //   return;
+    // }
+    // fetchMenus();
+    // showSuccessToast("Menu berhasil dihapus");
   };
 
-  const fetchData = async () => {
+  const fetchDataBranch = async () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
@@ -49,7 +57,7 @@ const TableMasterMenu = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchDataBranch();
   }, []);
 
   return (

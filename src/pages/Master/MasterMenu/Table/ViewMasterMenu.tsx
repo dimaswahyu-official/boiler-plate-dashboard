@@ -5,15 +5,16 @@ import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore"
 import AdjustTableMenu from "./AdjustTableMenu";
 import MenuFormSection from "./FormCreateMenu";
 import UpdateModal from "./FormUpdateMenu";
+import { showSuccessToast } from "../../../../components/toast";
 
 const TableMasterMenu = () => {
   const navigate = useNavigate();
-  const { fetchMenus, menus, getParentMenu, deleteMenu } = useMenuStore();
+  const { fetchMenus, menus, fetchParentMenus, deleteMenu } = useMenuStore();
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [editMenuData, setEditMenuData] = useState<any | null>(null);
 
   useEffect(() => {
-    getParentMenu();
+    fetchParentMenus();
     fetchMenus();
   }, []);
 
@@ -22,8 +23,13 @@ const TableMasterMenu = () => {
   };
 
   const handleDelete = async (id: number) => {
-    await deleteMenu(id);
+    const res = await deleteMenu(id);
+    if (!res.ok) {
+      console.log("Failed to delete menu:", res.message);
+      return;
+    }
     fetchMenus();
+    showSuccessToast("Menu berhasil dihapus");
   };
 
   const tableData = useMemo(() => {

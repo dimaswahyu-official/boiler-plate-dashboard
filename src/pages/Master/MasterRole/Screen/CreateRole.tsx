@@ -1,10 +1,13 @@
 import React, { useRef, useEffect, useMemo } from "react";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
-import DynamicForm, {FieldConfig} from "../../../../components/form-input/DynamicForm";
+import DynamicForm, {
+  FieldConfig,
+} from "../../../../components/form-input/DynamicForm";
 import TableMenuPermission from "../Table/CreatePermission";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
 import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import { useNavigate } from "react-router-dom";
+import { showErrorToast, showSuccessToast } from "../../../../components/toast";
 
 const fields: FieldConfig[] = [
   { name: "name", label: "Name", type: "text" },
@@ -58,14 +61,15 @@ function CreateRole() {
       permissions: selectedPermissions,
     };
 
-    console.log("Payload yang akan dikirim:", payload);
-
-    try {
-      await createRole(payload);
-      navigate("/master_role");
-    } catch (error: any) {
-      console.log("Gagal membuat role: " + error.message);
+    const res = await createRole(payload);
+    if (!res.ok) {
+      showErrorToast(res.message);
+      return;
     }
+    showSuccessToast("Role berhasil ditambahkan");
+    setTimeout(() => {
+      navigate("/master_role");
+    }, 1000);
   };
 
   const flattenMenus = (menuData: any[]) => {

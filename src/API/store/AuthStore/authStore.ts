@@ -14,7 +14,7 @@ interface AuthState {
 }
 
 interface LoginPayload {
-  email: string;
+  employee_id: string;
   password: string;
   ip_address: string;
   device_info: string;
@@ -22,9 +22,8 @@ interface LoginPayload {
 
 interface User {
   id: number;
-  email: string;
-  username: string;
   employee_id: string;
+  username: string;
   picture: string;
   role_id: number;
 }

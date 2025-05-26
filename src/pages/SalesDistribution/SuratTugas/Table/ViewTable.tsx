@@ -211,27 +211,27 @@ const TableMasterCustomer = () => {
   })();
 
   const handleSubmit = async (payload: any) => {
-    const formattedPayload = {
-      name: payload.name, // Add the name property
-      email: payload.email,
-      username: payload.username,
-      employee_id: payload.username, // Assuming employee_id is the same as username
-      password: payload.password,
-      picture: "https://picsum.photos/seed/xvqRwaMRt/640/480", // Static picture URL
-      is_active: true,
-      join_date: "2023-01-01T00:00:00Z", // Current date as join_date
-      valid_from: "2023-01-01T00:00:00Z", // Current date as valid_from
-      valid_to: "2023-01-01T00:00:00Z",
-      role_id: parseInt(payload.roles.value, 10), // Ensure role_id is sent as a number
-      created_by: user_login?.username, // Handle null user_login
-      updated_by: user_login?.username, // Handle null user_login
-    };
+    // const formattedPayload = {
+    //   name: payload.name, // Add the name property
+    //   email: payload.email,
+    //   username: payload.username,
+    //   employee_id: payload.username, // Assuming employee_id is the same as username
+    //   password: payload.password,
+    //   picture: "https://picsum.photos/seed/xvqRwaMRt/640/480", // Static picture URL
+    //   is_active: true,
+    //   join_date: "2023-01-01T00:00:00Z", // Current date as join_date
+    //   valid_from: "2023-01-01T00:00:00Z", // Current date as valid_from
+    //   valid_to: "2023-01-01T00:00:00Z",
+    //   role_id: parseInt(payload.roles.value, 10), // Ensure role_id is sent as a number
+    //   created_by: user_login?.username, // Handle null user_login
+    //   updated_by: user_login?.username, // Handle null user_login
+    // };
 
-    try {
-      await createUser(formattedPayload);
-    } catch (error) {
-      console.error("Error creating user:", error);
-    }
+    // try {
+    //   await createUser(formattedPayload);
+    // } catch (error) {
+    //   console.error("Error creating user:", error);
+    // }
   };
 
   return (

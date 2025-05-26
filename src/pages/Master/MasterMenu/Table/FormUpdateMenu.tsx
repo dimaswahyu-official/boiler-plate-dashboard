@@ -10,8 +10,9 @@ import {
   FaUserTag,
   FaChartLine,
   FaCreditCard,
-  FaList 
+  FaList,
 } from "react-icons/fa";
+import { showSuccessToast } from "../../../../components/toast";
 
 const UpdateModal = ({
   isOpen,
@@ -24,7 +25,7 @@ const UpdateModal = ({
   existingData: any;
   onRefresh: () => void;
 }) => {
-  const { updateMenuById, parentMenus } = useMenuStore();
+  const { updateMenu, parentMenus } = useMenuStore();
 
   const parentMenuOpt = useMemo(
     () => parentMenus.map((menu) => ({ value: menu.id, label: menu.name })),
@@ -85,7 +86,7 @@ const UpdateModal = ({
     },
   ];
 
-  const handleSubmit = async (data: any) => {    
+  const handleSubmit = async (data: any) => {
     const payload = {
       ...data,
       parent_id: data.parent_id?.value
@@ -94,10 +95,15 @@ const UpdateModal = ({
       order: Number(data.order),
       icon: data.icon?.value || data.icon,
     };
-        
-    await updateMenuById(existingData.id, payload);
+
+    const res = await updateMenu(existingData.id, payload);
+
+    if (!res.ok) {
+      return;
+    }
     onRefresh();
     onClose();
+    showSuccessToast("Menu berhasil diupdate");
   };
 
   // Siapkan default values dari data lama

@@ -5,6 +5,7 @@ import DatePicker from "../../../../components/form/date-picker";
 import Button from "../../../../components/ui/button/Button";
 import Checkbox from "../../../../components/form/input/Checkbox";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { showErrorToast } from "../../../../components/toast";
 
 /* -------------------------------------------------------------------------- */
 /*                                   Types                                    */
@@ -182,6 +183,12 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
 
       try {
         const token = localStorage.getItem("token");
+        if (!token) {
+          setNikStatus("invalid");
+          setNikData(null); // Reset state jika token tidak ada
+          setError("nik", { type: "manual", message: "Token tidak ditemukan" });
+          return;
+        }
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -217,11 +224,18 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
 
   /* ------------------------------ submit handler ------------------------------ */
   const onSubmitInternal: SubmitHandler<FormValues> = (data) => {
+    console.log("onSubmitInternal data", data);
+
+    if (nikStatus === "invalid") {
+      showErrorToast("NIK tidak valid. Harap periksa kembali.");
+      return; // Hentikan proses submit
+    }
+
     const payload: any = {
       supervisor_number: data.nik_spv,
       email: data.email,
       name: data.name,
-      employee_id: nikData?.salesrep_number || nikData?.employee_id,
+      employee_id: data.nik,
       non_employee: data.is_employee ?? false,
       password: data.password,
       is_active: true,
@@ -231,8 +245,8 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
       role_id: Number((data.roles as { value: string }).value), // Pastikan role_id adalah number
       role_name: (data.roles as { label: string }).label,
       branch_id: Number((data.branch as { value: string }).value),
-      region_code: (data.region as { label: string })?.label || null,
-      phone_number: data.phone_number, // Tambahkan phone_number ke payload
+      region_code: nikData?.organization_code || null,
+      phone: data.phone_number, // Tambahkan phone_number ke payload
       created_by: "Superuser", // Contoh hardcoded
       updated_by: "Superuser", // Contoh hardcoded
     };
@@ -260,12 +274,11 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
         status: nikData?.status || null,
         start_date_active: nikData?.start_date_active || null,
         end_date_active: nikData?.end_date_active || null,
-        created_by: "admin",
-        updated_by: "admin",
+        created_by: "Superuser", // Contoh hardcoded
+        updated_by: "Superuser", // Contoh hardcoded
       };
     } else if (!isTSF) {
       payload.employee = {
-        employee_id: nikData?.employee_id || null,
         employee_number: nikData?.employee_number || null,
         employee_name: nikData?.employee_name || null,
         flag_salesman: nikData?.flag_salesman || null,
@@ -275,8 +288,12 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
         vendor_site_code: nikData?.vendor_site_code || null,
         vendor_id: Number(nikData?.vendor_id) || null,
         vendor_site_id: Number(nikData?.vendor_site_id) || null,
-        effective_start_date: nikData?.effective_start_date || null,
-        effective_end_date: nikData?.effective_end_date || null,
+        effective_start_date: new Date(nikData.effective_start_date)
+          .toISOString()
+          .split("T")[0],
+        effective_end_date: new Date(nikData.effective_end_date)
+          .toISOString()
+          .split("T")[0],
         organization_code: nikData?.organization_code || null,
         organization_name: nikData?.organization_name || null,
         organization_id: Number(nikData?.organization_id) || null,
@@ -284,6 +301,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
         org_id: Number(nikData?.org_id) || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        deleted_at: null,
       };
     }
 
@@ -295,6 +313,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
     "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300";
   const errorClasses =
     "w-full px-3 py-2 border rounded-md focus:outline-none ring ring-red-300";
+    
   const getClassName = (hasError: boolean) =>
     hasError ? errorClasses : commonClasses;
 
@@ -353,7 +372,9 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
                 <Select
                   {...c}
                   options={field.options}
-                  placeholder={ `-- ${field.placeholder} --` || "-- Select an option --"} // Gunakan placeholder dari field
+                  placeholder={
+                    `-- ${field.placeholder} --` || "-- Select an option --"
+                  } // Gunakan placeholder dari field
                   classNamePrefix="react-select"
                   value={field.options?.find((o) => o.value === c.value)}
                   onChange={(opt) => c.onChange(opt ?? null)}

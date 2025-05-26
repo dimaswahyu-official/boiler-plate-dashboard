@@ -6,6 +6,7 @@ import Checkbox from "../../../../components/form/input/Checkbox";
 
 import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
+import { showErrorToast, showSuccessToast } from "../../../../components/toast";
 
 // Constants for options
 const STATUS_OPTIONS = [
@@ -178,14 +179,15 @@ export default function UpdateFormWithTable(paramRole: any) {
       return;
     }
 
-    try {
-      await updateRole(updateId, finalPayload);
-      setTimeout(() => {
-        navigate("/master_role");
-      }, 500);
-    } catch (error: any) {
-      console.error("Failed to update role:", error.message);
+    const res = await updateRole(updateId, finalPayload);
+    if (!res.ok) {
+      showErrorToast(res.message);
+      return;
     }
+    showSuccessToast("Role berhasil diupdate");
+    setTimeout(() => {
+      navigate("/master_role");
+    }, 1000);
   };
 
   return (

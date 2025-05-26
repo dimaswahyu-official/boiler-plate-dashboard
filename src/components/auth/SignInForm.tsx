@@ -13,7 +13,7 @@ import { useMenuStore } from "../../API/store/MasterStore/masterMenuStore";
 import { useAuthStore } from "../../API/store/AuthStore/authStore";
 
 interface SignInFormValues {
-  email: string;
+  employee_id: string;
   password: string;
   ip_address: string;
   device_info: string;
@@ -109,19 +109,19 @@ export default function SignInForm() {
               Sign In
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Enter your email and password to sign in!
+              Enter your employee id and password to sign in!
             </p>
           </header>
           <form onSubmit={handleSubmit(handleLogin)} className="space-y-6">
             <div>
               <Label>
-                Email <span className="text-error-500">*</span>
+                Employee Id <span className="text-error-500">*</span>
               </Label>
               <SignInInput
-                placeholder="Enter your email"
-                register={register("email", { required: "Email is required" })}
-                error={!!errors.email}
-                hint={errors.email?.message}
+                placeholder="Enter your employee_id"
+                register={register("employee_id", { required: "Email is required" })}
+                error={!!errors.employee_id}
+                hint={errors.employee_id?.message}
               />
             </div>
             <div>

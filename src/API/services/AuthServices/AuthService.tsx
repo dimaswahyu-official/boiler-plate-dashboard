@@ -2,7 +2,7 @@ import axiosInstance from "../AxiosInstance";
 import { showErrorToast } from "../../../components/toast";
 
 interface LoginPayload {
-  email: string;
+  employee_id: string;
   password: string;
   ip_address: string;
   device_info: string;
@@ -16,7 +16,9 @@ export const loginService = async (payload: LoginPayload) => {
       return data;
     }
   } catch (error: any) {
-    showErrorToast(`Error response: ${error.response?.data?.message || "Unknown error"}`);
+    showErrorToast(
+      `Error response: ${error.response?.data?.message || "Unknown error"}`
+    );
     console.error("Error response:", error.response?.data);
     throw new Error(error.response?.data?.message || "Login failed");
   }

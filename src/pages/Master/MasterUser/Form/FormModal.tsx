@@ -1,6 +1,7 @@
 import React from "react";
 import ModalComponent from "../../../../components/modal/ModalComponent";
 import FormCreateUser from "../Form/FormCreateUser";
+import FormDetailUser from "./FormDetailUser";
 
 interface ReusableFormModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface ReusableFormModalProps {
   formFields: Array<any>;
   title: string;
   defaultValues?: any;
+  mode: "create" | "update"; // Tambahkan mode
 }
 
 const FormModal: React.FC<ReusableFormModalProps> = ({
@@ -18,15 +20,16 @@ const FormModal: React.FC<ReusableFormModalProps> = ({
   formFields,
   title,
   defaultValues,
+  mode, // Terima mode
 }) => {
   return (
-    <>
-      <ModalComponent
-        isOpen={isOpen}
-        onClose={onClose}
-        title={title}
-        size="medium"
-      >
+    <ModalComponent
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      size="medium"
+    >
+      {mode === "create" ? (
         <FormCreateUser
           formFields={formFields}
           onSubmit={(data) => {
@@ -35,8 +38,23 @@ const FormModal: React.FC<ReusableFormModalProps> = ({
           onClose={onClose}
           defaultValues={defaultValues}
         />
-      </ModalComponent>
-    </>
+      ) : (
+        <FormDetailUser
+          formFields={formFields}
+          onClose={onClose}
+          defaultValues={defaultValues} // Pass defaultValues
+          optionRoles={
+            formFields.find((field) => field.name === "roles")?.options || []
+          }
+          optionBranch={
+            formFields.find((field) => field.name === "branch")?.options || []
+          }
+          optionRegion={
+            formFields.find((field) => field.name === "region")?.options || []
+          }
+        />
+      )}
+    </ModalComponent>
   );
 };
 

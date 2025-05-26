@@ -13,6 +13,7 @@ import Spinner from "../../../../components/ui/spinner";
 import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 import { useSalesmanStore } from "../../../../API/store/MasterStore/masterSalesmanStore";
 import { useDebounce } from "../../../../helper/useDebounce";
+import { showErrorToast } from "../../../../components/toast";
 
 interface Option {
   value: string;
@@ -77,44 +78,17 @@ const TableMasterMenu = () => {
   };
 
   useEffect(() => {
-    fetchSalesman();
-    getOrgName();
+    const loadData = async () => {
+      try {
+        await fetchSalesman();
+        await getOrgName();
+      } catch (err: any) {
+        showErrorToast(err.message); // tampilkan error toast di UI
+      }
+    };
+
+    loadData();
   }, []);
-
-  // const filteredData = useMemo(() => {
-  //   return salesman
-  //     .filter((item) => {
-  //       const matchesStartDate =
-  //         !filters.startDate ||
-  //         new Date(item.start_date_active).toISOString().split("T")[0] ===
-  //           filters.startDate;
-
-  //       const matchesEndDate =
-  //         !filters.endDate ||
-  //         (item.end_date_active &&
-  //           new Date(item.end_date_active).toISOString().split("T")[0] ===
-  //             filters.endDate);
-
-  //       const matchesOrganizationName =
-  //         !filters.organizationName ||
-  //         item.organization_name === filters.organizationName;
-  //       const matchesStatus = !filters.status || item.status === filters.status;
-
-  //       return (
-  //         matchesStartDate &&
-  //         matchesEndDate &&
-  //         matchesOrganizationName &&
-  //         matchesStatus
-  //       );
-  //     })
-  //     .map((item, index) => ({
-  //       id: index, // Assign a unique ID for each item
-  //       employee_name: item.employee_name,
-  //       salesrep_id: String(item.salesrep_id), // Convert salesrep_id to string
-  //       vendor_name: item.vendor_name,
-  //       organization_name: item.organization_name,
-  //     }));
-  // }, [salesman, filters]);
 
   const filteredData = useMemo(() => {
     return salesman
@@ -152,11 +126,12 @@ const TableMasterMenu = () => {
         );
       })
       .map((item, index) => ({
-        id: index, // Assign a unique ID for each item
+        id: index,
         employee_name: item.employee_name,
-        salesrep_id: String(item.salesrep_id), // Convert salesrep_id to string
+        salesrep_id: String(item.salesrep_id),
         vendor_name: item.vendor_name,
         organization_name: item.organization_name,
+        salesrep_number: item.salesrep_number,
       }));
   }, [salesman, debouncedFilter, filters]);
 

@@ -1,7 +1,7 @@
+// src/API/services/MasterServices/MenuService.ts
 import axiosInstance from "../AxiosInstance";
-import { showSuccessToast, showErrorToast } from "../../../components/toast";
 
-interface Menu {
+export interface Menu {
   id: number;
   name: string;
   path: string;
@@ -10,92 +10,41 @@ interface Menu {
   order: number;
 }
 
-export const getAllMenus = async () => {
-  try {
-    const res = await axiosInstance.get("/menu");    
-    return res.data.data;
-  } catch (error: any) {
-    console.error(
-      "Failed to fetch menus:",
-      error.response?.data || error.message
-    );
-    throw new Error(error.response?.data?.message || "Failed to fetch menus");
-  }
+export type MenuPayload = Omit<Menu, "id">;
+
+/* helper */
+const assert200 = (status: number, msg = "Request failed") => {
+  if (status !== 200) throw new Error(msg);
 };
 
-export const getParentMenu = async () => {
-  try {
-    const res = await axiosInstance.get("/menu/parent");
-    return res.data.data;
-  } catch (error: any) {
-    console.error(
-      "Failed to fetch parent menus:",
-      error.response?.data || error.message
-    );
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch parent menus"
-    );
-  }
+/* ---------- queries ---------- */
+export const getAllMenus = async (): Promise<Menu[]> => {
+  const { data } = await axiosInstance.get("/menu");
+  assert200(data.statusCode ?? 200, data.message);
+  return data.data;
+};
+
+export const fetchParentMenus = async (): Promise<Menu[]> => {
+  const { data } = await axiosInstance.get("/menu/parent");
+  assert200(data.statusCode ?? 200, data.message);
+  return data.data;
+};
+
+/* ---------- commands ---------- */
+export const createMenu = async (payload: MenuPayload) => {
+  const { data } = await axiosInstance.post("/menu", payload);
+  assert200(data.statusCode, data.message);
+  return data.data; // ← data menu baru
+};
+
+export const updateMenu = async (id: number, payload: Partial<MenuPayload>) => {
+  const { data } = await axiosInstance.put(`/menu/${id}`, payload);
+  assert200(data.statusCode, data.message);
+  return data.data; // ← data menu hasil update
 };
 
 export const deleteMenu = async (id: number) => {
-  try {
-    const res = await axiosInstance.delete(`/menu/${id}`);
-    if (res.data.statusCode === 200) {
-      showSuccessToast("Berhasil hapus menu!");
-      return res.data;
-    }
-  } catch (error: any) {
-    showErrorToast(`${error.response?.data?.message}`);
-
-    console.error(
-      "Failed to delete menu:",
-      error.response?.data || error.message,
-      "Full error response:",
-      error.response
-    );
-    throw new Error(error.response?.data?.message || "Failed to delete menu");
-  }
-};
-
-// POST a new menu
-export const createMenus = async (menuData: Menu) => {
-  try {
-    const res = await axiosInstance.post("/menu", menuData);
-    console.log("Response from createMenus:", res.data);
-
-    if (res.data.statusCode === 200) {
-      showSuccessToast("Berhasil tambah menu!");
-      return res.data;
-    }
-  } catch (error: any) {
-    showErrorToast(`${error.response?.data?.message}`);
-    console.error(
-      "Failed to create menu:",
-      error.response?.data || error.message,
-      "Full error response:",
-      error.response
-    );
-    throw new Error(error.response?.data?.message || "Failed to create menu");
-  }
-};
-
-export const updateMenuById = async (id: number, menuData: Partial<Menu>) => {
-  try {
-    const res = await axiosInstance.put(`/menu/${id}`, menuData);
-    if (res.data.statusCode === 200) {
-      showSuccessToast("Berhasil update menu!");
-      return res.data;
-    }
-  } catch (error: any) {
-    showErrorToast(`${error.response?.data?.message}`);
-
-    console.error(
-      "Failed to update menu:",
-      error.response?.data || error.message,
-      "Full error response:",
-      error.response
-    );
-    throw new Error(error.response?.data?.message || "Failed to update menu");
-  }
+  const { data } = await axiosInstance.delete(`/menu/${id}`);
+  assert200(data.statusCode, data.message);
+  return data.data; // ← data menu terhapus (opsional)
 };

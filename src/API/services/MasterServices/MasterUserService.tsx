@@ -1,5 +1,4 @@
 import axiosInstance from "../AxiosInstance";
-import { showSuccessToast, showErrorToast } from "../../../components/toast";
 
 interface User {
   id: number;
@@ -39,6 +38,7 @@ interface User {
   employee: any | null; // Update this type if you have a specific structure for employee
 }
 
+// GET all users
 export const fetchAllUser = async () => {
   try {
     const res = await axiosInstance.get("/admin/user/all");
@@ -56,20 +56,23 @@ export const fetchAllUser = async () => {
 export const createUser = async (payload: User) => {
   console.log("Creating user with payload:", payload);
 
-  try {
-    const res = await axiosInstance.post("/admin/user", payload);
-    console.log("Response from createUser:", res);
+  const res = await axiosInstance.post("/admin/user", payload);
+  if (res.data.statusCode !== 200) {
+    throw new Error(res.data.message || "Gagal tambah user");
+  }
+  return res.data;
+};
 
-    if (res.data.statusCode === 200) {
-      showSuccessToast("Berhasil tambah user!");
-      return res.data;
-    }
+export const fetchDetailUser = async (employee_id: any) => {
+  try {
+    const res = await axiosInstance.get(`/user/profile/${employee_id}`);
+    return res.data.data;
   } catch (error: any) {
-    showErrorToast(`${error.response?.data?.message}`);
     console.error(
-      "Failed to create user:",
+      "Failed to fetch users:",
       error.response?.data || error.message
     );
-    throw new Error(error.response?.data?.message || "Failed to create user");
+    throw new Error(error.response?.data?.message || "Failed to fetch users");
   }
 };
+

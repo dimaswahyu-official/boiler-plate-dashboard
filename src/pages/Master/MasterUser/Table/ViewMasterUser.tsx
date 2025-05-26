@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef, use } from "react";
 import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
 import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
@@ -15,12 +15,15 @@ import Label from "../../../../components/form/Label";
 import Select from "../../../../components/form/Select";
 import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 import { useNavigate } from "react-router";
+import { showSuccessToast } from "../../../../components/toast";
 
 const TableMasterMenu = () => {
   const navigate = useNavigate();
+  const hasFetched = useRef(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { fetchAllUser, user, createUser, error } = useUserStore();
+  const { fetchAllUser, user, createUser, fetchDetailUser } = useUserStore();
   const { fetchRoles, roles } = useRoleStore();
   const { fetchBranches, branches } = useBranchStore();
 
@@ -29,10 +32,16 @@ const TableMasterMenu = () => {
   const { canCreate, canManage } = usePagePermissions();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "update">("create");
+
   const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [selectedUserData, setSelectedUserData] = useState<any>(null); // State untuk menyimpan data user yang dipilih
 
   useEffect(() => {
-    const fetchData = async () => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    const fetchDataUser = async () => {
       await fetchAllUser();
     };
 
@@ -44,20 +53,25 @@ const TableMasterMenu = () => {
       await fetchBranches();
     };
 
-    fetchData();
+    fetchDataUser();
     fetchDataRole();
     fetchDataBranches();
-  }, [fetchAllUser]);
+  }, []);
+
+  // useEffect(() => {
+  //   // console.log("User data fetched:", user);
+  //   console.log("User Detail data fetched:", userDetail);
+  // }, []);
 
   const tableData = useMemo(() => {
     return user.map((u) => ({
       id: u.id,
-      name: u.employee_name || "",
+      name: u.employee_name || u.salesrep_name || u.sales_name || "null",
       email: u.email,
       role: u.role?.name || u.role_name || "",
       branch: String(u.organization_code || ""),
       created_on: u.created_at || "",
-      nik: u.employee_id || "",
+      nik: u.employee_id || u.salesrep_number || "",
       nik_spv: u.supervisor_number || "",
       is_active: u.is_active ? "Active" : "Inactive",
       valid_to: u.valid_to || "",
@@ -71,11 +85,23 @@ const TableMasterMenu = () => {
     value: role.id,
     label: role.name,
   }));
-
   const optionBranch = branches.map((branch) => ({
     value: branch.id,
     label: `${branch.organization_name} (${branch.region_code || "No Region"})`,
   }));
+
+  const optionRegion = branches
+    .map((branch) => ({
+      value: branch.region_code,
+      label: branch.region_name,
+    }))
+    .filter(
+      (region, index, self) =>
+        region.value &&
+        self.findIndex((r) => r.value === region.value) === index
+    );
+
+  console.log("branches", branches);
 
   const formFields = [
     {
@@ -122,10 +148,7 @@ const TableMasterMenu = () => {
       name: "region",
       label: "Region",
       type: "select",
-      options: [
-        { value: "region_1", label: "region_1" },
-        { value: "region_2", label: "region_2" },
-      ],
+      options: optionRegion,
       validation: {},
       placeholder: "pilih region",
     },
@@ -192,8 +215,39 @@ const TableMasterMenu = () => {
     { value: "development", label: "Development" },
   ];
 
-  const handleDetail = (id: number) => {
-    console.log("Id", id);
+  const handleDetail = async (id: number) => {
+    // 1. Cari item di tabel (hanya untuk mendapatkan employee_id)
+    const userData = user.find((u) => u.id === id);
+
+    if (!userData) {
+      console.error(`User with id ${id} not found`);
+      return;
+    }
+
+    // 2. Pastikan employee_id ada
+    if (!userData.employee_id) {
+      console.error(`User ${id} tidak mempunyai employee_id`);
+      return;
+    }
+
+    // 3. Ambil detail terbaru dari server
+    const { ok, data, message } = await fetchDetailUser(userData.employee_id);
+
+    if (!ok || !data) {
+      console.error(message ?? "Gagal ambil detail user");
+      return;
+    }
+
+    // 4. Siapkan data untuk modal
+    setSelectedUserData({
+      ...data,
+      roles: optionRoles.find((role) => role.value === data.role_id),
+      branches: optionBranch.find((branch) => branch.value === data.branch_id),
+      regions: optionRegion.find((region) => region.value === data.region_code),
+    });
+
+    setModalMode("update");
+    setIsModalOpen(true);
   };
 
   const handleDelete = async (id: number) => {
@@ -205,16 +259,12 @@ const TableMasterMenu = () => {
   }
 
   const handleSubmit = async (payload: any) => {
-    try {
-      await createUser(payload);
-      if (!error) {
-        setIsModalOpen(false);
-      } else {
-        console.error("Error creating user:", error);
-      }
-    } catch (error) {
-      console.error("Error creating user:", error);
+    const result = await createUser(payload);
+    if (!result.ok) {
+      return;
     }
+    showSuccessToast("Berhasil tambah user");
+    // setIsModalOpen(false);
   };
 
   // UPLOAD EXCEL
@@ -273,7 +323,10 @@ const TableMasterMenu = () => {
               <Button
                 variant="primary"
                 size="sm"
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => {
+                  setModalMode("create"); // Set mode ke "create"
+                  setIsModalOpen(true); // Buka modal
+                }}
               >
                 <FaPlus className="mr-2" /> Tambah User
               </Button>
@@ -358,7 +411,9 @@ const TableMasterMenu = () => {
         onClose={handleCloseModal}
         onSubmit={(data) => handleSubmit(data)}
         formFields={formFields}
-        title="Create User"
+        title={modalMode === "create" ? "Create User" : "Detail User"}
+        defaultValues={modalMode === "update" ? selectedUserData : undefined} // Data default untuk update
+        mode={modalMode} // Pass mode
       />
     </>
   );
