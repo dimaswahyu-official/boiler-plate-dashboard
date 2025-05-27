@@ -101,8 +101,6 @@ const TableMasterMenu = () => {
         self.findIndex((r) => r.value === region.value) === index
     );
 
-  console.log("branches", branches);
-
   const formFields = [
     {
       name: "name",
@@ -264,7 +262,7 @@ const TableMasterMenu = () => {
       return;
     }
     showSuccessToast("Berhasil tambah user");
-    // setIsModalOpen(false);
+    setIsModalOpen(false);
   };
 
   // UPLOAD EXCEL
