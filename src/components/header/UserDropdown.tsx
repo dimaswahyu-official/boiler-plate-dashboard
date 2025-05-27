@@ -38,15 +38,11 @@ export default function UserDropdown() {
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          {/* {user_login.picture ? (
-            <img src={user_login.picture} alt="User" />
-          ) : ( */}
           <FaRegUserCircle className="h-full w-full text-gray-500" />
-          {/* )} */}
         </span>
         {user_login ? (
           <span className="block mr-1 font-medium text-theme-sm">
-            {user_login.username}
+            {user_login.employee_id || user_login.employee_name}
           </span>
         ) : (
           <span className="block mr-1 font-medium text-theme-sm">Guest</span>
@@ -80,7 +76,7 @@ export default function UserDropdown() {
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
             {user_login ? (
               <span className="block mr-1 font-medium text-theme-sm">
-                {user_login.username}
+                {user_login.employee_id || user_login.employee_name}
               </span>
             ) : (
               <span className="block mr-1 font-medium text-theme-sm">

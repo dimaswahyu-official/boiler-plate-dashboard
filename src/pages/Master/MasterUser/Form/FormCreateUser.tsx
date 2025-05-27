@@ -563,7 +563,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
 
         <div className="flex justify-end gap-2 mt-10">
           {/* <Button variant="outline" onClick={onClose}>Cancel</Button> */}
-          <Button variant="primary">Submit Oyyyy</Button>
+          <Button variant="primary">Submit</Button>
         </div>
       </form>
     </div>

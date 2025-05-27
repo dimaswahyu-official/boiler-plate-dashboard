@@ -18,6 +18,7 @@ interface LoginPayload {
   password: string;
   ip_address: string;
   device_info: string;
+  platform: string;
 }
 
 interface User {
@@ -26,13 +27,14 @@ interface User {
   username: string;
   picture: string;
   role_id: number;
+  last_login: string;
 }
 
 interface Menu {
   id: number;
   name: string;
   path: string;
-  icon: string;
+  icon: string | null;
   parent_id: number | null;
   order: number;
   created_at: string;

@@ -133,14 +133,15 @@ const SelectTerritory = () => {
       is_active: true,
       created_by: "admin",
     };
-    console.log("Payload:", payload);
+
+    console.log("Submitting payload:", payload);
+
     try {
       const token = localStorage.getItem("token");
-      const URL = `http://10.0.29.47/api/v1/territory?region_code=${regionCode}&branch_id=${branchId}`;
+      const URL = `http://10.0.29.47:9003/api/v1/territory?branch_id=${branchId}`;
       const res = await axios.post(URL, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      //   console.log("Response:", res.data);
 
       if (res.data.statusCode === 200) {
         showSuccessToast("Data berhasil disimpan.");
@@ -155,21 +156,10 @@ const SelectTerritory = () => {
     }
   };
 
-  //   useEffect(() => {
-  //     const handler = setTimeout(() => {
-  //       setDebouncedQuery(searchQuery);
-  //     }, 600); // tunggu 300ms setelah user berhenti mengetik
-
-  //     return () => {
-  //       clearTimeout(handler);
-  //     };
-  //   }, [searchQuery]);
-
   /* filter provinsi */
   const filteredGeoTrees = geoTrees.filter((prov) =>
     prov.provinsi.toLowerCase().includes(debouncedQuery.toLowerCase())
   );
-
 
   /* ─── UI ───────────────────────────────────────────────────────── */
   return (
@@ -205,7 +195,7 @@ const SelectTerritory = () => {
 
                 <div className="space-x-4">
                   <p>
-                    {organizationCode} - {organizationName}
+                    {organizationCode} - {organizationName} - {branchId}
                   </p>
                 </div>
 

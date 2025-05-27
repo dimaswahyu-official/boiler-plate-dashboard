@@ -20,7 +20,7 @@ interface Option {
   label: string;
 }
 
-const DataTable = () => {
+const TableMasterMenu = () => {
   const navigate = useNavigate();
 
   const { fetchSalesman, salesman, isLoading } = useSalesmanStore();
@@ -285,4 +285,4 @@ const DataTable = () => {
   );
 };
 
-export default DataTable;
+export default TableMasterMenu;

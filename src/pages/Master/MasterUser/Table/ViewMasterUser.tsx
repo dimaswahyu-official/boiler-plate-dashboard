@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef, use } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
 import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
@@ -14,11 +14,9 @@ import DatePicker from "../../../../components/form/date-picker";
 import Label from "../../../../components/form/Label";
 import Select from "../../../../components/form/Select";
 import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
-import { useNavigate } from "react-router";
 import { showSuccessToast } from "../../../../components/toast";
 
 const TableMasterMenu = () => {
-  const navigate = useNavigate();
   const hasFetched = useRef(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -57,11 +55,6 @@ const TableMasterMenu = () => {
     fetchDataRole();
     fetchDataBranches();
   }, []);
-
-  // useEffect(() => {
-  //   // console.log("User data fetched:", user);
-  //   console.log("User Detail data fetched:", userDetail);
-  // }, []);
 
   const tableData = useMemo(() => {
     return user.map((u) => ({

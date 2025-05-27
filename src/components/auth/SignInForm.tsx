@@ -17,6 +17,7 @@ interface SignInFormValues {
   password: string;
   ip_address: string;
   device_info: string;
+  platform: string;
 }
 
 export default function SignInForm() {
@@ -25,6 +26,8 @@ export default function SignInForm() {
   const { fetchMenus } = useMenuStore();
 
   const [showPassword, setShowPassword] = useState(false);
+  const toggleShowPassword = () => setShowPassword((prev) => !prev);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ipAddress, setIpAddress] = useState<string>("");
@@ -57,6 +60,7 @@ export default function SignInForm() {
         ...data,
         ip_address: ipAddress,
         device_info: navigator.userAgent,
+        platform: "web",
       });
 
       const { accessToken, refreshToken, user, menus, permissions } =
@@ -73,11 +77,12 @@ export default function SignInForm() {
       );
       localStorage.setItem("token", accessToken);
       localStorage.setItem("role_id", user?.role_id.toString() || "");
+
       showSuccessToast("Login successful!");
 
       setTimeout(() => {
         navigate("/master_menu");
-      }, 1000);
+      }, 800);
     } catch (err: any) {
       console.error("Login failed:", err);
       setError(err.message || "Login failed!");
@@ -85,19 +90,6 @@ export default function SignInForm() {
       setIsLoading(false);
     }
   };
-
-  const renderPasswordToggleIcon = () => (
-    <span
-      onClick={() => setShowPassword(!showPassword)}
-      className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
-    >
-      {showPassword ? (
-        <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
-      ) : (
-        <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
-      )}
-    </span>
-  );
 
   return (
     <div className="flex flex-col flex-1">
@@ -119,7 +111,9 @@ export default function SignInForm() {
               </Label>
               <SignInInput
                 placeholder="Enter your employee_id"
-                register={register("employee_id", { required: "Email is required" })}
+                register={register("employee_id", {
+                  required: "Employee Id is required",
+                })}
                 error={!!errors.employee_id}
                 hint={errors.employee_id?.message}
               />
@@ -128,22 +122,30 @@ export default function SignInForm() {
               <Label>
                 Password <span className="text-error-500">*</span>
               </Label>
-              <div className="relative">
-                <SignInInput
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  register={register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters",
-                    },
-                  })}
-                  error={!!errors.password}
-                  hint={errors.password?.message}
-                />
-                {renderPasswordToggleIcon()}
-              </div>
+
+              <SignInInput
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                register={register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+                error={!!errors.password}
+                hint={errors.password?.message}
+                className="h-12"
+                rightIcon={
+                  <button type="button" onClick={toggleShowPassword}>
+                    {showPassword ? (
+                      <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                    ) : (
+                      <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                    )}
+                  </button>
+                }
+              />
             </div>
             <div className="flex items-center justify-between">
               <Link

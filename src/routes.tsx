@@ -25,6 +25,7 @@ import {
   MasterCustomer,
   SuratTugas,
   DetailCustomer,
+  MasterEmployee,
 } from "./utils/PagesComponent";
 import MasterBranch from "./pages/Master/MasterBranch";
 import MasterRegion from "./pages/Master/MasterRegion";
@@ -39,7 +40,7 @@ export function AppRoutes() {
     localStorage.getItem("accessToken");
   const isAuthenticated = () => {
     if (token) {
-      localStorage.setItem("accessToken", token); // Persist token
+      localStorage.setItem("accessToken", token);
       return true;
     }
     return false;
@@ -47,7 +48,6 @@ export function AppRoutes() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      // Jika tidak terautentikasi, panggil fungsi signOut
       signOut(navigate);
     }
   }, [isAuthenticated, navigate]);
@@ -106,7 +106,7 @@ export function AppRoutes() {
         {/* ✅ Protected Routes */}
         {isAuthenticated() ? (
           <Route element={<AppLayout />}>
-            <Route path="/" element={<Callplan />} />
+            {/* <Route path="/" element={<SignIn />} /> */}
             <Route path="/master_menu" element={<MasterMenu />} />
             <Route path="/master_role" element={<MasterRole />} />
             <Route path="/master_user" element={<MasterUser />} />
@@ -114,6 +114,8 @@ export function AppRoutes() {
             <Route path="/master_branch" element={<MasterBranch />} />
             <Route path="/master_region" element={<MasterRegion />} />
             <Route path="/master_salesman" element={<MasterSalesman />} />
+            <Route path="/master_employee" element={<MasterEmployee />} />
+
             <Route
               path="/management_territory"
               element={<ManagementTerritory />}
@@ -138,14 +140,7 @@ export function AppRoutes() {
         )}
 
         {/* ✅ Public Routes */}
-        <Route
-          path="/signin"
-          element={isAuthenticated() ? <Navigate to="/" replace /> : <SignIn />}
-        />
-        <Route
-          path="/signup"
-          element={isAuthenticated() ? <Navigate to="/" replace /> : <SignUp />}
-        />
+        <Route path="/signin" element={<SignIn />} />
       </Routes>
     </>
   );

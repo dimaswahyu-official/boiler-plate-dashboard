@@ -13,7 +13,6 @@ export default function ManagementTerritory() {
   const navigate = useNavigate();
 
   const handleSelectBranch = (branch: any) => {
-    console.log("Selected branch:", branch);
     const { id, region_code, organization_code, organization_name } = branch;
 
     // Navigasi ke halaman berikutnya dengan state
@@ -58,7 +57,7 @@ export default function ManagementTerritory() {
       setBranches(branchesWithRegionCode || []);
     } catch (error) {
       console.error("Error fetching data:", error);
-    }finally {
+    } finally {
       setIsLoading(false);
     }
   };

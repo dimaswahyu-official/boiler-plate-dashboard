@@ -16,13 +16,15 @@ import PaymentTypes from "../pages/Parameters/ParameterList/PaymentTypes";
 import RouteManagement from "../pages/Parameters/ParameterList/SalesRouteManagement";
 import VisitTypes from "../pages/Parameters/ParameterList/VisitTypes";
 
- // MASTER CUSTOMER
- import MasterCustomer from '../pages/Master/MasterCustomer'
- import DetailCustomer from "../pages/Master/MasterCustomer/DetailPage/DetailCustomerPage";
+// MASTER CUSTOMER
+import MasterCustomer from "../pages/Master/MasterCustomer";
+import DetailCustomer from "../pages/Master/MasterCustomer/DetailPage/DetailCustomerPage";
+
+// MASTER EMPLOYEE
+import MasterEmployee from "../pages/Master/MasterEmployee";
 
 //  SALES & DISTRIBUTION
 import SuratTugas from "../pages/SalesDistribution/SuratTugas";
-
 
 export {
   // PAGE MASTER
@@ -47,6 +49,9 @@ export {
   MasterCustomer,
   DetailCustomer,
 
+  // MASTER EMPLOYEE
+  MasterEmployee,
+
   // SALES & DISTRIBUTION
-  SuratTugas
+  SuratTugas,
 };

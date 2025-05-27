@@ -1,7 +1,10 @@
 import React from "react";
 import ModalComponent from "../../../../components/modal/ModalComponent";
-import FormCreateUser from "../Form/FormCreateUser";
+import FormCreateUser from "./FormCreateUser";
+// import FormCreateUser from "./FormCreateUserLogic";
+
 import FormDetailUser from "./FormDetailUser";
+
 
 interface ReusableFormModalProps {
   isOpen: boolean;
