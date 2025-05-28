@@ -110,7 +110,7 @@ export default function SignInForm() {
                 Employee Id <span className="text-error-500">*</span>
               </Label>
               <SignInInput
-                placeholder="Enter your employee_id"
+                placeholder="Employee id"
                 register={register("employee_id", {
                   required: "Employee Id is required",
                 })}

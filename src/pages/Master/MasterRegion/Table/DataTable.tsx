@@ -40,7 +40,6 @@ const TableMasterMenu = () => {
         }
       );
       const apiData = response.data.data.data;
-      console.log("API Data:", apiData);
 
       setData(apiData);
     } catch (error) {
