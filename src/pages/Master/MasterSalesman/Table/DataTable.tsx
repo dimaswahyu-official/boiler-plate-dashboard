@@ -224,10 +224,7 @@ const DataTable = () => {
                 />
               </div>
 
-              <div
-                className="space-x-4"
-                style={{ zIndex: 9999, position: "relative" }}
-              >
+              <div className="space-x-4" style={{ position: "relative" }}>
                 <Label htmlFor="jenis-kunjungan-select">
                   Organization Name
                 </Label>
@@ -242,10 +239,7 @@ const DataTable = () => {
                 />
               </div>
 
-              <div
-                className="space-x-4"
-                style={{ zIndex: 9999, position: "relative" }}
-              >
+              <div className="space-x-4" style={{ position: "relative" }}>
                 <Label htmlFor="jenis-kunjungan-select">Status</Label>
                 <Select
                   options={options}

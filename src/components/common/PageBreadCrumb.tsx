@@ -41,7 +41,6 @@ const PageBreadcrumb: React.FC<PageBreadcrumbProps> = ({ breadcrumbs }) => {
       </h2>
       <nav aria-label="breadcrumb">
         <ol className="flex items-center gap-1.5">
-          {/* Home */}
           <li>
             <Link
               to="/"

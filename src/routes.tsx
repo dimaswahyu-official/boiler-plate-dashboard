@@ -106,7 +106,7 @@ export function AppRoutes() {
         {/* ✅ Protected Routes */}
         {isAuthenticated() ? (
           <Route element={<AppLayout />}>
-            {/* <Route path="/" element={<SignIn />} /> */}
+            <Route path="/" element={<Callplan />} />
             <Route path="/master_menu" element={<MasterMenu />} />
             <Route path="/master_role" element={<MasterRole />} />
             <Route path="/master_user" element={<MasterUser />} />
