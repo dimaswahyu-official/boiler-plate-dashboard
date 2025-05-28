@@ -5,6 +5,7 @@ import TableComponent from "../../../../components/tables/MasterDataTable/TableC
 import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 import Checkbox from "../../../../components/form/input/Checkbox";
 
+
 type Region = {
   region_code: string;
   region_name: string;

@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../../../components/form/input/InputField";
 import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
+import { useRegionStore } from "../../../../API/store/MasterStore/masterRegionStore";
+
 import AdjustTable from "./AdjustTable";
 import axios from "axios";
 
@@ -11,12 +13,15 @@ const TableMasterMenu = () => {
   const [page, setPage] = useState(1);
 
   const { fetchMenus, menus, fetchParentMenus, deleteMenu } = useMenuStore();
+  const { fetchRegion, regions } = useRegionStore();
+
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [editMenuData, setEditMenuData] = useState<any | null>(null);
 
   useEffect(() => {
     fetchParentMenus();
     fetchMenus();
+    fetchRegion();
   }, []);
 
   const handleDetail = (id: number) => {
@@ -28,27 +33,9 @@ const TableMasterMenu = () => {
     fetchMenus();
   };
 
-  const fetchData = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `http://10.0.29.47:9003/api/v1/region/meta-sync`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const apiData = response.data.data.data;
-
-      setData(apiData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
 
   useEffect(() => {
-    fetchData();
+    console.log("regions", regions);
   }, []);
 
   return (
@@ -65,7 +52,7 @@ const TableMasterMenu = () => {
       </div>
 
       <AdjustTable
-        data={data}
+        data={regions}
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
         onDetail={handleDetail}

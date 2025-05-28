@@ -69,8 +69,8 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
   });
 
   const onSubmit = (data: any) => {
+    alert("On development")
     console.log("Updated Data:", data);
-    // Lakukan sesuatu dengan data yang diupdate, seperti mengirim ke API
   };
 
   return (

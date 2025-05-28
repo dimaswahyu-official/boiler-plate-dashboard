@@ -5,7 +5,6 @@ import FormCreateUser from "./FormCreateUser";
 
 import FormDetailUser from "./FormDetailUser";
 
-
 interface ReusableFormModalProps {
   isOpen: boolean;
   onClose: () => void;
