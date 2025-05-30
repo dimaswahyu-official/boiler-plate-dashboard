@@ -318,9 +318,8 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
         deleted_at: null,
       };
     }
-    console.log("Final payload", payload);
 
-    // onSubmit(payload);
+    onSubmit(payload);
   };
 
   /* ------------------------------ render helpers ------------------------------ */
