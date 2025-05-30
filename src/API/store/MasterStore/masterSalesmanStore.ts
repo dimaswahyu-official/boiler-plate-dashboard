@@ -1,14 +1,12 @@
 import { create } from "zustand";
 import {
     fetchSalesman,
-    createSalesman as createSvc,
-    updateSalesman as updateSvc,
-    deleteSalesman as deleteSvc,
     Salesman,
-    SalesmanPayload,
+    // createSalesman,
+    // updateSalesman,
+    // deleteSalesman,
+    // SalesmanPayload,
 } from "../../services/MasterServices/MasterSalesmanService";
-
-type Result = { ok: true } | { ok: false; message: string };
 
 interface SalesmanState {
     salesman: Salesman[];

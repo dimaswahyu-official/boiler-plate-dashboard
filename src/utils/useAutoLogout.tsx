@@ -3,7 +3,7 @@ import { useAuthStore } from "../API/store/AuthStore/authStore";
 import axiosInstance from "../API/services/AxiosInstance";
 
 export function useAutoLogout() {
-  const { user, logout, accessToken } = useAuthStore();
+  const { user, accessToken } = useAuthStore();
 
   const employee_id = user?.employee_id;
 
@@ -35,5 +35,5 @@ export function useAutoLogout() {
     }, 10000); // cek tiap 10 detik, sesuaikan kebutuhan
 
     return () => clearInterval(interval);
-  }, [accessToken, user, logout]);
+  }, [accessToken, user]);
 }

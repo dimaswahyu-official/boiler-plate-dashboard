@@ -169,7 +169,15 @@ export default function UpdateFormWithTable(paramRole: any) {
       return;
     }
 
-    showSuccessToast("Role berhasil diupdate. Dan silahkan sign in kembali untuk update state");
+    const res = await updateRole(updateId, finalPayload);
+    if (!res.ok) {
+      showErrorToast(res.message);
+      return;
+    }
+
+    showSuccessToast(
+      "Role berhasil diupdate. Dan silahkan sign in kembali untuk update state"
+    );
     setTimeout(() => {
       signOut(navigate);
     }, 800);

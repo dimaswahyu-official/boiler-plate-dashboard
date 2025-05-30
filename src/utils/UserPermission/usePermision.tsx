@@ -17,7 +17,6 @@ export const usePermission = () => {
     }
 
     const dataUserLogin = JSON.parse(storedUserLogin);
-    const role_id = dataUserLogin?.user?.role_id;
     const rawPermissions = dataUserLogin?.permissions || [];
 
     const groupedPermissions = rawPermissions.reduce(

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import Select from "react-select";
 import DatePicker from "../form/date-picker";
@@ -63,8 +63,8 @@ const ModalForm: React.FC<FormInputProps> = ({
     const commonClasses =
       "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300";
 
-    const errorClasses =
-      "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-red-300";
+    // const errorClasses =
+    //   "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-red-300";
 
     switch (field.type) {
       case "textarea":

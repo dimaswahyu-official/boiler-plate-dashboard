@@ -8,32 +8,32 @@ type Region = {
 };
 
 interface FetchBranchResponse {
-    statusCode: number;
+  statusCode: number;
+  message: string;
+  data: {
+    data: Region[];
+    count: number;
+    status: boolean;
     message: string;
-    data: {
-      data: Region[];
-      count: number;
-      status: boolean;
-      message: string;
-    };
-  }
+  };
+}
 
 export const fetchRegion = async (): Promise<Region[]> => {
-    try {
-        const response = await axiosInstance.get<FetchBranchResponse>(
-            `/region/meta-sync`
-        );
+  try {
+    const response = await axiosInstance.get<FetchBranchResponse>(
+      `/region/with-branch`
+    );
 
-        if (response.data.statusCode === 200 && response.data.data) {            
-            return response.data.data.data;
-        } else {
-            showErrorToast(response.data.message);
-            return [];
-        }
-    } catch (error: any) {
-        showErrorToast(
-            error.response?.data?.message || "Failed to fetch region data"
-        );
-        throw error;
+    if (response.data.statusCode === 200 && response.data.data) {
+      return response.data.data.data;
+    } else {
+      showErrorToast(response.data.message);
+      return [];
     }
+  } catch (error: any) {
+    showErrorToast(
+      error.response?.data?.message || "Failed to fetch region data"
+    );
+    throw error;
+  }
 };

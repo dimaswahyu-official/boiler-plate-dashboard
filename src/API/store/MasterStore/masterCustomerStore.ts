@@ -97,7 +97,7 @@ export const useCustomerStore = create<CustomersState>((set) => ({
     ) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await fetchCustomers(page, limit, sortBy, sortOrder, search);            
+            const response = await fetchCustomers(page, limit, sortBy, sortOrder, search);
             set({
                 customers: response.data,
                 totalPages: response.totalPages,

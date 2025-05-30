@@ -1,7 +1,7 @@
 import { JSX, useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import SignIn from "./pages/AuthPages/SignIn";
-import SignUp from "./pages/AuthPages/SignUp";
+// import SignUp from "./pages/AuthPages/SignUp";
 import { useAuthStore } from "./API/store/AuthStore/authStore";
 import { signOut } from "./utils/SignOut";
 // import dummyRoutes from "./helper/dummyRoutes";

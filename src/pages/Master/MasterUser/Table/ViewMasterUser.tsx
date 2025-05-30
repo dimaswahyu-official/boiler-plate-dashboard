@@ -3,6 +3,7 @@ import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
 import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
 import { useBranchStore } from "../../../../API/store/MasterStore/masterBranchStore";
+import { useRegionStore } from "../../../../API/store/MasterStore/masterRegionStore";
 
 import * as XLSX from "xlsx";
 
@@ -24,6 +25,7 @@ const TableMasterMenu = () => {
   const { fetchAllUser, user, createUser, fetchDetailUser } = useUserStore();
   const { fetchRoles, roles } = useRoleStore();
   const { fetchBranches, branches } = useBranchStore();
+  const { fetchRegion, regions } = useRegionStore();
 
   const [importData, setDataImport] = useState<any[]>([]);
 
@@ -51,9 +53,14 @@ const TableMasterMenu = () => {
       await fetchBranches();
     };
 
+    const fetchDataregions = async () => {
+      await fetchRegion();
+    };
+
     fetchDataUser();
     fetchDataRole();
     fetchDataBranches();
+    fetchDataregions();
   }, []);
 
   useEffect(() => {
@@ -91,13 +98,17 @@ const TableMasterMenu = () => {
   const optionRegion = branches
     .map((branch) => ({
       value: branch.region_code,
-      label: branch.region_name,
+      label: branch.region_name || "No Region",
     }))
     .filter(
       (region, index, self) =>
         region.value &&
         self.findIndex((r) => r.value === region.value) === index
     );
+
+  console.log("branch", branches);
+  console.log("regions", regions);
+
 
   const formFields = [
     {
