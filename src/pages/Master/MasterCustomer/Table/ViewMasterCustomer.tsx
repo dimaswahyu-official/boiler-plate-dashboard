@@ -62,10 +62,7 @@ const ViewMasterCustomer = () => {
         </div>
 
         <div className="flex justify-between items-center mt-3">
-          <div
-            className="space-x-4"
-            style={{ zIndex: 9999, position: "relative" }}
-          >
+          <div className="space-x-4">
             <Label htmlFor="jenis-kunjungan-select">Cabang</Label>
             <Select
               options={options}
@@ -78,10 +75,7 @@ const ViewMasterCustomer = () => {
             />
           </div>
 
-          <div
-            className="space-x-4"
-            style={{ zIndex: 9999, position: "relative" }}
-          >
+          <div className="space-x-4">
             <Label htmlFor="jenis-kunjungan-select">Tipe Channel</Label>
             <Select
               options={options}
@@ -94,10 +88,7 @@ const ViewMasterCustomer = () => {
             />
           </div>
 
-          <div
-            className="space-x-4"
-            style={{ zIndex: 9999, position: "relative" }}
-          >
+          <div className="space-x-4">
             <Label htmlFor="jenis-kunjungan-select">Status</Label>
             <Select
               options={options}

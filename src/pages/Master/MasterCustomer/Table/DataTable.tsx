@@ -157,9 +157,9 @@ const DataTable: React.FC<DataTableProps> = ({
       ) : (
         <div>
           <div className="overflow-x-auto">
-            <div className="overflow-auto max-h-[500px] border border-gray-300">
-              <table className="min-w-full border-collapse">
-                <thead className="bg-gray-100 sticky top-0 z-10">
+            <div className="max-h-[600px] overflow-y-auto">
+              <table className="min-w-full table-auto border border-gray-200">
+                <thead className="sticky top-0 bg-gray-100">
                   {table.getHeaderGroups().map((headerGroup: any) => (
                     <tr key={headerGroup.id}>
                       {headerGroup.headers.map((header: any) => (

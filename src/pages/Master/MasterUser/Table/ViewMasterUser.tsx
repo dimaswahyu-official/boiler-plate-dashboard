@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef, use } from "react";
 import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
 import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
@@ -54,6 +54,10 @@ const TableMasterMenu = () => {
     fetchDataUser();
     fetchDataRole();
     fetchDataBranches();
+  }, []);
+
+  useEffect(() => {
+    console.log("Fetching user data...", user);
   }, []);
 
   const tableData = useMemo(() => {
