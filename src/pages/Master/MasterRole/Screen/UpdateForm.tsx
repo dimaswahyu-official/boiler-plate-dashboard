@@ -7,6 +7,9 @@ import Checkbox from "../../../../components/form/input/Checkbox";
 import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
 import { showErrorToast, showSuccessToast } from "../../../../components/toast";
+import Button from "../../../../components/ui/button/Button";
+import { signOut } from "../../../../utils/SignOut";
+import Swal from "sweetalert2";
 
 // Constants for options
 const STATUS_OPTIONS = [
@@ -145,7 +148,7 @@ export default function UpdateFormWithTable(paramRole: any) {
     });
   };
 
-  const hancleSubmitData = async () => {
+  const handleSubmitData = async () => {
     const formData = getValues();
     const tableData = Object.entries(selectedPermissions).flatMap(
       ([menuId, permissions]: any) =>
@@ -179,15 +182,27 @@ export default function UpdateFormWithTable(paramRole: any) {
       return;
     }
 
-    const res = await updateRole(updateId, finalPayload);
-    if (!res.ok) {
-      showErrorToast(res.message);
-      return;
-    }
-    showSuccessToast("Role berhasil diupdate");
-    setTimeout(() => {
-      navigate("/master_role");
-    }, 1000);
+    Swal.fire({
+      title: "Update Role",
+      text: "Jika berhasil update role, Anda akan keluar untuk update state. Dan silahkan sign in kembali. Lanjutkan?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await updateRole(updateId, finalPayload);
+        if (!res.ok) {
+          showErrorToast(res.message);
+          return;
+        }
+
+        showSuccessToast("Role berhasil diupdate");
+        setTimeout(() => {
+          signOut(navigate);
+        }, 800);
+      }
+    });
   };
 
   return (
@@ -289,12 +304,12 @@ export default function UpdateFormWithTable(paramRole: any) {
 
       {/* Submit Button */}
       <div className="flex justify-end mt-4">
-        <button
-          onClick={hancleSubmitData}
+        <Button
+          onClick={handleSubmitData}
           className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
         >
           Update
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import Select from "react-select";
 import DatePicker from "../../../../components/form/date-picker";
 import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore";
 import { showSuccessToast } from "../../../../components/toast";
+import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 
 interface Option<T = string | number> {
   label: string;
@@ -54,6 +55,7 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
 }) => {
   const { updateUser } = useUserStore();
   const [isEditable, setIsEditable] = useState(false);
+  const { canUpdate, canManage } = usePagePermissions();
 
   const processedValues = {
     ...defaultValues,
@@ -376,29 +378,33 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
             Close
           </button>
 
-          {!isEditable ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                setIsEditable(true);
-              }}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md"
-            >
-              Update
-            </button>
-          ) : (
-            <button
-              type="submit"
-              disabled={!isDirty || Object.keys(errors).length > 0}
-              className={`px-4 py-2 rounded-md text-white ${
-                isDirty && Object.keys(errors).length === 0
-                  ? "bg-green-500"
-                  : "bg-gray-400 cursor-not-allowed"
-              }`}
-            >
-              Save
-            </button>
+          {canUpdate && canManage && (
+            <>
+              {!isEditable ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsEditable(true);
+                  }}
+                  className="px-4 py-2 bg-orange-500 text-white rounded-md"
+                >
+                  Update
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={!isDirty || Object.keys(errors).length > 0}
+                  className={`px-4 py-2 rounded-md text-white ${
+                    isDirty && Object.keys(errors).length === 0
+                      ? "bg-green-500"
+                      : "bg-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  Save
+                </button>
+              )}
+            </>
           )}
         </div>
       </form>
@@ -407,11 +413,6 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
 };
 
 export default FormDetailUser;
-
-
-
-
-
 
 // import React, { useEffect, useState } from "react";
 // import { useForm, Controller } from "react-hook-form";

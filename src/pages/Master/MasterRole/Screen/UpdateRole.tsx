@@ -1,8 +1,6 @@
-import { use, useEffect, useState } from "react";
-
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import UpdateForm from "./UpdateForm";
-// import NewTableMenuPermission from "../Table/NewTableMenuPermission";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
 

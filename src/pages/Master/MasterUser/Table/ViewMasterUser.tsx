@@ -291,23 +291,26 @@ const TableMasterMenu = () => {
 
   // UPLOAD EXCEL
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    alert("Import User, not yet implemented");
 
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const bstr = evt.target?.result;
-      const workbook = XLSX.read(bstr, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
-      setDataImport(jsonData);
-    };
-    reader.readAsBinaryString(file);
+    // const file = e.target.files?.[0];
+    // if (!file) return;
+
+    // const reader = new FileReader();
+    // reader.onload = (evt) => {
+    //   const bstr = evt.target?.result;
+    //   const workbook = XLSX.read(bstr, { type: "binary" });
+    //   const sheetName = workbook.SheetNames[0];
+    //   const worksheet = workbook.Sheets[sheetName];
+    //   const jsonData = XLSX.utils.sheet_to_json(worksheet);
+    //   setDataImport(jsonData);
+    // };
+    // reader.readAsBinaryString(file);
   };
 
-  const onButtonClick = () => {
-    fileInputRef.current?.click(); // Trigger hidden file input click
+  const onButtonImport = () => {
+    alert("Import User, not yet implemented");
+    // fileInputRef.current?.click(); // Trigger hidden file input click
   };
 
   return (
@@ -325,11 +328,11 @@ const TableMasterMenu = () => {
           </div>
 
           <div className="space-x-4">
-            <Button variant="primary" size="sm">
+            <Button variant="primary" size="sm" onClick={onButtonImport}>
               <FaFileDownload className="mr-2" /> Unduh
             </Button>
 
-            <Button variant="primary" size="sm" onClick={onButtonClick}>
+            <Button variant="primary" size="sm" onClick={onButtonImport}>
               <FaFileImport className="mr-2" /> Import User
             </Button>
 

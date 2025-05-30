@@ -3,6 +3,7 @@ import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { ColumnDef } from "@tanstack/react-table";
 import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
 import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
+import Badge from "../../../../components/ui/badge/Badge";
 
 type User = {
   id: number;
@@ -70,14 +71,14 @@ const MenuTable = ({
       },
       {
         id: "actions",
-        header: "Actions",
+        header: "Action",
         cell: ({ row }) => (
           <div className="space-x-4">
-            <button
-              className="text-green-600"
-              onClick={() => onDetail(row.original.id)}
-            >
-              <FaEye />
+            <button onClick={() => onDetail(row.original.id)}>
+              <Badge variant="solid" size="sm" color="secondary">
+                <FaEye />
+                Detail
+              </Badge>
             </button>
           </div>
         ),
