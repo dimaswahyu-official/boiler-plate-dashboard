@@ -106,10 +106,6 @@ const TableMasterMenu = () => {
         self.findIndex((r) => r.value === region.value) === index
     );
 
-  console.log("branch", branches);
-  console.log("regions", regions);
-
-
   const formFields = [
     {
       name: "name",

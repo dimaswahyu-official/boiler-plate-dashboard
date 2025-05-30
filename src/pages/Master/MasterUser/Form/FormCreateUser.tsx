@@ -243,7 +243,6 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
       showErrorToast("NIK Karyawan tidak valid. Harap periksa kembali.");
       return; // Hentikan proses submit
     }
-
     const payload: any = {
       supervisor_number: data.nik_spv,
       email: data.email,
@@ -255,10 +254,12 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
       join_date: new Date().toISOString(),
       valid_from: new Date().toISOString(),
       valid_to: data.valid_to,
-      role_id: Number((data.roles as { value: string }).value), // Pastikan role_id adalah number
+      role_id: Number((data.roles as { value: string }).value),
       role_name: (data.roles as { label: string }).label,
-      branch_id: Number((data.branch as { value: string }).value),
-      region_code: nikData?.organization_code || null,
+      branch_id: data.branch
+        ? Number((data.branch as { value: string }).value)
+        : null,
+      region_code: Number((data.region as { value: string }).value),
       phone: data.phone_number, // Tambahkan phone_number ke payload
       created_by: "Superuser", // Contoh hardcoded
       updated_by: "Superuser", // Contoh hardcoded
@@ -317,8 +318,9 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
         deleted_at: null,
       };
     }
+    console.log("Final payload", payload);
 
-    onSubmit(payload);
+    // onSubmit(payload);
   };
 
   /* ------------------------------ render helpers ------------------------------ */

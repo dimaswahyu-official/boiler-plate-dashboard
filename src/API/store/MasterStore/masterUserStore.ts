@@ -190,9 +190,14 @@ export const useUserStore = create<UserStore>((set) => ({
             await createUserService(payload as unknown as User);
             const users = await fetchAllUser();
 
+            console.log("USERS AFTER CREATE", users);
+            
+
             set({ user: users, loading: false });
             return { ok: true };
         } catch (err: any) {
+            console.log("ERROR CREATE USER", err);
+            
             const msg = err.message ?? "Gagal tambah user";
             showErrorToast(msg);
             set({ error: msg, loading: false });
