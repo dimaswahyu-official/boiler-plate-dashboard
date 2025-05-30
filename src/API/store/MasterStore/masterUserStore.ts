@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { fetchAllUser, createUser as createUserService, fetchDetailUser } from "../../services/MasterServices/MasterUserService";
+import { fetchAllUser, createUser as createUserService, fetchDetailUser, updateUser } from "../../services/MasterServices/MasterUserService";
 import { showErrorToast } from "../../../components/toast";
 
 // Define Role interface
@@ -128,6 +128,20 @@ interface User {
     employee: any | null;
 }
 
+interface UpdateUser {
+    role_id: number;
+    branch_id: number;
+    region_code: string;
+    supervisor_number: string;
+    phone: string;
+    is_active: boolean;
+    is_sales:boolean;
+    valid_from: string;
+    valid_to: string;
+    updated_by: string;
+    name: string;
+}
+
 // Define the Zustand store interface
 interface UserStore {
     user: User[];
@@ -139,6 +153,10 @@ interface UserStore {
     fetchDetailUser: (
         employee_id: string
     ) => Promise<{ ok: boolean; message?: string; data?: User }>;
+    updateUser: (
+        employeeId: string,
+        payload: UpdateUser
+    ) => Promise<{ ok: boolean; message?: string }>;
 }
 
 // Zustand store implementation
@@ -199,6 +217,25 @@ export const useUserStore = create<UserStore>((set) => ({
             set({ loading: false });
         }
     },
+
+    updateUser: async (
+        employeeId: string,
+        payload
+    ) => {
+        set({ loading: true, error: null });
+        try {
+            await updateUser(employeeId, payload);
+            const users = await fetchAllUser();
+            set({ user: users, loading: false });
+            return { ok: true };
+        } catch (err: any) {
+            const msg = err.message ?? "Gagal update user";
+            showErrorToast(msg);
+            set({ error: msg, loading: false });
+            return { ok: false, message: msg };
+        }
+    },
+
 
 
 }));

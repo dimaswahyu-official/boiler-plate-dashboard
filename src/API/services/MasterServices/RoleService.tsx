@@ -23,7 +23,6 @@ const assert200 = (statusCode: number, message = "Request failed") => {
 export const fetchAllRole = async (): Promise<Role[]> => {
   const { data } = await axiosInstance.get("/roles");
   assert200(data.statusCode, data.message);
-
   // map hanya field yang dibutuhkan
   return data.data.map((r: any) => ({
     id: r.id,

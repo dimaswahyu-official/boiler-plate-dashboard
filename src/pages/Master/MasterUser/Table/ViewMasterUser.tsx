@@ -14,7 +14,7 @@ import DatePicker from "../../../../components/form/date-picker";
 import Label from "../../../../components/form/Label";
 import Select from "../../../../components/form/Select";
 import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
-import { showSuccessToast } from "../../../../components/toast";
+import { showErrorToast, showSuccessToast } from "../../../../components/toast";
 
 const TableMasterMenu = () => {
   const hasFetched = useRef(false);
@@ -78,6 +78,7 @@ const TableMasterMenu = () => {
     value: role.id,
     label: role.name,
   }));
+
   const optionBranch = branches.map((branch) => ({
     value: branch.id,
     label: `${branch.organization_name} (${branch.region_code || "No Region"})`,
@@ -211,12 +212,14 @@ const TableMasterMenu = () => {
     const userData = user.find((u) => u.id === id);
 
     if (!userData) {
+      showErrorToast(`User dengan id ${id} tidak ditemukan`);
       console.error(`User with id ${id} not found`);
       return;
     }
 
     // 2. Pastikan employee_id ada
     if (!userData.employee_id) {
+      showErrorToast(`User ${id} tidak mempunyai employee_id`);
       console.error(`User ${id} tidak mempunyai employee_id`);
       return;
     }
@@ -225,6 +228,7 @@ const TableMasterMenu = () => {
     const { ok, data, message } = await fetchDetailUser(userData.employee_id);
 
     if (!ok || !data) {
+      showErrorToast(message ?? "Gagal ambil detail user");
       console.error(message ?? "Gagal ambil detail user");
       return;
     }

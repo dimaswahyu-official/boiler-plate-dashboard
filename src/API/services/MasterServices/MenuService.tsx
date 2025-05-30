@@ -19,7 +19,7 @@ const assert200 = (status: number, msg = "Request failed") => {
 
 /* ---------- queries ---------- */
 export const getAllMenus = async (): Promise<Menu[]> => {
-  const { data } = await axiosInstance.get("/menu");
+  const { data } = await axiosInstance.get("/menu");  
   assert200(data.statusCode ?? 200, data.message);
   return data.data;
 };

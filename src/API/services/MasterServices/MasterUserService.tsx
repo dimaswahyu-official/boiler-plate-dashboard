@@ -38,6 +38,20 @@ interface User {
   employee: any | null; // Update this type if you have a specific structure for employee
 }
 
+interface UpdateUser {
+  role_id: number;
+  branch_id: number;
+  region_code: string;
+  supervisor_number: string;
+  phone: string;
+  is_active: boolean;
+  is_sales:boolean;
+  valid_from: string;
+  valid_to: string;
+  updated_by: string;
+  name: string;
+}
+
 // GET all users
 export const fetchAllUser = async () => {
   try {
@@ -76,3 +90,22 @@ export const fetchDetailUser = async (employee_id: any) => {
   }
 };
 
+// PUT update user
+export const updateUser = async (employeeId: string, payload: UpdateUser) => {
+  try {
+    console.log("Updating user with payload:", payload);
+    console.log("Employee ID:", employeeId);
+
+    const res = await axiosInstance.put(`/user/${employeeId}`, payload);
+    if (res.data.statusCode !== 200) {
+      throw new Error(res.data.message || "Gagal update user");
+    }
+    return res.data;
+  } catch (error: any) {
+    console.error(
+      "Failed to update user:",
+      error.response?.data || error.message
+    );
+    throw new Error(error.response?.data?.message || "Failed to update user");
+  }
+};
