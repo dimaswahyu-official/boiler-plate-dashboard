@@ -259,7 +259,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
       branch_id: data.branch
         ? Number((data.branch as { value: string }).value)
         : null,
-      region_code: Number((data.region as { value: string }).value),
+      region_code: (data.region as { value: string }).value,
       phone: data.phone_number, // Tambahkan phone_number ke payload
       created_by: "Superuser", // Contoh hardcoded
       updated_by: "Superuser", // Contoh hardcoded
@@ -318,6 +318,8 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
         deleted_at: null,
       };
     }
+
+    console.log("Final payload to submit:", payload);
 
     onSubmit(payload);
   };
