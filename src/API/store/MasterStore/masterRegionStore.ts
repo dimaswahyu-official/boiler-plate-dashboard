@@ -24,8 +24,7 @@ export const useRegionStore = create<RegionState>((set) => ({
         set({ isLoading: true, error: null });
         try {
             const regions = await fetchRegion();
-            
-            set({ regions });
+            set({ regions: regions || [] });
         } catch (error: any) {
             const errorMessage =
                 error.response?.data?.message || "Failed to fetch region data";

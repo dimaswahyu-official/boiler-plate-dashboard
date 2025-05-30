@@ -166,8 +166,8 @@ const TableMasterMenu = () => {
       validation: {
         required: "NIK Pegawai is required",
         pattern: {
-          value: /^\d{14,16}$/,
-          message: "NIK Pegawai must be 14-16 digits",
+          value: /^.{14,16}$/,
+          message: "NIK Pegawai must be 14-16 characters",
         },
       },
     },
@@ -178,8 +178,8 @@ const TableMasterMenu = () => {
       validation: {
         required: "NIK Supervisor is required",
         pattern: {
-          value: /^\d{14,16}$/,
-          message: "NIK Supervisor must be 14-16 digits",
+          value: /^.{14,16}$/,
+          message: "NIK Supervisor must be 14-16 characters",
         },
       },
     },

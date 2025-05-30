@@ -21,7 +21,7 @@ interface FetchBranchResponse {
 export const fetchRegion = async (): Promise<Region[]> => {
   try {
     const response = await axiosInstance.get<FetchBranchResponse>(
-      `/region/with-branch`
+      `/region/meta-sync`
     );
 
     if (response.data.statusCode === 200 && response.data.data) {
