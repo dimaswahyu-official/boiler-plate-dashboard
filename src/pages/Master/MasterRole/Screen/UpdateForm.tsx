@@ -9,7 +9,7 @@ import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore"
 import { showErrorToast, showSuccessToast } from "../../../../components/toast";
 import Button from "../../../../components/ui/button/Button";
 import { signOut } from "../../../../utils/SignOut";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 
 // Constants for options
 const STATUS_OPTIONS = [
@@ -108,19 +108,6 @@ export default function UpdateFormWithTable(paramRole: any) {
     fetchMenus();
   }, []);
 
-  // useEffect(() => {
-  //   if (paramRole.paramRole.permissions) {
-  //     const permissionsMap: any = {};
-  //     paramRole.paramRole.permissions.forEach((permission: any) => {
-  //       if (!permissionsMap[permission.menu_id]) {
-  //         permissionsMap[permission.menu_id] = {};
-  //       }
-  //       permissionsMap[permission.menu_id][permission.permission_type] = true;
-  //     });
-  //     setSelectedPermissions(permissionsMap);
-  //   }
-  // }, [paramRole.paramRole.permissions]);
-
   useEffect(() => {
     if (paramRole.paramRole.permissions) {
       const permissionsMap: any = {};
@@ -182,27 +169,32 @@ export default function UpdateFormWithTable(paramRole: any) {
       return;
     }
 
-    Swal.fire({
-      title: "Update Role",
-      text: "Jika berhasil update role, Anda akan keluar untuk update state. Dan silahkan sign in kembali. Lanjutkan?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const res = await updateRole(updateId, finalPayload);
-        if (!res.ok) {
-          showErrorToast(res.message);
-          return;
-        }
+    showSuccessToast("Role berhasil diupdate. Dan silahkan sign in kembali untuk update state");
+    setTimeout(() => {
+      signOut(navigate);
+    }, 800);
 
-        showSuccessToast("Role berhasil diupdate");
-        setTimeout(() => {
-          signOut(navigate);
-        }, 800);
-      }
-    });
+    // Swal.fire({
+    //   title: "Update Role",
+    //   text: "Jika berhasil update role, Anda akan keluar untuk update state. Dan silahkan sign in kembali. Lanjutkan?",
+    //   icon: "warning",
+    //   showCancelButton: true,
+    //   confirmButtonText: "Yes",
+    //   cancelButtonText: "No",
+    // }).then(async (result) => {
+    //   if (result.isConfirmed) {
+    //     const res = await updateRole(updateId, finalPayload);
+    //     if (!res.ok) {
+    //       showErrorToast(res.message);
+    //       return;
+    //     }
+
+    //     showSuccessToast("Role berhasil diupdate");
+    //     setTimeout(() => {
+    //       signOut(navigate);
+    //     }, 800);
+    //   }
+    // });
   };
 
   return (
