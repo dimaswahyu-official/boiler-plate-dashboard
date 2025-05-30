@@ -98,7 +98,7 @@ const TableMasterMenu = () => {
   const optionRegion = branches
     .map((branch) => ({
       value: branch.region_code,
-      label: branch.region_name || "No Region",
+      label: branch.region_name || branch.region_code,
     }))
     .filter(
       (region, index, self) =>
