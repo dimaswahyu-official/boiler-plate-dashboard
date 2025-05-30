@@ -240,7 +240,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
     console.log("onSubmitInternal data", data);
 
     if (nikStatus === "invalid") {
-      showErrorToast("NIK tidak valid. Harap periksa kembali.");
+      showErrorToast("NIK Karyawan tidak valid. Harap periksa kembali.");
       return; // Hentikan proses submit
     }
 

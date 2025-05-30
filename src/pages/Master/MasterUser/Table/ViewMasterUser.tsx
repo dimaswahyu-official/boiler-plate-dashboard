@@ -152,26 +152,49 @@ const TableMasterMenu = () => {
       name: "nik",
       label: "NIK Pegawai",
       type: "text",
-      validation: { required: "NIK Pegawai is required" },
+      validation: {
+        required: "NIK Pegawai is required",
+        pattern: {
+          value: /^\d{14,16}$/,
+          message: "NIK Pegawai must be 14-16 digits",
+        },
+      },
     },
     {
       name: "nik_spv",
       label: "NIK Supervisor",
       type: "text",
-      validation: { required: "SPV NIK is required" },
+      validation: {
+        required: "NIK Supervisor is required",
+        pattern: {
+          value: /^\d{14,16}$/,
+          message: "NIK Supervisor must be 14-16 digits",
+        },
+      },
     },
     {
       name: "phone_number",
       label: "Nomor HP Kantor",
       type: "text",
-      validation: { required: "Phone number is required" },
+      validation: {
+        required: "Phone number is required",
+        pattern: {
+          value: /^\d{10,12}$/,
+          message: "Phone number digit must be 10-12 digits",
+        },
+      },
     },
-
     {
       name: "email",
       label: "Email",
       type: "text",
-      validation: { required: "Email is required" },
+      validation: {
+        required: "Email is required",
+        pattern: {
+          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+          message: "Email must be a valid email address",
+        },
+      },
     },
     {
       name: "password",
