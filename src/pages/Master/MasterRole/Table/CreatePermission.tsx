@@ -10,13 +10,13 @@ type MenuItem = {
 
 type Props = {
   menus: MenuItem[];
-  permissionsList?: PermissionType[]; // Optional, default: ['Create', 'View', 'Update', 'Delete']
+  permissionsList?: PermissionType[];
 };
 
 // ForwardRef untuk expose fungsi getSelectedPermissions
 const TableMenuPermission = forwardRef(
   (
-    { menus, permissionsList = ["Create", "View", "Update", "Delete"] }: Props,
+    { menus, permissionsList = ["Create", "View", "Update", "Delete", "Manage"] }: Props,
     ref
   ) => {
     const [checkedItems, setCheckedItems] = useState<

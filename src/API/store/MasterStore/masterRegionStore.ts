@@ -3,9 +3,15 @@ import { showErrorToast } from "../../../components/toast";
 import { fetchRegion } from "../../services/MasterServices/MasterRegionService";
 
 type Region = {
+    id: number;
     region_code: string;
     region_name: string;
-    last_update_date: string;
+    is_active: boolean;
+    created_by: string;
+    created_at: string;
+    updated_by: string;
+    updated_at: string;
+    deleted_at: string | null;
 };
 
 interface RegionState {
@@ -23,7 +29,7 @@ export const useRegionStore = create<RegionState>((set) => ({
     fetchRegion: async () => {
         set({ isLoading: true, error: null });
         try {
-            const regions = await fetchRegion();
+            const regions = await fetchRegion();            
             set({ regions: regions || [] });
         } catch (error: any) {
             const errorMessage =

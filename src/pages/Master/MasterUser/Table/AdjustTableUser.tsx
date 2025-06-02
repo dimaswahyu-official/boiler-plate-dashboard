@@ -55,13 +55,13 @@ const MenuTable = ({
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "branch",
-        header: "Branch",
+        accessorKey: "region_name",
+        header: "Region",
         cell: (info) => String(info.getValue()),
       },
       {
-        accessorKey: "region_code",
-        header: "Region",
+        accessorKey: "branch",
+        header: "Branch",
         cell: (info) => String(info.getValue()),
       },
       {

@@ -13,6 +13,7 @@ interface Option<T = string | number> {
 
 interface FormDetailUserProps {
   defaultValues: {
+    [x: string]: any;
     supervisor_number: string;
     region_code: any;
     employee_id: any;
@@ -59,7 +60,11 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
 
   const processedValues = {
     ...defaultValues,
-    name: defaultValues.salesrep_name || defaultValues.employee_name || "",
+    name:
+      defaultValues.salesrep_name ||
+      defaultValues.employee_name ||
+      defaultValues.sales_name ||
+      "",
     nik: defaultValues.employee_id || "",
     nik_supervisor: defaultValues.supervisor_number || "",
     phone: defaultValues.phone || "",
@@ -142,17 +147,16 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
 
     const payload = {
       role_id: Number(watchedRole?.value) ?? 0,
-      branch_id: !isRegional && !isTSF ? data.branches?.value ?? "" : "",
-      region_code: isRegional ? data.regions?.value ?? "" : "",
-      // tsf_type: isTSF ? data.tsf_type?.value ?? "" : "",
-      supervisor_number: data.nik_supervisor ?? "",
-      phone: data.phone ?? "",
+      branch_id: !isRegional && !isTSF ? data.branches?.value ?? null : null,
+      region_code: isRegional ? data.regions?.value ?? null : null,
+      supervisor_number: data.nik_supervisor ?? null,
+      phone: data.phone ?? null,
       is_active: data.is_active ?? false,
       is_sales: showIsSales ? data.is_sales ?? false : false,
       valid_from: new Date().toISOString(),
       valid_to: validToIso,
       updated_by: "Superuser",
-      name: data.name ?? "",
+      name: data.name ?? null,
     };
 
     const result = await updateUser(employeeId, payload);

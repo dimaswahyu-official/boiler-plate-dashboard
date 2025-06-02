@@ -7,6 +7,7 @@ import Checkbox from "../../../../components/form/input/Checkbox";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { showErrorToast } from "../../../../components/toast";
 import { useDebounce } from "../../../../helper/useDebounce";
+import Swal from "sweetalert2";
 
 /* -------------------------------------------------------------------------- */
 /*                                   Types                                    */
@@ -196,6 +197,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
+        showErrorToast(data.data.message);
 
         const isValid = data?.data?.data?.length > 0;
         setNikStatus(isValid ? "valid" : "invalid");
@@ -237,8 +239,6 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
 
   /* ------------------------------ submit handler ------------------------------ */
   const onSubmitInternal: SubmitHandler<FormValues> = (data) => {
-    console.log("onSubmitInternal data", data);
-
     if (nikStatus === "invalid") {
       showErrorToast("NIK Karyawan tidak valid. Harap periksa kembali.");
       return; // Hentikan proses submit
@@ -260,9 +260,9 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
         ? Number((data.branch as { value: string }).value)
         : null,
       region_code: (data.region as { value: string }).value,
-      phone: data.phone_number, // Tambahkan phone_number ke payload
-      created_by: "Superuser", // Contoh hardcoded
-      updated_by: "Superuser", // Contoh hardcoded
+      phone: data.phone_number,
+      created_by: "Superuser",
+      updated_by: "Superuser",
     };
 
     if (isSales) {

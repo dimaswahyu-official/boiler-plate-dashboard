@@ -63,25 +63,31 @@ const TableMasterMenu = () => {
     fetchDataregions();
   }, []);
 
-  useEffect(() => {
-    console.log("Fetching user data...", user);
-  }, []);
-
+  // Menggunakan useMemo untuk mengoptimalkan performa
   const tableData = useMemo(() => {
-    return user.map((u) => ({
-      id: u.id,
-      name: u.employee_name || u.salesrep_name || u.sales_name || "null",
-      email: u.email,
-      role: u.role?.name || u.role_name || "",
-      branch: String(u.organization_code || ""),
-      created_on: u.created_at || "",
-      nik: u.employee_id || u.salesrep_number || "",
-      nik_spv: u.supervisor_number || "",
-      is_active: u.is_active ? "Active" : "Inactive",
-      valid_to: u.valid_to || "",
-      region_code: u.region_code || "",
-    }));
-  }, [user]);
+    return user.map((u) => {
+      const region = regions.find(
+        (r) =>
+          r.region_code === u.region_code ||
+          r.region_code === u.branch_region_code
+      );
+
+      return {
+        id: u.id,
+        name: u.employee_name || u.salesrep_name || u.sales_name || "null",
+        email: u.email,
+        role: u.role?.name || u.role_name || "",
+        branch: String(u.organization_code || ""),
+        created_on: u.created_at || "",
+        nik: u.employee_id || u.salesrep_number || "",
+        nik_spv: u.supervisor_number || "",
+        is_active: u.is_active ? "Active" : "Inactive",
+        valid_to: u.valid_to || "",
+        region_code: u.branch_region_code || u.region_code || "",
+        region_name: region ? region.region_name : "",
+      };
+    });
+  }, [user, regions]);
 
   const handleCloseModal = () => setIsModalOpen(false);
 
@@ -95,10 +101,10 @@ const TableMasterMenu = () => {
     label: `${branch.organization_name} (${branch.region_code || "No Region"})`,
   }));
 
-  const optionRegion = branches
-    .map((branch) => ({
-      value: branch.region_code,
-      label: branch.region_name || branch.region_code,
+  const optionRegion = regions
+    .map((region) => ({
+      value: region.region_code,
+      label: region.region_name,
     }))
     .filter(
       (region, index, self) =>

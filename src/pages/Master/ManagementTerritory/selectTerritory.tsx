@@ -52,6 +52,8 @@ const SelectTerritory = () => {
       try {
         const token = localStorage.getItem("token");
         const URL = `http://10.0.29.47/api/v1/geotree/get-mapped-tree?branch_id=${branchId}`;
+        console.log("Fetching geotree from:", URL);
+        
         const { data } = await axios.get(URL, {
           headers: { Authorization: `Bearer ${token}` },
         });
