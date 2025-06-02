@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import DatePicker from "../../../../components/form/date-picker";
 import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore";
-import { showSuccessToast } from "../../../../components/toast";
+import { showErrorToast, showSuccessToast } from "../../../../components/toast";
 import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 
 interface Option<T = string | number> {
@@ -159,6 +159,11 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
       name: data.name ?? null,
     };
 
+    if (employeeId === null || employeeId === undefined) {
+      showErrorToast("Employee ID is required");
+      return;
+    }
+
     const result = await updateUser(employeeId, payload);
     if (!result.ok) return;
     showSuccessToast("Berhasil memperbarui user");
@@ -231,10 +236,6 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
             type="text"
             {...register("nik_supervisor", {
               required: "NIK Supervisor is required",
-              pattern: {
-                value: /^\d{14,16}$/,
-                message: "NIK Supervisor must be 14-16 digits",
-              },
             })}
             readOnly={!isEditable}
             className={`${inputBaseClass} ${!isEditable ? disabledClass : ""}`}
