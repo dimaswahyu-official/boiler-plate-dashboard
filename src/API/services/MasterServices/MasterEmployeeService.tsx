@@ -20,11 +20,8 @@ export const checkEmployee = async (nik: string): Promise<Employee[]> => {
     console.log("Response from checkEmployee Store:", response.data);
 
     if (response.data.statusCode === 200) {
-      const responseData = response.data.data;
-      if (responseData.data.length === 0) {
-       showErrorToast(response.data.data.message);
-        return [];
-      }
+      const responseData = response.data.data;      
+
       return responseData.data.data;
     } else {
       showErrorToast(response.data.message);
