@@ -30,6 +30,7 @@ interface FetchBranchResponse {
 }
 
 export const fetchBranch = async (): Promise<Branch[]> => {
+
   try {
     const response = await axiosInstance.get<FetchBranchResponse>(
       `/branch?sortBy=org_id&sortOrder=asc`
@@ -42,9 +43,10 @@ export const fetchBranch = async (): Promise<Branch[]> => {
       return [];
     }
   } catch (error: any) {
-    showErrorToast(
-      error.response?.data?.message || "Failed to fetch branch data"
-    );
+      showErrorToast(
+        error.response?.data?.message || "Failed to fetch branch data"
+      );
     throw error;
   }
+  
 };

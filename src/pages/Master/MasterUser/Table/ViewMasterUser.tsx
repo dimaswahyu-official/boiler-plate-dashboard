@@ -4,6 +4,7 @@ import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore"
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
 import { useBranchStore } from "../../../../API/store/MasterStore/masterBranchStore";
 import { useRegionStore } from "../../../../API/store/MasterStore/masterRegionStore";
+import { useCheckEmployee } from "../../../../API/store/MasterStore/masterEmployeeStore";
 
 import * as XLSX from "xlsx";
 
@@ -26,6 +27,7 @@ const TableMasterMenu = () => {
   const { fetchRoles, roles } = useRoleStore();
   const { fetchBranches, branches } = useBranchStore();
   const { fetchRegion, regions } = useRegionStore();
+  const { checkingEmployee, employeeData } = useCheckEmployee();
 
   const [importData, setDataImport] = useState<any[]>([]);
 
@@ -62,6 +64,30 @@ const TableMasterMenu = () => {
     fetchDataBranches();
     fetchDataregions();
   }, []);
+
+  const user_login = (() => {
+    const storedUserLogin = localStorage.getItem("user_login_data");
+    return storedUserLogin && storedUserLogin !== "undefined"
+      ? JSON.parse(storedUserLogin).user
+      : null;
+  })();
+
+  // useEffect(() => {
+  //   const employeeID = user_login.employee_id;
+  //   console.log("Employee ID:", employeeID);
+
+  //   const checkEmployeeAsync = async (employeeID: string | undefined) => {
+  //     if (employeeID) {
+  //       await checkingEmployee(employeeID);
+  //     } else {
+  //       console.error("Employee ID is undefined");
+  //     }
+  //   };
+
+  //   checkEmployeeAsync(employeeID);
+
+  //   console.log("Current Employee Data:", employeeData);
+  // }, []);
 
   // Menggunakan useMemo untuk mengoptimalkan performa
   const tableData = useMemo(() => {

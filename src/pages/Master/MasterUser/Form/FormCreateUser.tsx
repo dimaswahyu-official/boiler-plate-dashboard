@@ -7,7 +7,7 @@ import Checkbox from "../../../../components/form/input/Checkbox";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { showErrorToast } from "../../../../components/toast";
 import { useDebounce } from "../../../../helper/useDebounce";
-import Swal from "sweetalert2";
+import { useCheckEmployee } from "../../../../API/store/MasterStore/masterEmployeeStore";
 
 /* -------------------------------------------------------------------------- */
 /*                                   Types                                    */
@@ -143,6 +143,8 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
     clearErrors, //  <-- tambahkan
   } = useForm<FormValues>({ defaultValues, mode: "onChange" });
 
+  const { checkingEmployee, employeeData } = useCheckEmployee();
+
   /* ---------------------- cek nilai role “TSF” ---------------------- */
   const rolesValue = useWatch({ control, name: "roles" }) as {
     label: string;
@@ -181,61 +183,85 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
       if (!nik) return;
       setNikStatus("checking");
 
-      const url = isSales
-        ? `http://10.0.29.47:9003/api/v1/salesman/meta-find-salesrep-number/${nik}`
-        : `http://10.0.29.47:9003/api/v1/employee/meta-find-employee-number/${nik}`;
+      if (isSales) {
+        const url = `http://10.0.29.47:9003/api/v1/salesman/meta-find-salesrep-number/${nik}`;
+        try {
+          const token = localStorage.getItem("token");
+          if (!token) {
+            setNikStatus("invalid");
+            setNikData(null); // Reset state jika token tidak ada
+            setError("nik", {
+              type: "manual",
+              message: "Token tidak ditemukan",
+            });
+            return;
+          }
+          const res = await fetch(url, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          showErrorToast(data.data.message);
 
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
+          const isValid = data?.data?.data?.length > 0;
+          setNikStatus(isValid ? "valid" : "invalid");
+
+          if (isValid) {
+            const processedData = {
+              ...data?.data?.data[0],
+              employee_id: Number(data?.data?.data[0]?.employee_id) || null,
+              salesrep_id: Number(data?.data?.data[0]?.salesrep_id) || null,
+              organization_id:
+                Number(data?.data?.data[0]?.organization_id) || null,
+              // Tambahkan konversi ID lainnya jika diperlukan
+            };
+            setNikData(processedData); // Simpan data yang sudah diproses
+            clearErrors("nik");
+          } else {
+            setNikData(null); // Reset state jika tidak valid
+            setError("nik", { type: "manual", message: "NIK tidak ditemukan" });
+          }
+        } catch (e) {
+          console.error(e);
           setNikStatus("invalid");
-          setNikData(null); // Reset state jika token tidak ada
-          setError("nik", { type: "manual", message: "Token tidak ditemukan" });
-          return;
+          setNikData(null); // Reset state jika terjadi error
+          setError("nik", { type: "manual", message: "Gagal cek NIK" });
         }
-        const res = await fetch(url, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        showErrorToast(data.data.message);
+      } else {
+        console.log("Employee");
+        try {
+          await checkingEmployee(nik);
+          console.log("employeeData", employeeData);
+          
+          const isValid = employeeData.length > 0;
+          setNikStatus(isValid ? "valid" : "invalid");
 
-        const isValid = data?.data?.data?.length > 0;
-        setNikStatus(isValid ? "valid" : "invalid");
-
-        if (isValid) {
-          const processedData = {
-            ...data?.data?.data[0],
-            employee_id: Number(data?.data?.data[0]?.employee_id) || null,
-            salesrep_id: Number(data?.data?.data[0]?.salesrep_id) || null,
-            organization_id:
-              Number(data?.data?.data[0]?.organization_id) || null,
-            // Tambahkan konversi ID lainnya jika diperlukan
-          };
-          setNikData(processedData); // Simpan data yang sudah diproses
-          clearErrors("nik");
-        } else {
-          setNikData(null); // Reset state jika tidak valid
-          setError("nik", { type: "manual", message: "NIK tidak ditemukan" });
+          if (isValid) {
+            setNikData(employeeData[0]); // Simpan data employee
+            clearErrors("nik");
+          } else {
+            setNikData(null); // Reset state jika tidak valid
+            setError("nik", { type: "manual", message: "NIK tidak ditemukan" });
+          }
+        } catch (e) {
+          console.error(e);
+          setNikStatus("invalid");
+          setNikData(null); // Reset state jika terjadi error
+          setError("nik", { type: "manual", message: "Gagal cek NIK" });
         }
-      } catch (e) {
-        console.error(e);
-        setNikStatus("invalid");
-        setNikData(null); // Reset state jika terjadi error
-        setError("nik", { type: "manual", message: "Gagal cek NIK" });
       }
     },
-    [isSales, clearErrors, setError]
+    [isSales, checkingEmployee, employeeData, clearErrors, setError]
   );
 
-  useEffect(() => {
-    // ➌ panggil checkNik setiap debouncedNik berubah
-    if (debouncedNik != "") {
-      checkNik(debouncedNik);
-    } else {
-      setNikStatus(null);
-      clearErrors("nik");
-    }
-  }, [debouncedNik, checkNik, clearErrors]);
+  // useEffect(() => {
+  //   // ➌ panggil checkNik setiap debouncedNik berubah
+  //   if (debouncedNik != "") {
+  //     checkNik(debouncedNik);
+  //   } else {
+  //     setNikStatus(null);
+  //     clearErrors("nik");
+  //   }
+  // }, [debouncedNik, checkNik, clearErrors]);
 
   /* ------------------------------ submit handler ------------------------------ */
   const onSubmitInternal: SubmitHandler<FormValues> = (data) => {
@@ -469,16 +495,26 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
 
           return (
             <>
-              <input
-                {...nikRest}
-                ref={nikRef}
-                type="text"
-                className={getClassName(!!errors[field.name])}
-                onChange={(e) => {
-                  rhfOnChange(e); // tetap update react-hook-form
-                  setNik(e.target.value.trim()); // ➍ update state lokal
-                }}
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  {...nikRest}
+                  ref={nikRef}
+                  type="text"
+                  className={getClassName(!!errors[field.name])}
+                  onChange={(e) => {
+                    rhfOnChange(e); // tetap update react-hook-form
+                    setNik(e.target.value.trim()); // update state lokal
+                  }}
+                />
+                <Button
+                  variant="primary"
+                  size="xsm"
+                  onClick={() => checkNik(nik)}
+                  disabled={!nik || nikStatus === "checking"}
+                >
+                  Check NIK Karyawan
+                </Button>
+              </div>
 
               {/* indikator proses / sukses */}
               {nikStatus === "valid" && (
