@@ -17,13 +17,14 @@ export const checkEmployee = async (nik: string): Promise<Employee[]> => {
     const response = await axiosInstance.get(
       `employee/meta-find-employee-number/${nik}`
     );
-    console.log("Response from checkEmployee Store:", response.data);
+
+    console.log("Response from checkEmployee:", response.data);
+    
 
     if (response.data.statusCode === 200) {
       const responseData = response.data.data;      
-
       return responseData.data.data;
-    } else {
+    } else {        
       showErrorToast(response.data.message);
       return [];
     }

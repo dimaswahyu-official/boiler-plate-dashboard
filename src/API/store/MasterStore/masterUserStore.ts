@@ -91,7 +91,7 @@ type FinalPayload = BasePayload | EmployeePayload | SalesmanPayload;
 
 // Define User interface
 interface User {
-    branch_region_code: string | null;
+    branch_region_code: string;
     region_id: number;
     sales_name: string | null;
     id: number;
@@ -136,7 +136,7 @@ interface UpdateUser {
     supervisor_number: string;
     phone: string;
     is_active: boolean;
-    is_sales:boolean;
+    is_sales: boolean;
     valid_from: string;
     valid_to: string;
     updated_by: string;
@@ -172,8 +172,6 @@ export const useUserStore = create<UserStore>((set) => ({
         set({ loading: true, error: null });
         try {
             const users = await fetchAllUser();
-            // console.log("FETCH ALL USER", users);
-
             set({ user: users, loading: false });
             return { ok: true };
         } catch (err: any) {
@@ -184,21 +182,14 @@ export const useUserStore = create<UserStore>((set) => ({
         }
     },
 
-
     createUser: async (payload) => {
         set({ loading: true, error: null });
         try {
             await createUserService(payload as unknown as User);
             const users = await fetchAllUser();
-
-            console.log("USERS AFTER CREATE", users);
-            
-
             set({ user: users, loading: false });
             return { ok: true };
         } catch (err: any) {
-            console.log("ERROR CREATE USER", err);
-            
             const msg = err.message ?? "Gagal tambah user";
             showErrorToast(msg);
             set({ error: msg, loading: false });
@@ -210,9 +201,7 @@ export const useUserStore = create<UserStore>((set) => ({
         set({ loading: true, error: null });
         try {
             const userDetail = await fetchDetailUser(employee_id);
-            console.log("FETCH DETAIL USER", userDetail);
-
-            set({ userDetail }); // Simpan detail user ke state
+            set({ userDetail });
             return { ok: true, data: userDetail };
         } catch (err: any) {
             const msg = err.message ?? "Gagal ambil detail user";
@@ -224,13 +213,16 @@ export const useUserStore = create<UserStore>((set) => ({
         }
     },
 
-    updateUser: async (
-        employeeId: string,
-        payload
-    ) => {
+    updateUser: async (employeeId: string, payload) => {
         set({ loading: true, error: null });
+
         try {
-            await updateUser(employeeId, payload);
+            // Filter out null values from the payload
+            const filteredPayload = Object.fromEntries(
+                Object.entries(payload).filter(([_, value]) => value !== null)
+            );
+
+            await updateUser(employeeId, filteredPayload as UpdateUser);
             const users = await fetchAllUser();
             set({ user: users, loading: false });
             return { ok: true };
@@ -241,7 +233,4 @@ export const useUserStore = create<UserStore>((set) => ({
             return { ok: false, message: msg };
         }
     },
-
-
-
 }));

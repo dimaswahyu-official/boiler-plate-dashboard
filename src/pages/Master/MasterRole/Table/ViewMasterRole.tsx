@@ -44,7 +44,7 @@ const TableMasterRole = () => {
           <Button
             variant="primary"
             size="sm"
-            onClick={() => navigate("/create_role")}
+            onClick={() => navigate("/master_role/create")}
           >
             <FaPlus className="mr-2" /> Tambah Role
           </Button>

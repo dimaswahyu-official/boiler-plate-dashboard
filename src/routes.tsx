@@ -1,19 +1,17 @@
 import { JSX, useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import SignIn from "./pages/AuthPages/SignIn";
-// import SignUp from "./pages/AuthPages/SignUp";
-import { useAuthStore } from "./API/store/AuthStore/authStore";
-import { signOut } from "./utils/SignOut";
-// import dummyRoutes from "./helper/dummyRoutes";
 
 import AppLayout from "./layout/AppLayout";
+import SignIn from "./pages/AuthPages/SignIn";
+import { useAuthStore } from "./API/store/AuthStore/authStore";
+import { signOut } from "./utils/SignOut";
 import { ScrollToTop } from "./components/common/ScrollToTop";
+import { ProtectedRoute } from "./utils/ProtectedRoute";
 
+// ✅ Pages
 import {
-  SalesRoute,
-  MasterUser,
-  MasterMenu,
   Callplan,
+  MasterMenu,
   MasterRole,
   CreateRole,
   UpdateRole,
@@ -25,19 +23,24 @@ import {
   MasterCustomer,
   SuratTugas,
   DetailCustomer,
+  MasterUser,
+  SalesRoute,
+  // MasterBranch,
+  // MasterRegion,
+  // MasterSalesman,
+  // ManagementTerritory,
+  // SelectTerritory,
   MasterEmployee,
 } from "./utils/PagesComponent";
-import MasterBranch from "./pages/Master/MasterBranch";
-import MasterRegion from "./pages/Master/MasterRegion";
-import MasterSalesman from "./pages/Master/MasterSalesman";
-import ManagementTerritory from "./pages/Master/ManagementTerritory";
 import SelectTerritory from "./pages/Master/ManagementTerritory/selectTerritory";
+import ManagementTerritory from "./pages/Master/ManagementTerritory";
 
 export function AppRoutes() {
   const navigate = useNavigate();
   const token =
     useAuthStore((state) => state.accessToken) ||
     localStorage.getItem("accessToken");
+
   const isAuthenticated = () => {
     if (token) {
       localStorage.setItem("accessToken", token);
@@ -47,99 +50,120 @@ export function AppRoutes() {
   };
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated()) {
       signOut(navigate);
     }
-  }, [isAuthenticated, navigate]);
+  }, [navigate]);
 
-  const user_login_menu = (() => {
-    const storedUserLogin = localStorage.getItem("user_login_data");
-    return storedUserLogin && storedUserLogin !== "undefined"
+  const storedUserLogin = localStorage.getItem("user_login_data");
+  const userMenus =
+    storedUserLogin && storedUserLogin !== "undefined"
       ? JSON.parse(storedUserLogin).menus
-      : null;
-  })();
+      : [];
 
-  const componentMap: Record<string, JSX.Element> = {
-    SalesRoute: <SalesRoute />,
-    MasterUser: <MasterUser />,
-    MasterMenu: <MasterMenu />,
-    Callplan: <Callplan />,
-    Roles: <MasterRole />,
-    Parameters: <Parameters />,
-    MasterCustomer: <MasterCustomer />,
+  // 📌 Child route manual untuk parent tertentu
+  const manualChildRoutes: Record<
+    string,
+    { path: string; element: JSX.Element }[]
+  > = {
+    "/master_role": [
+      { path: "create", element: <CreateRole /> },
+      { path: "update", element: <UpdateRole /> },
+    ],
+
+    "/management_territory": [
+      { path: "select_territory", element: <SelectTerritory /> },
+    ],
   };
 
-  const flattenRoutes = (data: any[]) => {
-    const result: any[] = [];
+  // Gabungkan user menu + manual child
+  const buildRoutes = (menus: any[]) => {
+    const routes: { id: string; path: string; element: JSX.Element }[] = [];
+
     const traverse = (items: any[]) => {
-      if (!Array.isArray(items)) return; // Ensure items is an array
       items.forEach((item) => {
-        result.push(item);
-        if (item.children && item.children.length > 0) {
-          traverse(item.children);
+        if (item.path) {
+          const Element = getElementByPath(item.path);
+          if (Element) {
+            routes.push({
+              id: item.id || item.path,
+              path: item.path,
+              element: Element,
+            });
+          }
+
+          const childRoutes = manualChildRoutes[item.path];
+          if (childRoutes) {
+            childRoutes.forEach((child) => {
+              routes.push({
+                id: `${item.path}-${child.path}`,
+                path: `${item.path}/${child.path}`,
+                element: child.element,
+              });
+            });
+          }
+
+          if (item.children?.length) traverse(item.children);
         }
       });
     };
-    traverse(data);
-    return result;
+
+    traverse(menus);
+    return routes;
   };
 
-  const flattenedRoutes = flattenRoutes(user_login_menu as any[]);
+  const getElementByPath = (path: string): JSX.Element | null => {
+    const map: Record<string, JSX.Element> = {
+      "/sales_route": <SalesRoute />,
+      "/master_user": <MasterUser />,
+      "/master_menu": <MasterMenu />,
+      "/callplan": <Callplan />,
+      "/master_role": <MasterRole />,
+      "/management_territory": <ManagementTerritory />,
 
-  const renderDynamicRoutes = () => {
-    if (!Array.isArray(flattenedRoutes) || flattenedRoutes.length === 0) {
-      return null; // Return null if flattenedRoutes is not an array or is empty
-    }
-
-    return flattenedRoutes.map((menu: any) => {
-      const Component = componentMap[menu.name];
-      return Component ? (
-        <Route key={menu.id} path={menu.path} element={Component} />
-      ) : null;
-    });
+      "/parameters": <Parameters />,
+      "/master_customer": <MasterCustomer />,
+      "/master_employee": <MasterEmployee />,
+      "/channel_types": <ChannelTypes />,
+      "/payment_types": <PaymentTypes />,
+      "/visit_types": <VisitTypes />,
+      "/surat_tugas": <SuratTugas />,
+      "/detail_customer": <DetailCustomer />,
+      // "/master_branch": <MasterBranch />,
+      // "/master_region": <MasterRegion />,
+      // "/master_salesman": <MasterSalesman />,
+      // "/select_territory": <SelectTerritory />,
+    };
+    return map[path] || null;
   };
+
+  const userRoutes = buildRoutes(userMenus);
 
   return (
     <>
       <ScrollToTop />
       <Routes>
-        {/* ✅ Protected Routes */}
         {isAuthenticated() ? (
-          <Route element={<AppLayout />}>
+          <Route
+            element={
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route path="/" element={<Callplan />} />
-            <Route path="/master_menu" element={<MasterMenu />} />
-            <Route path="/master_role" element={<MasterRole />} />
-            <Route path="/master_user" element={<MasterUser />} />
-            <Route path="/master_customer" element={<MasterCustomer />} />
-            <Route path="/master_branch" element={<MasterBranch />} />
-            <Route path="/master_region" element={<MasterRegion />} />
-            <Route path="/master_salesman" element={<MasterSalesman />} />
-            <Route path="/master_employee" element={<MasterEmployee />} />
 
-            <Route
-              path="/management_territory"
-              element={<ManagementTerritory />}
-            />
-
-            <Route path="/create_role" element={<CreateRole />} />
-            <Route path="/update_role" element={<UpdateRole />} />
-            <Route path="/channel_types" element={<ChannelTypes />} />
-            <Route path="/payment_types" element={<PaymentTypes />} />
-            <Route path="/sales_route" element={<RouteManagement />} />
-            <Route path="/visit_types" element={<VisitTypes />} />
-            <Route path="/surat_tugas" element={<SuratTugas />} />
-            <Route path="/detail_customer" element={<DetailCustomer />} />
-            <Route path="/select_territory" element={<SelectTerritory />} />
-
-            {renderDynamicRoutes()}
-
-            {/* {renderDummyRoutes()} */}
+            {userRoutes.map((route) => (
+              <Route
+                key={route.id}
+                path={route.path}
+                element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+              />
+            ))}
           </Route>
         ) : (
           <Route path="*" element={<Navigate to="/signin" replace />} />
         )}
-
-        {/* ✅ Public Routes */}
         <Route path="/signin" element={<SignIn />} />
       </Routes>
     </>

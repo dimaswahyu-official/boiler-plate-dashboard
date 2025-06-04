@@ -86,8 +86,8 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
     valid_to: defaultValues.valid_to
       ? new Date(defaultValues.valid_to).toISOString().split("T")[0]
       : "",
-    is_active: defaultValues.is_active ?? false,
-    is_sales: defaultValues.is_active ?? false,
+    is_active: defaultValues.is_active,
+    is_sales: defaultValues.is_sales,
   };
 
   console.log("Processed Values:", processedValues);
@@ -99,16 +99,11 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
     watch,
     setValue,
     formState: { errors, isDirty },
-    reset,
+    reset
   } = useForm({
     defaultValues: processedValues,
-    mode: "onChange",
+    mode: "onChange", // validate as the user edits
   });
-
-  // Reset form ketika defaultValues berubah
-  useEffect(() => {
-    reset(processedValues);
-  }, [defaultValues]);
 
   const toIsoPreserveDate = (local: Date): string =>
     new Date(
@@ -153,6 +148,7 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
       const newVal = newData[key];
       const origVal = originalData[key];
 
+      // handle object like Select (e.g. { value, label })
       if (typeof newVal === "object" && newVal !== null && "value" in newVal) {
         if (newVal.value !== origVal?.value) {
           changes[key] = newVal;
@@ -199,11 +195,47 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
 
     const employeeId = defaultValues.employee_id;
 
+    console.log("Final Payload:", payload);
+
     const result = await updateUser(employeeId, payload);
     if (!result.ok) return;
     showSuccessToast("Berhasil memperbarui user");
     onClose();
   };
+
+  // const onSubmit = async (data: any) => {
+
+  //   const employeeId = defaultValues.employee_id;
+  //   const validToIso = data.valid_to
+  //     ? toIsoPreserveDate(new Date(data.valid_to))
+  //     : "";
+
+  //   const payload = {
+  //     role_id: Number(watchedRole?.value) ?? 0,
+  //     branch_id: !isRegional && !isTSF ? data.branches?.value ?? null : null,
+  //     region_code: isRegional ? data.regions?.value ?? null : null,
+  //     supervisor_number: data.nik_supervisor ?? null,
+  //     phone: data.phone ?? null,
+  //     is_active: data.is_active ?? false,
+  //     is_sales: showIsSales ? data.is_sales ?? false : false,
+  //     valid_from: new Date().toISOString(),
+  //     valid_to: validToIso,
+  //     updated_by: "Superuser",
+  //     name: data.name ?? null,
+  //   };
+
+  //   console.log("payload", payload);
+
+  //   // if (employeeId === null || employeeId === undefined) {
+  //   //   showErrorToast("Employee ID is required");
+  //   //   return;
+  //   // }
+
+  //   // const result = await updateUser(employeeId, payload);
+  //   // if (!result.ok) return;
+  //   // showSuccessToast("Berhasil memperbarui user");
+  //   // onClose();
+  // };
 
   const inputBaseClass = "w-full px-3 py-2 border rounded-md";
   const disabledClass = "bg-gray-100 text-gray-500";
@@ -212,10 +244,7 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
     reset(processedValues);
     setIsEditable(false);
   };
-
-  console.log("Default Values:", defaultValues);
-  console.log("Processed Values:", processedValues);
-  console.log("is_sales in processedValues:", processedValues.is_sales);
+  
 
   return (
     <div className="p-6 bg-white rounded-md shadow-md">
@@ -398,6 +427,16 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
         </div>
 
         {/* Is Active */}
+        {/* <div>
+          <label className="block text-sm font-medium mb-1">Is Active</label>
+          <input
+            type="checkbox"
+            {...register("is_active")}
+            disabled={!isEditable}
+            defaultChecked={processedValues.is_active}
+            className="w-5 h-5"
+          />
+        </div> */}
         <div>
           <label className="block text-sm font-medium mb-1">Is Active</label>
           <Controller
@@ -406,7 +445,7 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
             render={({ field }) => (
               <input
                 type="checkbox"
-                checked={!!field.value} // Pastikan boolean
+                checked={field.value}
                 onChange={(e) => field.onChange(e.target.checked)}
                 disabled={!isEditable}
                 className="w-5 h-5"
@@ -416,33 +455,77 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
         </div>
 
         {/* Is Sales */}
+        {/* {showIsSales && (
+          <div>
+            <label className="block text-sm font-medium mb-1">Is Sales</label>
+            <input
+              type="checkbox"
+              {...register("is_sales")}
+              disabled={!isEditable}
+              defaultChecked={processedValues.is_sales}
+              className="w-5 h-5"
+            />
+          </div>
+        )} */}
         {showIsSales && (
           <div>
             <label className="block text-sm font-medium mb-1">Is Sales</label>
             <Controller
               name="is_sales"
               control={control}
-              defaultValue={processedValues.is_sales} // Pastikan nilai default
-              render={({ field }) => {
-                console.log("Field value in render:", field.value); // Debugging
-                return (
-                  <input
-                    type="checkbox"
-                    checked={!!field.value}
-                    onChange={(e) => {
-                      console.log("Checkbox changed:", e.target.checked); // Debugging
-                      field.onChange(e.target.checked);
-                    }}
-                    disabled={!isEditable}
-                    className="w-5 h-5"
-                  />
-                );
-              }}
+              render={({ field }) => (
+                <input
+                  type="checkbox"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  disabled={!isEditable}
+                  className="w-5 h-5"
+                />
+              )}
             />
           </div>
         )}
 
         {/* Buttons */}
+        {/* <div className="flex justify-end space-x-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-300 rounded-md"
+          >
+            Close
+          </button>
+
+          {canUpdate && canManage && (
+            <>
+              {!isEditable ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsEditable(true);
+                  }}
+                  className="px-4 py-2 bg-orange-500 text-white rounded-md"
+                >
+                  Update
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={!isDirty || Object.keys(errors).length > 0}
+                  className={`px-4 py-2 rounded-md text-white ${
+                    isDirty && Object.keys(errors).length === 0
+                      ? "bg-green-500"
+                      : "bg-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  Save
+                </button>
+              )}
+            </>
+          )}
+        </div> */}
+
         <div className="flex justify-end space-x-2 pt-4">
           {isEditable ? (
             <>
@@ -455,6 +538,7 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
               <button
                 type="button"
                 onClick={onCancel}
+
                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
               >
                 Batal
