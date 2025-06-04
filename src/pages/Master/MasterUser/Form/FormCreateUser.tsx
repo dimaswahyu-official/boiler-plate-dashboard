@@ -253,7 +253,9 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
       valid_to: data.valid_to || null,
       role_id: Number((data.roles as { value: string }).value) || null,
       role_name: (data.roles as { label: string }).label || null,
-      branch_id: data.branch ? Number((data.branch as { value: string }).value) : null,
+      branch_id: data.branch
+        ? Number((data.branch as { value: string }).value)
+        : null,
       region_code: (data.region as { value: string })?.value || null,
       phone: data.phone_number || null,
       created_by: "Superuser",
@@ -452,6 +454,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
                   }}
                 />
                 <Button
+                  type="button"
                   variant="primary"
                   size="xsm"
                   onClick={() => checkNik(nik)}
@@ -547,7 +550,9 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
 
         <div className="flex justify-end gap-2 mt-10">
           {/* <Button variant="outline" onClick={onClose}>Cancel</Button> */}
-          <Button variant="primary">Submit</Button>
+          <Button variant="primary" type="submit">
+            Submit
+          </Button>
         </div>
       </form>
     </div>

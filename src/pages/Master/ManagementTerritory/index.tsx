@@ -16,7 +16,7 @@ export default function ManagementTerritory() {
     const { id, region_code, organization_code, organization_name } = branch;
 
     // Navigasi ke halaman berikutnya dengan state
-    navigate("/select_territory", {
+    navigate("/management_territory/select_territory", {
       state: { id, region_code, organization_code, organization_name },
     });
   };

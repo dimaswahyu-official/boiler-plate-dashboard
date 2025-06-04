@@ -6,11 +6,14 @@ import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore"
 import Input from "../../../../components/form/input/InputField";
 import Button from "../../../../components/ui/button/Button";
 import AdjustTableRole from "./AdjustTableRole";
+import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
 
 const TableMasterRole = () => {
   const navigate = useNavigate();
   const { fetchRoles, roles, deleteRole } = useRoleStore();
   const [globalFilter, setGlobalFilter] = useState<string>("");
+
+  const { canCreate, canManage } = usePagePermissions();
 
   useEffect(() => {
     fetchRoles();
@@ -41,13 +44,15 @@ const TableMasterRole = () => {
             placeholder="🔍 Search..."
           />
 
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => navigate("/master_role/create")}
-          >
-            <FaPlus className="mr-2" /> Tambah Role
-          </Button>
+          {canCreate && canManage && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => navigate("/master_role/create")}
+            >
+              <FaPlus className="mr-2" /> Tambah Role
+            </Button>
+          )}
         </div>
       </div>
 
