@@ -42,7 +42,7 @@ export default function UserDropdown() {
         </span>
         {user_login ? (
           <span className="block mr-1 font-medium text-theme-sm">
-            {user_login.employee_id || user_login.employee_name}
+            {user_login.employee_name}
           </span>
         ) : (
           <span className="block mr-1 font-medium text-theme-sm">Guest</span>
@@ -75,9 +75,14 @@ export default function UserDropdown() {
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
             {user_login ? (
-              <span className="block mr-1 font-medium text-theme-sm">
-                {user_login.employee_id || user_login.employee_name}
-              </span>
+              <>
+                <span className="block text-theme-xs text-gray-500 dark:text-gray-400">
+                  {user_login.employee_id}
+                </span>
+                <span className="block mr-1 font-medium text-theme-sm">
+                  {user_login.employee_name}
+                </span>
+              </>
             ) : (
               <span className="block mr-1 font-medium text-theme-sm">
                 Guest

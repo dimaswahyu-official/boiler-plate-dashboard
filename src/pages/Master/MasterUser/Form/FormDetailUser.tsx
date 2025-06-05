@@ -57,6 +57,15 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
   const { updateUser } = useUserStore();
   const [isEditable, setIsEditable] = useState(false);
   const { canUpdate, canManage } = usePagePermissions();
+
+  const user_login = (() => {
+    const storedUserLogin = localStorage.getItem("user_login_data");
+    return storedUserLogin && storedUserLogin !== "undefined"
+      ? JSON.parse(storedUserLogin).user
+      : null;
+  })();
+
+  // console.log("defaultValues", defaultValues);
   
   const processedValues = {
     ...defaultValues,
@@ -85,6 +94,9 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
     is_active: defaultValues.is_active ?? false,
     is_sales: defaultValues.is_sales ?? false,
   };
+
+  // console.log("processedValues.regions", processedValues.regions);
+  
 
   const {
     register,
@@ -187,7 +199,8 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
       is_sales: data.is_sales ?? false,
       valid_from: new Date().toISOString(),
       valid_to: validToIso,
-      updated_by: "Superuser",
+      created_by: user_login.employee_name,
+      updated_by: user_login.employee_name,
       name: data.name ?? null,
     };
 

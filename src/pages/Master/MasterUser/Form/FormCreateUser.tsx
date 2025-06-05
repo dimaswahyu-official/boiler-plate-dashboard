@@ -234,6 +234,13 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
     [clearErrors, setError]
   );
 
+  const user_login = (() => {
+    const storedUserLogin = localStorage.getItem("user_login_data");
+    return storedUserLogin && storedUserLogin !== "undefined"
+      ? JSON.parse(storedUserLogin).user
+      : null;
+  })();
+
   /* ------------------------------ submit handler ------------------------------ */
   const onSubmitInternal: SubmitHandler<FormValues> = (data) => {
     if (nikStatus === "invalid") {
@@ -258,8 +265,8 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
         : null,
       region_code: (data.region as { value: string })?.value || null,
       phone: data.phone_number || null,
-      created_by: "Superuser",
-      updated_by: "Superuser",
+      created_by: user_login.employee_name,
+      updated_by: null,
     };
 
     if (isTSF) {
@@ -291,8 +298,6 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
         deleted_at: null,
       };
     }
-
-    console.log("Final payload to submit:", payload);
 
     onSubmit(payload);
   };
