@@ -151,7 +151,7 @@ export function AppRoutes() {
               </ProtectedRoute>
             }
           >
-            {/* <Route path="/" element={<Sign />} /> */}
+            <Route path="/" element={<SignIn />} />
 
             {userRoutes.map((route) => (
               <Route
