@@ -39,6 +39,24 @@ const MenuTable = ({
 }: MenuTableProps) => {
   const { canUpdate, canDelete } = usePagePermissions();
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return ""; // Handle case jika dateString kosong
+
+    const date = new Date(dateString);
+
+    // Ambil komponen tanggal
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Bulan dimulai dari 0
+    const year = date.getFullYear();
+
+    // Ambil komponen waktu
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    // Gabungkan dalam format yang diinginkan
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+  };
+
   const columns: ColumnDef<User>[] = useMemo(
     () => [
       {
@@ -79,7 +97,7 @@ const MenuTable = ({
       {
         accessorKey: "created_on",
         header: "Created On",
-        cell: (info) => String(info.getValue()),
+        cell: (info) => formatDate(String(info.getValue())),
       },
       {
         id: "actions",
