@@ -44,7 +44,7 @@ const TableMasterRole = () => {
             placeholder="🔍 Search..."
           />
 
-          {canCreate && canManage && (
+          {/* {canCreate && canManage && ( */}
             <Button
               variant="primary"
               size="sm"
@@ -52,7 +52,7 @@ const TableMasterRole = () => {
             >
               <FaPlus className="mr-2" /> Tambah Role
             </Button>
-          )}
+          {/* )} */}
         </div>
       </div>
 

@@ -188,7 +188,13 @@ export const useUserStore = create<UserStore>((set) => ({
     createUser: async (payload) => {
         set({ loading: true, error: null });
         try {
-            await createUserService(payload as unknown as User);
+
+            const filteredPayload = Object.fromEntries(
+                Object.entries(payload).filter(([_, value]) => value !== null)
+            );            
+            
+            // await createUserService(payload as unknown as User);
+            await createUserService(filteredPayload as unknown as User);
             const users = await fetchAllUser();
             set({ user: users, loading: false });
             return { ok: true };

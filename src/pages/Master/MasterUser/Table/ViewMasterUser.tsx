@@ -124,13 +124,13 @@ const TableMasterMenu = () => {
       validation: { required: "Role is required" },
       placeholder: "pilih posisi",
     },
-    {
-      name: "is_employee",
-      label: "Jenis Karyawan",
-      type: "checkbox",
-      validation: {},
-      info: "Centang jika pengguna bukan karyawan (non-employee)",
-    },
+    // {
+    //   name: "is_employee",
+    //   label: "Jenis Karyawan",
+    //   type: "checkbox",
+    //   validation: {},
+    //   info: "Centang jika pengguna bukan karyawan (non-employee)",
+    // },
     {
       name: "tsf_type",
       label: "Tipe TSF",

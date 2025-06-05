@@ -66,7 +66,7 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
   })();
 
   // console.log("defaultValues", defaultValues);
-  
+
   const processedValues = {
     ...defaultValues,
     name: defaultValues.employee_name || "",
@@ -94,9 +94,6 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
     is_active: defaultValues.is_active ?? false,
     is_sales: defaultValues.is_sales ?? false,
   };
-
-  // console.log("processedValues.regions", processedValues.regions);
-  
 
   const {
     register,
@@ -199,7 +196,6 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
       is_sales: data.is_sales ?? false,
       valid_from: new Date().toISOString(),
       valid_to: validToIso,
-      created_by: user_login.employee_name,
       updated_by: user_login.employee_name,
       name: data.name ?? null,
     };

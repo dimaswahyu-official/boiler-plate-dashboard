@@ -247,12 +247,15 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
       showErrorToast("NIK Karyawan tidak valid. Harap periksa kembali.");
       return; // Hentikan proses submit
     }
+
+    const tipeTSF = (data.tsf_type as { value: string }).value;
+
     const payload: any = {
       supervisor_number: data.nik_spv || null,
       email: data.email || null,
       name: data.name || null,
       employee_id: data.nik || null,
-      non_employee: data.is_employee ?? false,
+      non_employee: isTSF ? tipeTSF === "external" : (data.is_employee ?? false),
       password: data.password || null,
       is_active: true,
       join_date: new Date().toISOString(),
@@ -260,9 +263,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
       valid_to: data.valid_to || null,
       role_id: Number((data.roles as { value: string }).value) || null,
       role_name: (data.roles as { label: string }).label || null,
-      branch_id: data.branch
-        ? Number((data.branch as { value: string }).value)
-        : null,
+      branch_id: data.branch? Number((data.branch as { value: string }).value) : null,
       region_code: (data.region as { value: string })?.value || null,
       phone: data.phone_number || null,
       created_by: user_login.employee_name,
@@ -270,7 +271,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
     };
 
     if (isTSF) {
-      payload.tsf_type = data.tsf_type || null;
+      console.log("TSF user detected, setting TSF type");
     } else {
       payload.employee = {
         employee_number: nikData?.employee_number || null,
@@ -298,7 +299,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
         deleted_at: null,
       };
     }
-
+    
     onSubmit(payload);
   };
 
@@ -320,21 +321,17 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
 
     if (isRegional) {
       // REGIONAL: tampilkan region, sembunyikan branch, is_employee, dan tsf_type
-      return formFields.filter(
-        (f) => !["branch", "is_employee", "tsf_type"].includes(f.name)
-      );
+      return formFields.filter((f) => !["branch", "tsf_type"].includes(f.name));
     }
 
     // non-TSF dan non-REGIONAL: sembunyikan is_employee & tsf_type, tampilkan NIK
-    return formFields.filter(
-      (f) => !["is_employee", "tsf_type", "region"].includes(f.name)
-    );
+    return formFields.filter((f) => !["tsf_type", "region"].includes(f.name));
   }, [formFields, isTSF, isRegional]);
 
   const renderField = (field: FormField) => {
     /* ------ kondisi visibilitas per-field ------ */
     if (field.name === "nik" && isTSF) return null;
-    if (field.name === "is_employee" && (!isTSF || isRegional)) return null; // Sembunyikan jika bukan TSF atau REGIONAL
+    // if (field.name === "is_employee" && (!isTSF || isRegional)) return null; // Sembunyikan jika bukan TSF atau REGIONAL
     if (field.name === "tsf_type" && (!isTSF || isRegional)) return null; // Sembunyikan jika bukan TSF atau REGIONAL
     if (field.name === "branch" && isRegional) return null; // Sembunyikan branch jika REGIONAL
     if (field.name === "region" && !isRegional) return null; // Sembunyikan region jika bukan REGIONAL
