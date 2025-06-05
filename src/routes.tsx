@@ -151,7 +151,7 @@ export function AppRoutes() {
               </ProtectedRoute>
             }
           >
-            <Route path="/" element={<Callplan />} />
+            {/* <Route path="/" element={<Sign />} /> */}
 
             {userRoutes.map((route) => (
               <Route
