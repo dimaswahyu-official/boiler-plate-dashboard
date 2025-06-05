@@ -57,7 +57,7 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
   const { updateUser } = useUserStore();
   const [isEditable, setIsEditable] = useState(false);
   const { canUpdate, canManage } = usePagePermissions();
-
+  
   const processedValues = {
     ...defaultValues,
     name: defaultValues.employee_name || "",
