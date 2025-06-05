@@ -168,6 +168,9 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
   };
 
   const onSubmit = async (data: any) => {
+
+   console.log("log", user_login.employee_id);
+   
     const validToIso = data.valid_to
       ? toIsoPreserveDate(new Date(data.valid_to))
       : "";
@@ -196,12 +199,12 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
       is_sales: data.is_sales ?? false,
       valid_from: new Date().toISOString(),
       valid_to: validToIso,
-      updated_by: user_login.employee_name,
       name: data.name ?? null,
+      updated_by: user_login.employee_id === "superuser" ? "superuser" : user_login.employee_name,
     };
 
     const employeeId = defaultValues.employee_id;
-
+    
     const result = await updateUser(employeeId, payload);
     if (!result.ok) return;
     showSuccessToast("Berhasil memperbarui user");
