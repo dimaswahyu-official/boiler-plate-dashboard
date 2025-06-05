@@ -60,11 +60,7 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
 
   const processedValues = {
     ...defaultValues,
-    name:
-      defaultValues.salesrep_name ||
-      defaultValues.employee_name ||
-      defaultValues.sales_name ||
-      "",
+    name: defaultValues.employee_name || "",
     nik: defaultValues.employee_id || "",
     nik_supervisor: defaultValues.supervisor_number || "",
     phone: defaultValues.phone || "",
@@ -87,10 +83,8 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
       ? new Date(defaultValues.valid_to).toISOString().split("T")[0]
       : "",
     is_active: defaultValues.is_active ?? false,
-    is_sales: defaultValues.is_active ?? false,
+    is_sales: defaultValues.is_sales ?? false,
   };
-
-  console.log("Processed Values:", processedValues);
 
   const {
     register,
@@ -132,20 +126,20 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
   const showIsSales = !isSalesman && !isTSF;
 
   // Reset fields on role change
-  useEffect(() => {
-    if (isRegional) {
-      setValue("branches", null);
-      setValue("tsf_type", null);
-      setValue("is_sales", false);
-    } else if (isTSF) {
-      setValue("branches", null);
-      setValue("regions", null);
-      setValue("is_sales", false);
-    } else {
-      setValue("regions", null);
-      setValue("tsf_type", null);
-    }
-  }, [labelRole, setValue, isRegional, isTSF]);
+  // useEffect(() => {
+  //   if (isRegional) {
+  //     setValue("branches", null);
+  //     setValue("tsf_type", null);
+  //     setValue("is_sales", defaultValues.is_sales ?? false);
+  //   } else if (isTSF) {
+  //     setValue("branches", null);
+  //     setValue("regions", null);
+  //     setValue("is_sales", defaultValues.is_sales ?? false);
+  //   } else {
+  //     setValue("regions", null);
+  //     setValue("tsf_type", null);
+  //   }
+  // }, [labelRole, setValue, isRegional, isTSF]);
 
   const getChangedFields = (newData: any, originalData: any) => {
     const changes: Record<string, any> = {};
@@ -213,9 +207,9 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
     setIsEditable(false);
   };
 
-  console.log("Default Values:", defaultValues);
-  console.log("Processed Values:", processedValues);
-  console.log("is_sales in processedValues:", processedValues.is_sales);
+  // console.log("Default Values:", defaultValues);
+  // console.log("Processed Values:", processedValues);
+  // console.log("is_sales in processedValues:", processedValues.is_sales);
 
   return (
     <div className="p-6 bg-white rounded-md shadow-md">
@@ -422,22 +416,15 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
             <Controller
               name="is_sales"
               control={control}
-              defaultValue={processedValues.is_sales} // Pastikan nilai default
-              render={({ field }) => {
-                console.log("Field value in render:", field.value); // Debugging
-                return (
-                  <input
-                    type="checkbox"
-                    checked={!!field.value}
-                    onChange={(e) => {
-                      console.log("Checkbox changed:", e.target.checked); // Debugging
-                      field.onChange(e.target.checked);
-                    }}
-                    disabled={!isEditable}
-                    className="w-5 h-5"
-                  />
-                );
-              }}
+              render={({ field }) => (
+                <input
+                  type="checkbox"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  disabled={!isEditable}
+                  className="w-5 h-5"
+                />
+              )}
             />
           </div>
         )}

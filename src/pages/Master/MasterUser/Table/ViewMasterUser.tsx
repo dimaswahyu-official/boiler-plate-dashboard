@@ -65,52 +65,23 @@ const TableMasterMenu = () => {
     fetchDataregions();
   }, []);
 
-  const user_login = (() => {
-    const storedUserLogin = localStorage.getItem("user_login_data");
-    return storedUserLogin && storedUserLogin !== "undefined"
-      ? JSON.parse(storedUserLogin).user
-      : null;
-  })();
-
-  // useEffect(() => {
-  //   const employeeID = user_login.employee_id;
-  //   console.log("Employee ID:", employeeID);
-
-  //   const checkEmployeeAsync = async (employeeID: string | undefined) => {
-  //     if (employeeID) {
-  //       await checkingEmployee(employeeID);
-  //     } else {
-  //       console.error("Employee ID is undefined");
-  //     }
-  //   };
-
-  //   checkEmployeeAsync(employeeID);
-
-  //   console.log("Current Employee Data:", employeeData);
-  // }, []);
-
   // Menggunakan useMemo untuk mengoptimalkan performa
   const tableData = useMemo(() => {
     return user.map((u) => {
-      const region = regions.find(
-        (r) =>
-          r.region_code === u.region_code ||
-          r.region_code === u.branch_region_code
-      );
-
       return {
         id: u.id,
-        name: u.employee_name || u.salesrep_name || u.sales_name || "null",
+        name: u.employee_name || "",
         email: u.email,
         role: u.role?.name || u.role_name || "",
         branch: String(u.organization_code || ""),
         created_on: u.created_at || "",
-        nik: u.employee_id || u.salesrep_number || "",
+        nik: u.employee_number || "",
         nik_spv: u.supervisor_number || "",
-        is_active: u.is_active ? "Active" : "Inactive",
         valid_to: u.valid_to || "",
-        region_code: u.branch_region_code || u.region_code || "",
-        region_name: region ? region.region_name : "",
+        region_code: u.region_code || "",
+        region_name: u.region_name || "",
+        is_active: u.is_active ? "Active" : "Inactive",
+        is_sales: u.is_sales ? "Yes" : "No",
       };
     });
   }, [user, regions]);

@@ -11,10 +11,12 @@ type User = {
   email: string;
   role: string;
   branch: string;
+  region_name: string;
   created_on: string;
   nik: string;
   nik_spv: string;
   is_active: string;
+  is_sales: string;
   valid_to: string;
 };
 
@@ -62,6 +64,16 @@ const MenuTable = ({
       {
         accessorKey: "branch",
         header: "Branch",
+        cell: (info) => String(info.getValue()),
+      },
+      {
+        accessorKey: "is_active",
+        header: "Active",
+        cell: (info) => String(info.getValue()),
+      },
+      {
+        accessorKey: "is_sales",
+        header: "Is Sales",
         cell: (info) => String(info.getValue()),
       },
       {

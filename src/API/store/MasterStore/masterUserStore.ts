@@ -91,6 +91,9 @@ type FinalPayload = BasePayload | EmployeePayload | SalesmanPayload;
 
 // Define User interface
 interface User {
+    is_sales: any;
+    region_name: string;
+    employee_number: string;
     branch_region_code: string;
     region_id: number;
     sales_name: string | null;
@@ -221,6 +224,8 @@ export const useUserStore = create<UserStore>((set) => ({
             const filteredPayload = Object.fromEntries(
                 Object.entries(payload).filter(([_, value]) => value !== null)
             );
+
+            console.log("Filtered Payload store:", filteredPayload);
 
             await updateUser(employeeId, filteredPayload as UpdateUser);
             const users = await fetchAllUser();

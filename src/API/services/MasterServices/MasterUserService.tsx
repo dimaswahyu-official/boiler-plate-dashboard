@@ -56,6 +56,8 @@ interface UpdateUser {
 export const fetchAllUser = async () => {
   try {
     const res = await axiosInstance.get("/admin/user/all");
+    console.log("Fetched users:", res.data.data);
+    
     return res.data.data;
   } catch (error: any) {
     console.error(
@@ -95,11 +97,9 @@ export const fetchDetailUser = async (employee_id: any) => {
 
 // PUT update user
 export const updateUser = async (employeeId: string, payload: UpdateUser) => {
-  try {
-    console.log("Updating user with payload:", payload);
-    console.log("Employee ID:", employeeId);
 
-    const res = await axiosInstance.put(`/user/${employeeId}`, payload);
+  try {
+    const res = await axiosInstance.put(`/user/${employeeId}`, payload);    
     if (res.data.statusCode !== 200) {
       throw new Error(res.data.message || "Gagal update user");
     }

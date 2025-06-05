@@ -15,6 +15,7 @@ import Button from "../../../components/ui/button/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { showSuccessToast } from "../../../components/toast";
 import { useDebounce } from "../../../helper/useDebounce";
+import { usePagePermissions } from "../../../utils/UserPermission/UserPagePermissions";
 
 /* ─── TYPE ──────────────────────────────────────────────────────── */
 type KelurahanT = {
@@ -30,6 +31,7 @@ const SelectTerritory = () => {
   /* route params */
   const { state } = useLocation();
   const navigate = useNavigate();
+  const { canCreate, canManage } = usePagePermissions();
 
   const branchId = state?.id;
   const regionCode = state?.region_code;
@@ -53,7 +55,7 @@ const SelectTerritory = () => {
         const token = localStorage.getItem("token");
         const URL = `http://10.0.29.47/api/v1/geotree/get-mapped-tree?branch_id=${branchId}`;
         console.log("Fetching geotree from:", URL);
-        
+
         const { data } = await axios.get(URL, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -190,14 +192,11 @@ const SelectTerritory = () => {
                     placeholder="🔍 Masukan Provinsi"
                     onChange={(e) => setSearchQuery(e.currentTarget.value)}
                   />
-                  {/* <div className="absolute left-0 mt-1 text-sm text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                    Tekan Enter untuk mencari
-                  </div> */}
                 </div>
 
                 <div className="space-x-4">
                   <p>
-                    {organizationCode} - {organizationName} - {branchId}
+                    {organizationCode} - {organizationName}
                   </p>
                 </div>
 
@@ -209,9 +208,12 @@ const SelectTerritory = () => {
                   >
                     <FaBan /> Batalkan Pilihan
                   </Button>
-                  <Button size="sm" variant="primary" onClick={handleSubmit}>
-                    <FaCheck /> Simpan
-                  </Button>
+
+                  {canCreate && canManage && (
+                    <Button size="sm" variant="primary" onClick={handleSubmit}>
+                      <FaCheck /> Simpan
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

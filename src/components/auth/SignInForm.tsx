@@ -155,7 +155,7 @@ export default function SignInForm() {
             {error && (
               <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
             )}
-            <Button className="w-full" size="sm" disabled={isLoading}>
+            <Button className="w-full" size="sm" disabled={isLoading} type="submit">
               {isLoading ? (
                 <div className="flex items-center justify-center">
                   <svg
