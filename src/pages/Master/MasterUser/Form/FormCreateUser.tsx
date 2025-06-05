@@ -247,15 +247,15 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
       showErrorToast("NIK Karyawan tidak valid. Harap periksa kembali.");
       return; // Hentikan proses submit
     }
-
-    const tipeTSF = (data.tsf_type as { value: string }).value;
+    
+    const tipeTSF = isTSF ? (data.tsf_type as { value: string }).value : null;
 
     const payload: any = {
       supervisor_number: data.nik_spv || null,
       email: data.email || null,
       name: data.name || null,
       employee_id: data.nik || null,
-      non_employee: isTSF ? tipeTSF === "external" : (data.is_employee ?? false),
+      non_employee: isTSF ? tipeTSF === "external" : data.is_employee ?? false,
       password: data.password || null,
       is_active: true,
       join_date: new Date().toISOString(),
@@ -263,7 +263,9 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
       valid_to: data.valid_to || null,
       role_id: Number((data.roles as { value: string }).value) || null,
       role_name: (data.roles as { label: string }).label || null,
-      branch_id: data.branch? Number((data.branch as { value: string }).value) : null,
+      branch_id: data.branch
+        ? Number((data.branch as { value: string }).value)
+        : null,
       region_code: (data.region as { value: string })?.value || null,
       phone: data.phone_number || null,
       created_by: user_login.employee_name,
@@ -299,7 +301,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
         deleted_at: null,
       };
     }
-    
+
     onSubmit(payload);
   };
 

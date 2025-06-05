@@ -219,9 +219,6 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
     setIsEditable(false);
   };
 
-  // console.log("Default Values:", defaultValues);
-  // console.log("Processed Values:", processedValues);
-  // console.log("is_sales in processedValues:", processedValues.is_sales);
 
   return (
     <div className="p-6 bg-white rounded-md shadow-md">
