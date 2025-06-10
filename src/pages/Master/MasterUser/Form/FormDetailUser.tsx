@@ -168,9 +168,8 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
   };
 
   const onSubmit = async (data: any) => {
+    console.log("log", user_login.employee_id);
 
-   console.log("log", user_login.employee_id);
-   
     const validToIso = data.valid_to
       ? toIsoPreserveDate(new Date(data.valid_to))
       : "";
@@ -200,11 +199,14 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
       valid_from: new Date().toISOString(),
       valid_to: validToIso,
       name: data.name ?? null,
-      updated_by: user_login.employee_id === "superuser" ? "superuser" : user_login.employee_name,
+      updated_by:
+        user_login.employee_id === "superuser"
+          ? "superuser"
+          : user_login.employee_id,
     };
 
     const employeeId = defaultValues.employee_id;
-    
+
     const result = await updateUser(employeeId, payload);
     if (!result.ok) return;
     showSuccessToast("Berhasil memperbarui user");
@@ -218,7 +220,6 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
     reset(processedValues);
     setIsEditable(false);
   };
-
 
   return (
     <div className="p-6 bg-white rounded-md shadow-md">
@@ -370,8 +371,10 @@ const FormDetailUser: React.FC<FormDetailUserProps> = ({
                 message: "Invalid email address",
               },
             })}
-            readOnly={!isEditable}
-            className={`${inputBaseClass} ${!isEditable ? disabledClass : ""}`}
+            // readOnly={!isEditable}
+            // className={`${inputBaseClass} ${!isEditable ? disabledClass : ""}`}
+            readOnly
+            className={`${inputBaseClass} ${disabledClass}`}
           />
           {errors.email && (
             <p className="text-red-500 text-sm mt-1">

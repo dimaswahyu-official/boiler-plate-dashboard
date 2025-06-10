@@ -80,7 +80,7 @@ const PasswordField: React.FC<{
       return { text: "Password belum sama", cls: "text-red-500" };
     if (!isConfirm && value && !error)
       return {
-        text: "Great! Your password meets all the requirements.",
+        text: "Kata sandi Anda memenuhi semua persyaratan.",
         cls: "text-green-600",
       };
     return { text: "", cls: "text-transparent" };
@@ -240,6 +240,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
       ? JSON.parse(storedUserLogin).user
       : null;
   })();
+  
 
   /* ------------------------------ submit handler ------------------------------ */
   const onSubmitInternal: SubmitHandler<FormValues> = (data) => {
@@ -268,7 +269,7 @@ const FormCreateUser: React.FC<UserFormInputProps> = ({
         : null,
       region_code: (data.region as { value: string })?.value || null,
       phone: data.phone_number || null,
-      created_by: user_login.employee_name,
+      created_by: user_login.employee_id,
       updated_by: null,
     };
 

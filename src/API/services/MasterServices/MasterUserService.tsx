@@ -55,9 +55,7 @@ interface UpdateUser {
 // GET all users
 export const fetchAllUser = async () => {
   try {
-    const res = await axiosInstance.get("/admin/user/all");
-    console.log("Fetched users:", res.data.data);
-    
+    const res = await axiosInstance.get("/admin/user/all");    
     return res.data.data;
   } catch (error: any) {
     console.error(

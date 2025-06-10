@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef, use } from "react";
+import React, { useEffect, useMemo, useState, useRef} from "react";
 import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
 import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
@@ -178,7 +178,7 @@ const TableMasterMenu = () => {
         required: "NIK Supervisor is required",
         pattern: {
           value: /^.{14,16}$/,
-          message: "NIK Supervisor must be 14-16 characters",
+          message: "NIK Supervisor harusnya 14-16 characters",
         },
       },
     },
@@ -190,7 +190,7 @@ const TableMasterMenu = () => {
         required: "Phone number is required",
         pattern: {
           value: /^\d{10,12}$/,
-          message: "Phone number digit must be 10-12 digits",
+          message: "Nomor handphone harus 10-12 digits",
         },
       },
     },
@@ -202,23 +202,24 @@ const TableMasterMenu = () => {
         required: "Email is required",
         pattern: {
           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-          message: "Email must be a valid email address",
+          message: "Email harus memakai alamat email yang valid",
         },
       },
     },
     {
       name: "password",
-      label: "New Password",
+      label: "Password",
       type: "password",
       validation: {
         required: "Password is required",
         minLength: {
           value: 12,
-          message: "Password must be at least 12 characters",
+          message: "Password harus lebih dari 12 characters",
         },
         pattern: {
           value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
-          message: "Password must include uppercase, lowercase, and a number",
+          message:
+            "Password harus mengandung huruf besar, huruf kecil, dan angka",
         },
       },
     },
@@ -300,27 +301,121 @@ const TableMasterMenu = () => {
   };
 
   // UPLOAD EXCEL
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    alert("Import User, not yet implemented");
+  // const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-    // const file = e.target.files?.[0];
-    // if (!file) return;
+  //   const reader = new FileReader();
+  //   reader.onload = (evt) => {
+  //     const bstr = evt.target?.result;
+  //     const workbook = XLSX.read(bstr, { type: "binary" });
+  //     const sheetName = workbook.SheetNames[0];
+  //     const worksheet = workbook.Sheets[sheetName];
+  //     const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-    // const reader = new FileReader();
-    // reader.onload = (evt) => {
-    //   const bstr = evt.target?.result;
-    //   const workbook = XLSX.read(bstr, { type: "binary" });
-    //   const sheetName = workbook.SheetNames[0];
-    //   const worksheet = workbook.Sheets[sheetName];
-    //   const jsonData = XLSX.utils.sheet_to_json(worksheet);
-    //   setDataImport(jsonData);
-    // };
-    // reader.readAsBinaryString(file);
+  //     setDataImport(jsonData);
+  //   };
+  //   reader.readAsBinaryString(file);    
+  // };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = fileInputRef.current?.files?.[0];
+
+    if (!file) {
+      alert("Silakan pilih file Excel terlebih dahulu.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Token tidak ditemukan. Silakan login ulang.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch(
+        "http://10.0.29.47:9003/api/v1/admin/user/import",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Import gagal");
+      }
+
+      const result = await response.json();
+      showSuccessToast("Import berhasil!");
+      console.log(result);
+    } catch (error) {
+      console.error("Import error:", error);
+      alert("Terjadi kesalahan saat mengimpor file.");
+    }
   };
 
   const onButtonImport = () => {
-    alert("Import User, not yet implemented");
-    // fileInputRef.current?.click(); // Trigger hidden file input click
+    fileInputRef.current?.click();
+  };
+
+  const onButtonExport = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Token tidak ditemukan. Silakan login ulang.");
+        return;
+      }
+
+      const response = await fetch(
+        "http://10.0.29.47:9003/api/v1/admin/user/export",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Gagal mengunduh file");
+      }
+
+      const blob = await response.blob();
+
+      // Format tanggal hari ini: yyyy-mm-dd
+      const today = new Date();
+      const formattedDate = today.toISOString().split("T")[0]; // contoh: "2025-06-09"
+
+      // Ambil nama file dari header jika ada, atau gunakan default
+      const contentDisposition = response.headers.get("Content-Disposition");
+      const filenameMatch = contentDisposition?.match(/filename="?(.+)"?/);
+      const baseFilename = filenameMatch
+        ? filenameMatch[1].split(".")[0]
+        : "users_export";
+
+      const filename = `${baseFilename}_${formattedDate}.xlsx`;
+
+      // Buat link download
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+
+      // Bersihkan
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Export error:", error);
+      alert("Terjadi kesalahan saat mengekspor file.");
+    }
   };
 
   return (
@@ -338,19 +433,20 @@ const TableMasterMenu = () => {
           </div>
 
           <div className="space-x-4">
-            <Button variant="primary" size="sm" onClick={onButtonImport}>
-              <FaFileDownload className="mr-2" /> Unduh
+            <Button variant="outline" size="sm" onClick={onButtonExport}>
+              <FaFileDownload className="mr-2" /> Unduh Data
             </Button>
 
-            <Button variant="primary" size="sm" onClick={onButtonImport}>
-              <FaFileImport className="mr-2" /> Import User
+            <Button variant="outline" size="sm" onClick={onButtonImport}>
+              <FaFileImport className="mr-2" />  Unggah Data
             </Button>
 
             <input
               type="file"
-              accept=".xlsx, .xls, .csv"
+              accept=".xlsx, .xls"
               onChange={handleFileUpload}
               ref={fileInputRef}
+              className="block"
               style={{ display: "none" }}
             />
 
