@@ -556,12 +556,12 @@ const TableMasterMenu = () => {
       <div className="p-4 bg-white shadow rounded-md mb-5">
         <div className="flex justify-between items-center">
           <div className="space-x-4">
-            <Label htmlFor="date-picker">Pencarian</Label>
+            <Label htmlFor="date-picker">Cari Nama/NIK Karyawan</Label>
             <Input
               onChange={(e) => setGlobalFilter(e.target.value)}
               type="text"
               id="search"
-              placeholder="🔍 Search..."
+              placeholder="🔍 Masukan nama/nik.."
             />
           </div>
 
