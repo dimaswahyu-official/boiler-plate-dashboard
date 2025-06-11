@@ -31,7 +31,10 @@ const TableMasterMenu = () => {
   const [importData, setDataImport] = useState<any[]>([]);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
-  const [selectedBranch, setSelectedBranch] = useState<{ value: string; label: string } | null>(null);
+  const [selectedBranch, setSelectedBranch] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [createdDate, setCreatedDate] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null); // << tambahan
@@ -82,17 +85,15 @@ const TableMasterMenu = () => {
       );
     }
 
+    console.log("Selected Role:", selectedRole);
+
     // Filter Region
     if (selectedRegion) {
       filteredData = filteredData.filter(
         (u) => u.region_code === selectedRegion
       );
-    }       
-    
-    console.log("Selected Branch:", selectedBranch);
-    console.log("Selected Region:", selectedRegion);
+    }
 
-    
     // Filter Branch
     if (selectedBranch) {
       filteredData = filteredData.filter(
@@ -459,7 +460,6 @@ const TableMasterMenu = () => {
   };
 
   const onButtonExport = async () => {
-    
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -513,11 +513,19 @@ const TableMasterMenu = () => {
     }
   };
 
-  const selectRole = [
-    { value: "SALESMAN", label: "SALESMAN" },
-    { value: "REGIONAL", label: "REGIONAL" },
-    { value: "TSF", label: "TSF" },
-  ];
+  const selectRole = user
+    .map((u) => ({
+      // value: String(u.role_id),
+      value: String(u.role_name),
+      label: String(u.role_name),
+    }))
+    .filter(
+      (role, index, self) =>
+        role.value &&
+        self.findIndex(
+          (r) => r.value === role.value && r.label === role.label
+        ) === index
+    );
 
   const selectRegion = regions.map((region) => ({
     value: region.region_code,
@@ -690,24 +698,3 @@ const TableMasterMenu = () => {
 };
 
 export default TableMasterMenu;
-
-// // Menggunakan useMemo untuk mengoptimalkan performa
-// const tableData = useMemo(() => {
-//   return user.map((u) => {
-//     return {
-//       id: u.id,
-//       name: u.employee_name || "",
-//       email: u.email,
-//       role: u.role?.name || u.role_name || "",
-//       branch: String(u.organization_code || ""),
-//       created_on: u.created_at || "",
-//       nik: u.employee_number || "",
-//       nik_spv: u.supervisor_number || "",
-//       valid_to: u.valid_to || "",
-//       region_code: u.region_code || "",
-//       region_name: u.region_name || "",
-//       is_active: u.is_active ? "Active" : "Inactive",
-//       is_sales: u.is_sales ? "Yes" : "No",
-//     };
-//   });
-// }, [user, regions]);
