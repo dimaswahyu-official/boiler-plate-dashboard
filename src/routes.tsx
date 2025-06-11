@@ -34,6 +34,9 @@ import {
 } from "./utils/PagesComponent";
 import SelectTerritory from "./pages/Master/ManagementTerritory/selectTerritory";
 import ManagementTerritory from "./pages/Master/ManagementTerritory";
+import MasterBranch from "./pages/Master/MasterBranch";
+import MasterRegion from "./pages/Master/MasterRegion";
+import MasterSalesman from "./pages/Master/MasterSalesman";
 
 export function AppRoutes() {
   const navigate = useNavigate();
@@ -129,10 +132,10 @@ export function AppRoutes() {
       "/visit_types": <VisitTypes />,
       "/surat_tugas": <SuratTugas />,
       "/detail_customer": <DetailCustomer />,
-      // "/master_branch": <MasterBranch />,
-      // "/master_region": <MasterRegion />,
-      // "/master_salesman": <MasterSalesman />,
-      // "/select_territory": <SelectTerritory />,
+      "/master_branch": <MasterBranch />,
+      "/master_region": <MasterRegion />,
+      "/master_salesman": <MasterSalesman />,
+      "/select_territory": <SelectTerritory />,
     };
     return map[path] || null;
   };

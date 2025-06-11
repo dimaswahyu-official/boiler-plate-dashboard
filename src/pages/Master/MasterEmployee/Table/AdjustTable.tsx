@@ -8,9 +8,10 @@ import Checkbox from "../../../../components/form/input/Checkbox";
 type Branch = {
   id: number;
   employee_name: string;
-  salesrep_id: string;
+  employee_number: string;
   vendor_name: string;
   organization_name: string;
+  effective_start_date: string;
 };
 
 type MenuTableProps = {
@@ -30,7 +31,6 @@ const AdjustTable = ({
   onDelete,
   onEdit,
 }: MenuTableProps) => {
-
   const columns: ColumnDef<any>[] = useMemo(
     () => [
       {
@@ -40,17 +40,12 @@ const AdjustTable = ({
         enableSorting: true,
       },
       {
-        accessorKey: "salesrep_id",
-        header: "salesrep_id",
+        accessorKey: "employee_number",
+        header: "NIK Karyawan",
         sortingFn: "basic",
         enableSorting: true,
       },
-      {
-        accessorKey: "salesrep_number",
-        header: "salesrep_number",
-        sortingFn: "basic",
-        enableSorting: true,
-      },
+
       {
         accessorKey: "vendor_name",
         header: "Vendor Name",
@@ -70,8 +65,8 @@ const AdjustTable = ({
         enableSorting: true,
       },
       {
-        accessorKey: "start_date_active",
-        header: "Started At",
+        accessorKey: "effective_start_date",
+        header: "Effective Start Date",
         cell: ({ getValue }) =>
           new Date(getValue() as string | number | Date).toLocaleDateString(
             "en-GB",
@@ -83,7 +78,7 @@ const AdjustTable = ({
       },
     ],
     []
-  );  
+  );
 
   return (
     <TableComponent

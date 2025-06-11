@@ -91,6 +91,7 @@ type FinalPayload = BasePayload | EmployeePayload | SalesmanPayload;
 
 // Define User interface
 interface User {
+    org_id: any;
     is_sales: any;
     region_name: string;
     employee_number: string;

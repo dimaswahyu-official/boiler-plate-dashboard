@@ -11,7 +11,7 @@ import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
 import Spinner from "../../../../components/ui/spinner";
 
 import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
-import { useSalesmanStore } from "../../../../API/store/MasterStore/masterSalesmanStore";
+import { useEmployeeStore } from "../../../../API/store/MasterStore/masterEmployeeStore";
 import { useDebounce } from "../../../../helper/useDebounce";
 import { showErrorToast } from "../../../../components/toast";
 
@@ -23,7 +23,7 @@ interface Option {
 const TableMasterMenu = () => {
   const navigate = useNavigate();
 
-  const { fetchSalesman, salesman, isLoading } = useSalesmanStore();
+  const { fetchAllEmployees, allEmployees, isLoading } = useEmployeeStore();
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [editMenuData, setEditMenuData] = useState<any | null>(null);
   const debouncedFilter = useDebounce(globalFilter, 500);
@@ -80,7 +80,7 @@ const TableMasterMenu = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        await fetchSalesman();
+        await fetchAllEmployees();
         await getOrgName();
       } catch (err: any) {
         showErrorToast(err.message); // tampilkan error toast di UI
@@ -91,7 +91,7 @@ const TableMasterMenu = () => {
   }, []);
 
   const filteredData = useMemo(() => {
-    return salesman
+    return allEmployees
       .filter((item) => {
         // Filter berdasarkan globalFilter (hanya untuk employee_name)
         const matchesGlobalFilter =
@@ -102,38 +102,36 @@ const TableMasterMenu = () => {
 
         const matchesStartDate =
           !filters.startDate ||
-          new Date(item.start_date_active).toISOString().split("T")[0] ===
+          new Date(item.effective_start_date).toISOString().split("T")[0] ===
             filters.startDate;
 
-        const matchesEndDate =
-          !filters.endDate ||
-          (item.end_date_active &&
-            new Date(item.end_date_active).toISOString().split("T")[0] ===
-              filters.endDate);
+        // const matchesEndDate =
+        //   !filters.endDate ||
+        //   (item.end_date_active &&
+        //     new Date(item.end_date_active).toISOString().split("T")[0] ===
+        //       filters.endDate);
 
         const matchesOrganizationName =
           !filters.organizationName ||
           item.organization_name === filters.organizationName;
 
-        const matchesStatus = !filters.status || item.status === filters.status;
+        // const matchesStatus = !filters.status || item.status === filters.status;
 
         return (
-          matchesGlobalFilter &&
-          matchesStartDate &&
-          matchesEndDate &&
-          matchesOrganizationName &&
-          matchesStatus
+          matchesGlobalFilter && matchesStartDate && matchesOrganizationName
         );
+        // matchesEndDate &&
+        // matchesStatus
       })
       .map((item, index) => ({
         id: index,
         employee_name: item.employee_name,
-        salesrep_id: String(item.salesrep_id),
+        employee_number: item.employee_number,
         vendor_name: item.vendor_name,
         organization_name: item.organization_name,
-        salesrep_number: item.salesrep_number,
+        effective_start_date: item.effective_start_date,
       }));
-  }, [salesman, debouncedFilter, filters]);
+  }, [allEmployees, debouncedFilter, filters]);
 
   function handleSelectOrgName(value: string): void {
     setFilters((prev) => ({ ...prev, organizationName: value }));
@@ -181,12 +179,12 @@ const TableMasterMenu = () => {
           <div className="p-4 bg-white shadow rounded-md mb-5">
             <div className="flex justify-between items-center">
               <div className="space-x-4">
-                <Label htmlFor="search">Nama Salesman</Label>
+                <Label htmlFor="search">Nama Karyawan</Label>
                 <Input
                   onChange={(e) => setGlobalFilter(e.target.value)}
                   type="text"
                   id="search"
-                  placeholder="🔍 Masukan nama salesman..."
+                  placeholder="🔍 Masukan nama..."
                 />
               </div>
             </div>
@@ -208,7 +206,7 @@ const TableMasterMenu = () => {
                 />
               </div>
 
-              <div className="space-x-4">
+              {/* <div className="space-x-4">
                 <Label htmlFor="date-picker">Tanggal Berakhir</Label>
                 <DatePicker
                   id="end-date-salesman"
@@ -222,7 +220,7 @@ const TableMasterMenu = () => {
                     handleEndDateChange(date);
                   }}
                 />
-              </div>
+              </div> */}
 
               <div
                 className="space-x-4"

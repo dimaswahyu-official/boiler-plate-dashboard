@@ -4,7 +4,7 @@ import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore"
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
 import { useBranchStore } from "../../../../API/store/MasterStore/masterBranchStore";
 import { useRegionStore } from "../../../../API/store/MasterStore/masterRegionStore";
-import { useCheckEmployee } from "../../../../API/store/MasterStore/masterEmployeeStore";
+import { useEmployeeStore } from "../../../../API/store/MasterStore/masterEmployeeStore";
 
 // import * as XLSX from "xlsx";
 
@@ -26,7 +26,7 @@ const TableMasterMenu = () => {
   const { fetchRoles, roles } = useRoleStore();
   const { fetchBranches, branches } = useBranchStore();
   const { fetchRegion, regions } = useRegionStore();
-  const { checkingEmployee, employeeData } = useCheckEmployee();
+  const { checkingEmployee, employeeData } = useEmployeeStore();
 
   const [importData, setDataImport] = useState<any[]>([]);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
