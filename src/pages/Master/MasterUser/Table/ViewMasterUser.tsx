@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef} from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { FaPlus, FaFileImport, FaFileDownload, FaUndo } from "react-icons/fa";
 import { useUserStore } from "../../../../API/store/MasterStore/masterUserStore";
 import { useRoleStore } from "../../../../API/store/MasterStore/masterRoleStore";
@@ -6,7 +6,7 @@ import { useBranchStore } from "../../../../API/store/MasterStore/masterBranchSt
 import { useRegionStore } from "../../../../API/store/MasterStore/masterRegionStore";
 import { useCheckEmployee } from "../../../../API/store/MasterStore/masterEmployeeStore";
 
-import * as XLSX from "xlsx";
+// import * as XLSX from "xlsx";
 
 import Input from "../../../../components/form/input/InputField";
 import AdjustTableUser from "./AdjustTableUser";
@@ -20,7 +20,6 @@ import { showErrorToast, showSuccessToast } from "../../../../components/toast";
 
 const TableMasterMenu = () => {
   const hasFetched = useRef(false);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { fetchAllUser, user, createUser, fetchDetailUser } = useUserStore();
@@ -30,6 +29,12 @@ const TableMasterMenu = () => {
   const { checkingEmployee, employeeData } = useCheckEmployee();
 
   const [importData, setDataImport] = useState<any[]>([]);
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [selectedBranch, setSelectedBranch] = useState<{ value: string; label: string } | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [createdDate, setCreatedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null); // << tambahan
 
   const { canCreate, canManage } = usePagePermissions();
 
@@ -65,26 +70,89 @@ const TableMasterMenu = () => {
     fetchDataregions();
   }, []);
 
-  // Menggunakan useMemo untuk mengoptimalkan performa
-  const tableData = useMemo(() => {
-    return user.map((u) => {
-      return {
-        id: u.id,
-        name: u.employee_name || "",
-        email: u.email,
-        role: u.role?.name || u.role_name || "",
-        branch: String(u.organization_code || ""),
-        created_on: u.created_at || "",
-        nik: u.employee_number || "",
-        nik_spv: u.supervisor_number || "",
-        valid_to: u.valid_to || "",
-        region_code: u.region_code || "",
-        region_name: u.region_name || "",
-        is_active: u.is_active ? "Active" : "Inactive",
-        is_sales: u.is_sales ? "Yes" : "No",
-      };
-    });
-  }, [user, regions]);
+  const filteredTableData = useMemo(() => {
+    let filteredData = [...user];
+
+    // Filter Role
+    if (selectedRole) {
+      filteredData = filteredData.filter(
+        (u) =>
+          u.role?.name?.toLowerCase() === selectedRole.toLowerCase() ||
+          u.role_name?.toLowerCase() === selectedRole.toLowerCase()
+      );
+    }
+
+    // Filter Region
+    if (selectedRegion) {
+      filteredData = filteredData.filter(
+        (u) => u.region_code === selectedRegion
+      );
+    }       
+    
+    console.log("Selected Branch:", selectedBranch);
+    console.log("Selected Region:", selectedRegion);
+
+    
+    // Filter Branch
+    if (selectedBranch) {
+      filteredData = filteredData.filter(
+        (u) => String(u.organization_code) === selectedBranch.label
+      );
+    }
+
+    // Filter Status
+    if (selectedStatus) {
+      filteredData = filteredData.filter((u) => {
+        const isActive = u.is_active ? "Active" : "Inactive";
+        return isActive === selectedStatus;
+      });
+    }
+
+    // Filter Tanggal Dibuat (created_at)
+    if (createdDate) {
+      filteredData = filteredData.filter((u) => {
+        if (!u.created_at) return false;
+        const userDate = new Date(u.created_at).toISOString().split("T")[0];
+        return userDate === createdDate;
+      });
+    }
+
+    // Global Filter
+    if (globalFilter.trim() !== "") {
+      const keyword = globalFilter.toLowerCase();
+      filteredData = filteredData.filter(
+        (u) =>
+          u.employee_name?.toLowerCase().includes(keyword) ||
+          u.email?.toLowerCase().includes(keyword) ||
+          u.employee_number?.toLowerCase().includes(keyword)
+      );
+    }
+
+    // Mapping ke format tabel
+    return filteredData.map((u) => ({
+      id: u.id,
+      name: u.employee_name || "",
+      email: u.email,
+      role: u.role?.name || u.role_name || "",
+      branch: String(u.organization_code || ""),
+      created_on: u.created_at || "",
+      nik: u.employee_number || "",
+      nik_spv: u.supervisor_number || "",
+      valid_to: u.valid_to || "",
+      region_code: u.region_code || "",
+      region_name: u.region_name || "",
+      is_active: u.is_active ? "Active" : "Inactive",
+      is_sales: u.is_sales ? "Yes" : "No",
+    }));
+  }, [
+    user,
+    selectedRole,
+    selectedRegion,
+    selectedBranch,
+    selectedStatus,
+    createdDate,
+    globalFilter,
+  ]);
 
   const handleCloseModal = () => setIsModalOpen(false);
 
@@ -287,10 +355,6 @@ const TableMasterMenu = () => {
     console.log("Id", id);
   };
 
-  function handleSelectChange(value: string): void {
-    throw new Error("Function not implemented.");
-  }
-
   const handleSubmit = async (payload: any) => {
     const result = await createUser(payload);
     if (!result.ok) {
@@ -315,25 +379,33 @@ const TableMasterMenu = () => {
 
   //     setDataImport(jsonData);
   //   };
-  //   reader.readAsBinaryString(file);    
+  //   reader.readAsBinaryString(file);
   // };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = fileInputRef.current?.files?.[0];
 
     if (!file) {
-      alert("Silakan pilih file Excel terlebih dahulu.");
+      showErrorToast("Silakan pilih file Excel terlebih dahulu.");
       return;
     }
 
+    const user_login = (() => {
+      const storedUserLogin = localStorage.getItem("user_login_data");
+      return storedUserLogin && storedUserLogin !== "undefined"
+        ? JSON.parse(storedUserLogin).user
+        : null;
+    })();
+
     const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Token tidak ditemukan. Silakan login ulang.");
+    if (!token || !user_login) {
+      showErrorToast("Token tidak ditemukan. Silakan login ulang.");
       return;
     }
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("created_by", user_login?.employee_id);
 
     try {
       const response = await fetch(
@@ -352,11 +424,33 @@ const TableMasterMenu = () => {
       }
 
       const result = await response.json();
-      showSuccessToast("Import berhasil!");
-      console.log(result);
+      const innerData = result.data?.data || {};
+      const { successLogs = [], errorLogs = [] } = innerData;
+
+      if (successLogs.length > 0) {
+        showSuccessToast(`✅ Berhasil import: ${successLogs.length} data`);
+      }
+
+      if (errorLogs.length > 0) {
+        showErrorToast(`❌ Gagal import: ${errorLogs.length} data`);
+        errorLogs.forEach((log: any) => {
+          showErrorToast(`⚠️ ${log.name} (${log.employeeId}): ${log.message}`);
+        });
+      }
+
+      if (successLogs.length === 0 && errorLogs.length === 0) {
+        showSuccessToast(
+          "Import selesai, namun tidak ada data yang berhasil diproses."
+        );
+      }
     } catch (error) {
       console.error("Import error:", error);
-      alert("Terjadi kesalahan saat mengimpor file.");
+      showErrorToast("Terjadi kesalahan saat mengimpor file.");
+    } finally {
+      // Reset file input agar bisa mengupload file yang sama lagi
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -365,6 +459,7 @@ const TableMasterMenu = () => {
   };
 
   const onButtonExport = async () => {
+    
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -418,6 +513,36 @@ const TableMasterMenu = () => {
     }
   };
 
+  const selectRole = [
+    { value: "SALESMAN", label: "SALESMAN" },
+    { value: "REGIONAL", label: "REGIONAL" },
+    { value: "TSF", label: "TSF" },
+  ];
+
+  const selectRegion = regions.map((region) => ({
+    value: region.region_code,
+    label: region.region_name,
+  }));
+
+  const selectBranch = branches.map((branch) => ({
+    value: branch.org_id,
+    label: branch.organization_code,
+  }));
+
+  const selectStatus = [
+    { value: "Active", label: "Active" },
+    { value: "Inactive", label: "Inactive" },
+  ];
+
+  const handleResetFilters = () => {
+    setSelectedRole(null);
+    setSelectedBranch(null);
+    setSelectedRegion("");
+    setSelectedStatus("");
+    setCreatedDate("");
+    setSelectedDate(null);
+  };
+
   return (
     <>
       <div className="p-4 bg-white shadow rounded-md mb-5">
@@ -438,7 +563,7 @@ const TableMasterMenu = () => {
             </Button>
 
             <Button variant="outline" size="sm" onClick={onButtonImport}>
-              <FaFileImport className="mr-2" />  Unggah Data
+              <FaFileImport className="mr-2" /> Unggah Data
             </Button>
 
             <input
@@ -469,9 +594,10 @@ const TableMasterMenu = () => {
           <div className="space-x-4">
             <Label htmlFor="jenis-kunjungan-select">Posisi</Label>
             <Select
-              options={options}
+              options={selectRole}
               placeholder="Pilih"
-              onChange={handleSelectChange}
+              value={selectedRole ?? undefined}
+              onChange={(value) => setSelectedRole(value ?? "")}
               className="dark:bg-dark-900 react-select-container"
             />
           </div>
@@ -479,9 +605,10 @@ const TableMasterMenu = () => {
           <div className="space-x-4">
             <Label htmlFor="jenis-kunjungan-select">Region</Label>
             <Select
-              options={options}
+              options={selectRegion}
+              value={selectedRegion ?? undefined}
               placeholder="Pilih"
-              onChange={handleSelectChange}
+              onChange={(value) => setSelectedRegion(value ?? "")}
               className="dark:bg-dark-900 react-select-container"
             />
           </div>
@@ -489,9 +616,15 @@ const TableMasterMenu = () => {
           <div className="space-x-4">
             <Label htmlFor="jenis-kunjungan-select">Cabang</Label>
             <Select
-              options={options}
+              value={selectedBranch?.value ?? undefined}
+              options={selectBranch}
               placeholder="Pilih"
-              onChange={handleSelectChange}
+              onChange={(value) => {
+                const selectedOption = selectBranch.find(
+                  (option) => option.value === value
+                );
+                setSelectedBranch(selectedOption || null);
+              }}
               className="dark:bg-dark-900 react-select-container"
             />
           </div>
@@ -499,9 +632,10 @@ const TableMasterMenu = () => {
           <div className="space-x-4">
             <Label htmlFor="jenis-kunjungan-select">Status</Label>
             <Select
-              options={options}
+              value={selectedStatus ?? undefined}
+              options={selectStatus}
               placeholder="Pilih"
-              onChange={handleSelectChange}
+              onChange={(value) => setSelectedStatus(value ?? "")}
               className="dark:bg-dark-900 react-select-container"
             />
           </div>
@@ -511,9 +645,14 @@ const TableMasterMenu = () => {
             <DatePicker
               id="create-date"
               placeholder="Select a date"
-              onChange={(dates, currentDateString) =>
-                console.log({ dates, currentDateString })
-              }
+              defaultDate={selectedDate ?? undefined}
+              onChange={(dates) => {
+                const selected = dates?.[0] ?? null;
+                setSelectedDate(selected);
+                setCreatedDate(
+                  selected ? selected.toLocaleDateString("sv-SE") : ""
+                );
+              }}
             />
           </div>
 
@@ -521,7 +660,7 @@ const TableMasterMenu = () => {
             <Button
               variant="rounded"
               size="sm"
-              onClick={() => alert("Reset Filters")}
+              onClick={() => handleResetFilters()}
             >
               <FaUndo />
             </Button>
@@ -530,7 +669,7 @@ const TableMasterMenu = () => {
       </div>
 
       <AdjustTableUser
-        data={tableData}
+        data={filteredTableData}
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
         onDetail={handleDetail}
@@ -551,3 +690,24 @@ const TableMasterMenu = () => {
 };
 
 export default TableMasterMenu;
+
+// // Menggunakan useMemo untuk mengoptimalkan performa
+// const tableData = useMemo(() => {
+//   return user.map((u) => {
+//     return {
+//       id: u.id,
+//       name: u.employee_name || "",
+//       email: u.email,
+//       role: u.role?.name || u.role_name || "",
+//       branch: String(u.organization_code || ""),
+//       created_on: u.created_at || "",
+//       nik: u.employee_number || "",
+//       nik_spv: u.supervisor_number || "",
+//       valid_to: u.valid_to || "",
+//       region_code: u.region_code || "",
+//       region_name: u.region_name || "",
+//       is_active: u.is_active ? "Active" : "Inactive",
+//       is_sales: u.is_sales ? "Yes" : "No",
+//     };
+//   });
+// }, [user, regions]);
