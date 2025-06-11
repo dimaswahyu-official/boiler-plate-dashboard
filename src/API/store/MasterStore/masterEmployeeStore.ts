@@ -28,6 +28,7 @@ interface EmployeeData {
     org_id: string;
     effective_start_date: string;
     effective_end_date: string;
+    status: any;
 }
 
 interface BranchState {
@@ -61,7 +62,7 @@ export const useEmployeeStore = create<BranchState>((set) => ({
         try {
             const employees = await fetchAllEmployees();
             console.log("Fetched employees:", employees);
-            
+
             set({ allEmployees: employees });
         } catch (error: any) {
             set({ error: error.message || "Failed to fetch all employees", isLoading: false });

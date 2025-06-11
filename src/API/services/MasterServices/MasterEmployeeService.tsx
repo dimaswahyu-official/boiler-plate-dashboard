@@ -33,6 +33,7 @@ interface EmployeeData {
   org_id: string;
   effective_start_date: string;
   effective_end_date: string;
+  status: any;
 }
 
 export const fetchAllEmployees = async (): Promise<EmployeeData[]> => {

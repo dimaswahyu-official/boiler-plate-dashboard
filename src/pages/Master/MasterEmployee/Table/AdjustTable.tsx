@@ -12,6 +12,7 @@ type Branch = {
   vendor_name: string;
   organization_name: string;
   effective_start_date: string;
+  status: any;
 };
 
 type MenuTableProps = {

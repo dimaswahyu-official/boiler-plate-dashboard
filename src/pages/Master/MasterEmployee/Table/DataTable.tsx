@@ -129,6 +129,7 @@ const TableMasterMenu = () => {
         employee_number: item.employee_number,
         vendor_name: item.vendor_name,
         organization_name: item.organization_name,
+        status: item.status,
         effective_start_date: item.effective_start_date,
       }));
   }, [allEmployees, debouncedFilter, filters]);
