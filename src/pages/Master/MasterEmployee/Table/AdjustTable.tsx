@@ -35,7 +35,7 @@ const AdjustTable = ({
     () => [
       {
         accessorKey: "employee_name",
-        header: "Salesman Name",
+        header: "Nama Karyawan",
         sortingFn: "basic",
         enableSorting: true,
       },
