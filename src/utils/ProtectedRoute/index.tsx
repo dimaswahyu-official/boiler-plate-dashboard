@@ -10,10 +10,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const currentPath = location.pathname;
 
   const storedUserLogin = localStorage.getItem("user_login_data");
-  const userMenus =
-    storedUserLogin && storedUserLogin !== "undefined"
-      ? JSON.parse(storedUserLogin).menus
-      : [];
+  const userMenus = storedUserLogin && storedUserLogin !== "undefined"  ? JSON.parse(storedUserLogin).menus : [];
 
   // Ambil semua path termasuk child manual
   const flattenPaths = (menus: any[]): string[] => {

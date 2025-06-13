@@ -25,11 +25,6 @@ import {
   DetailCustomer,
   MasterUser,
   SalesRoute,
-  // MasterBranch,
-  // MasterRegion,
-  // MasterSalesman,
-  // ManagementTerritory,
-  // SelectTerritory,
   MasterEmployee,
 } from "./utils/PagesComponent";
 import SelectTerritory from "./pages/Master/ManagementTerritory/selectTerritory";

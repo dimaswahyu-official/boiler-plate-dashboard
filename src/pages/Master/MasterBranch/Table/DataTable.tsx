@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Input from "../../../../components/form/input/InputField";
 import { useMenuStore } from "../../../../API/store/MasterStore/masterMenuStore";
 import { useBranchStore } from "../../../../API/store/MasterStore/masterBranchStore";
-
 import AdjustTable from "./AdjustTable";
 
 const TableMasterMenu = () => {
