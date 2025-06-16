@@ -53,34 +53,36 @@ export default function SignInForm() {
     setError(null);
 
     try {
-      await authLogin({
-        ...data,
-        ip_address: ipAddress,
-        device_info: navigator.userAgent,
-        platform: "web",
-      });
-
-      const { accessToken, refreshToken, user, menus, permissions } =
-        useAuthStore.getState();
-
-      if (!accessToken) {
-        throw new Error("Login failed!");
-      }
-
-      fetchMenus();
-      localStorage.setItem(
-        "user_login_data",
-        JSON.stringify({ accessToken, refreshToken, user, menus, permissions })
-      );
-      localStorage.setItem("token", accessToken);
-      localStorage.setItem("role_id", user?.role_id.toString() || "");
-
-      showSuccessToast("Login successful!");
-
+      // await authLogin({
+      //   ...data,
+      //   ip_address: ipAddress,
+      //   device_info: navigator.userAgent,
+      //   platform: "web",
+      // });
+      //
+      // const { accessToken, refreshToken, user, menus, permissions } =
+      //   useAuthStore.getState();
+      //
+      // if (!accessToken) {
+      //   throw new Error("Login failed!");
+      // }
+      //
+      // fetchMenus();
+      // localStorage.setItem(
+      //   "user_login_data",
+      //   JSON.stringify({ accessToken, refreshToken, user, menus, permissions })
+      // );
+      // localStorage.setItem("token", accessToken);
+      // localStorage.setItem("role_id", user?.role_id.toString() || "");
+      //
+      // showSuccessToast("Login successful!");
+      //
+      localStorage.setItem("token", "asdasdasd11");
+      localStorage.setItem("role_id", "1");
       setTimeout(() => {
         navigate("/master_menu");
       }, 800);
-    } catch (err: any) {
+    } catch (err:any) {
       console.error("Login failed:", err);
       setError(err.message || "Login failed!");
     } finally {

@@ -59,18 +59,23 @@ export const useDynamicSidebarItems = (): NavItem[] => {
     }
   }, []);
 
-  const user_login_menu = (() => {
-    const storedUserLogin = localStorage.getItem("user_login_data");
-    return storedUserLogin && storedUserLogin !== "undefined"
-      ? JSON.parse(storedUserLogin).menus
-      : null;
-  })();
+  // const user_login_menu = (() => {
+  //   const storedUserLogin = localStorage.getItem("user_login_data");
+  //   return storedUserLogin && storedUserLogin !== "undefined"
+  //     ? JSON.parse(storedUserLogin).menus
+  //     : null;
+  // })();
 
   const navItems = useMemo(() => {
-    const effectiveMenus =
-      user_login_menu && user_login_menu.length > 0
-        ? user_login_menu
-        : localMenus;
+    // const effectiveMenus =
+    //   user_login_menu && user_login_menu.length > 0
+    //     ? user_login_menu
+    //     : localMenus;
+
+    const effectiveMenus = (localMenus.length > 0 ? localMenus : dummyRoutes).map((menu) => ({
+      ...menu,
+      parent_id: menu.parent_id !== null ? String(menu.parent_id) : null,
+    }));
 
     if (!effectiveMenus || effectiveMenus.length === 0) return [];
 
