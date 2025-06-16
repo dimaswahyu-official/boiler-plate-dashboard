@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import { FaEdit, FaTrash, } from "react-icons/fa";
 import { ColumnDef } from "@tanstack/react-table";
 import TableComponent from "../../../../components/tables/MasterDataTable/TableComponent";
 import { usePagePermissions } from "../../../../utils/UserPermission/UserPagePermissions";
