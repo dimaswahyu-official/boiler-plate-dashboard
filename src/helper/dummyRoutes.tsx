@@ -49,6 +49,36 @@ const dummyRoutes = [
     created_at: "2025-05-06T01:17:11.026Z",
     updated_at: "2025-05-06T01:17:11.026Z",
   },
+  {
+    id: 7,
+    name: "Inbound",
+    path: "/inbound",
+    icon: "FaRegFileAlt",
+    parent_id: null,
+    order: 1,
+    created_at: "2025-05-06T01:03:15.036Z",
+    updated_at: "2025-05-06T01:14:04.189Z",
+  },
+  {
+    id: 8,
+    name: "Inbound Planning",
+    path: "/inbound_planning",
+    icon: "FaRegFileAlt",
+    parent_id: 7,
+    order: 1,
+    created_at: "2025-05-06T01:03:15.036Z",
+    updated_at: "2025-05-06T01:14:04.189Z",
+  },
+  {
+    id: 9,
+    name: "Goods Receipt",
+    path: "/goods_receipt",
+    icon: "FaRegFileAlt",
+    parent_id: 7,
+    order: 1,
+    created_at: "2025-05-06T01:03:15.036Z",
+    updated_at: "2025-05-06T01:14:04.189Z",
+  },
 ];
 
 export default dummyRoutes;
